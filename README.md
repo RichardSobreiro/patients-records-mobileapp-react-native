@@ -141,3 +141,20 @@ Add new lint script to our package.json:
 },
 ...
 ```
+
+## Publishing the App with EAS Build
+
+Take a look at the [Expo Build](https://docs.expo.dev/build/introduction/) page for more details.
+
+1. npm install -g eas-cli
+2. eas login
+3. eas build:configure
+4. eas build -p android --profile preview
+
+## Setup Social Login with Google
+
+Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/google-authentication/) page for more details.
+
+emulator Pixel_4_API_UpsideDownCake -feature -Vulkan
+
+1. npx expo install expo-auth-session expo-crypto expo-web-browser
