@@ -155,6 +155,10 @@ Take a look at the [Expo Build](https://docs.expo.dev/build/introduction/) page 
 
 Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/google-authentication/) page for more details.
 
-emulator Pixel_4_API_UpsideDownCake -feature -Vulkan
+# Run Locally (Windows)
 
-1. npx expo install expo-auth-session expo-crypto expo-web-browser
+## Start Android Emulator
+
+1. emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
+
+2. npm start

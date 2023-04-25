@@ -1,94 +1,115 @@
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
+import IconButton from './components/ui/IconButton';
+import { Colors } from './constants/styles';
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignupScreen';
+import WelcomeScreen from './screens/WelcomeScreen';
+import AuthContextProvider, { AuthContext } from './store/auth-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 
-import * as Facebook from 'expo-auth-session/providers/facebook';
+// Keep the splash screen visible while we fetch resources
+//SplashScreen.preventAutoHideAsync();
 
-WebBrowser.maybeCompleteAuthSession();
+export type RootStackParamList = {
+  Login: undefined;
+  Signup: undefined;
+  Welcome: undefined;
+};
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [request, response, promptAsync] = Facebook.useAuthRequest({
-    clientId: '592502122839259'
-  });
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  if (request) {
-    console.log(
-      'You need to add this url to your authorized redirect urls on your Facebook app: ' +
-        request.redirectUri
-    );
-  }
+const AuthStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: Colors.primary500 },
+        headerTintColor: 'white',
+        contentStyle: { backgroundColor: Colors.primary100 }
+      }}
+    >
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+    </Stack.Navigator>
+  );
+};
 
-  useEffect(() => {
-    if (response && response.type === 'success' && response.authentication) {
-      (async () => {
-        const userInfoResponse = await fetch(
-          `https://graph.facebook.com/me?access_token=${
-            response.authentication!.accessToken
-          }&fields=id,name,picture.type(large)`
-        );
-        const userInfo = await userInfoResponse.json();
-        setUser(userInfo);
-      })();
-    } else {
-      console.log(response);
-    }
-  }, [response]);
+const AuthenticatedStack = () => {
+  const authCtx = useContext(AuthContext);
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: Colors.primary500 },
+        headerTintColor: 'white',
+        contentStyle: { backgroundColor: Colors.primary100 }
+      }}
+    >
+      <Stack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+        options={{
+          headerRight: ({ tintColor }) => (
+            <IconButton icon="exit" color={tintColor} size={24} onPress={authCtx.logout} />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
-  const handlePressAsync = async () => {
-    const result = await promptAsync();
-    if (result.type !== 'success') {
-      alert('Uh oh, something went wrong');
-      //return;
-    }
-  };
-
-  function Profile({ user }) {
-    return (
-      <View style={styles.profile}>
-        <Image source={{ uri: user.picture.data.url }} style={styles.image} />
-        <Text style={styles.name}>{user.name}</Text>
-        <Text>ID: {user.id}</Text>
-      </View>
-    );
-  }
+const Navigation = () => {
+  const authCtx = useContext(AuthContext);
 
   return (
-    <View style={styles.container}>
-      {user ? (
-        <Profile user={user} />
-      ) : (
-        <Button disabled={!request} title="Sign in with Facebook" onPress={handlePressAsync} />
-      )}
-    </View>
-    // <View style={styles.container}>
-    //   <Text>Open up App.js to start working on your app!</Text>
-    //   <StatusBar style="auto" />
-    // </View>
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: '#fff',
-  //   alignItems: 'center',
-  //   justifyContent: 'center'
-  // }
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  profile: {
-    alignItems: 'center'
-  },
-  name: {
-    fontSize: 20
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50
+const Root = () => {
+  const [isTryingLogin, setIsTryingLogin] = useState(true);
+
+  const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    async function fetchToken() {
+      const storedToken = await AsyncStorage.getItem('token');
+
+      if (storedToken) {
+        authCtx.authenticate(storedToken);
+      }
+    }
+    try {
+      fetchToken();
+    } catch (e: any) {
+      console.log(e);
+    } finally {
+      setIsTryingLogin(false);
+    }
+  }, [authCtx]);
+
+  if (isTryingLogin) {
+    return <ActivityIndicator size="large" />;
   }
-});
+
+  return <Navigation />;
+};
+
+const App: React.FC = () => {
+  return (
+    <>
+      <StatusBar style="light" />
+      <AuthContextProvider>
+        <Root />
+      </AuthContextProvider>
+    </>
+  );
+};
+
+export default App;
