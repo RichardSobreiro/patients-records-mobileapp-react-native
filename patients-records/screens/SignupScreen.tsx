@@ -15,7 +15,7 @@ const SignupScreen: React.FC = () => {
     try {
       //const token = await createUser(email, password);
       const token = '';
-      authCtx.authenticate(token);
+      //authCtx.authenticate(token);
     } catch (error) {
       Alert.alert(
         'Authentication failed',

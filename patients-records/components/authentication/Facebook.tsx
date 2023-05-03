@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import { Colors } from '../../constants/styles';
+import { facebookCallbackParams } from '../../util/auth';
 import { AntDesign } from '@expo/vector-icons';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import * as WebBrowser from 'expo-web-browser';
@@ -8,14 +9,16 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
+const app_id: string = '592502122839259';
+
 interface Props {
   isLogin: boolean;
-  callback: (token: { access_token: string; expires_in: string; refresh_token: string }) => void;
+  callback: (params: facebookCallbackParams) => void;
 }
 
 const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
   const [, response, promptAsync] = Facebook.useAuthRequest({
-    clientId: '592502122839259'
+    clientId: app_id
   });
 
   useEffect(() => {
@@ -24,43 +27,30 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
         const userInfoResponse = await fetch(
           `https://graph.facebook.com/me?access_token=${
             response.authentication!.accessToken
-          }&fields=id,name,picture.type(large)`
+          }&fields=id,name,email,picture.type(large)`
         );
         const userInfo = await userInfoResponse.json();
-        console.log(userInfo);
+
+        await callback({
+          facebook_access_token: response.authentication!.accessToken,
+          app_id,
+          user_id: userInfo.id,
+          username: userInfo.name,
+          email: userInfo.email,
+          pictureUrl: userInfo.picture.data.url
+        });
       })();
     } else {
       console.log(response);
     }
-  }, [response]);
+  }, [callback, response]);
 
   const handlePressAsync = async () => {
     const result = await promptAsync();
     if (result.type !== 'success') {
       alert('Uh oh, something went wrong');
-      //return;
     }
   };
-
-  // function Profile({ user }) {
-  //   return (
-  //     <View style={styles.profile}>
-  //       <Image source={{ uri: user.picture.data.url }} style={styles.image} />
-  //       <Text style={styles.name}>{user.name}</Text>
-  //       <Text>ID: {user.id}</Text>
-  //     </View>
-  //   );
-  // }
-
-  // return (
-  //   <View style={styles.container}>
-  //     {user ? (
-  //       <Profile user={user} />
-  //     ) : (
-  //       <Button disabled={!request} title="Sign in with Facebook" onPress={handlePressAsync} />
-  //     )}
-  //   </View>
-  // );
 
   return (
     <Pressable
@@ -103,20 +93,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold'
   }
-  // container: {
-  //   flex: 1,
-  //   alignItems: 'center',
-  //   justifyContent: 'center'
-  // },
-  // profile: {
-  //   alignItems: 'center'
-  // },
-  // name: {
-  //   fontSize: 20
-  // },
-  // image: {
-  //   width: 100,
-  //   height: 100,
-  //   borderRadius: 50
-  // }
 });

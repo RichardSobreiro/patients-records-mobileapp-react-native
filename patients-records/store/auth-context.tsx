@@ -1,31 +1,70 @@
+import AxiosConfig from '../util/AxiosConfig';
+import { Token, validadeToken, UserInfo } from '../util/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState } from 'react';
 
-export const AuthContext = createContext({
-  token: '',
+type AuthState = {
+  token: Token | undefined;
+  userInfo: UserInfo | undefined;
+  isAuthenticated: boolean;
+  authenticate: (token: Token, userInfo: UserInfo) => void;
+  logout: () => void;
+  initializeState: () => void;
+};
+
+const initialState: AuthState = {
+  token: undefined,
+  userInfo: undefined,
   isAuthenticated: false,
-  authenticate: (token) => {},
-  logout: () => {}
-});
+  authenticate: (token: Token, userInfo: UserInfo) => {},
+  logout: () => {},
+  initializeState: () => {}
+};
+
+export const AuthContext = createContext(initialState);
 
 const AuthContextProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState<string>('');
+  const [authToken, setAuthToken] = useState<Token | undefined>(undefined);
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
 
-  function authenticate(token) {
+  const authenticate = (token: Token, userInfo: UserInfo): void => {
     setAuthToken(token);
-    AsyncStorage.setItem('token', token);
-  }
+    setUserInfo(userInfo);
+    AsyncStorage.setItem('ACCESS_TOKEN', JSON.stringify(token));
+    AsyncStorage.setItem('USER_INFO', JSON.stringify(userInfo));
+    AxiosConfig(token);
+  };
 
-  function logout() {
-    setAuthToken('');
-    AsyncStorage.removeItem('token');
-  }
+  const logout = (): void => {
+    setAuthToken(undefined);
+    AsyncStorage.removeItem('ACCESS_TOKEN');
+    AsyncStorage.removeItem('USER_INFO');
+  };
+
+  const initializeState = async () => {
+    const accessTokenJson = await AsyncStorage.getItem('ACCESS_TOKEN');
+    const userInfoJson = await AsyncStorage.getItem('USER_INFO');
+    if (accessTokenJson && userInfoJson) {
+      const accessTokenAsyncStorage = JSON.parse(accessTokenJson) as Token;
+      const userInfoAsyncStorage = JSON.parse(userInfoJson) as UserInfo;
+      const isValid = await validadeToken(accessTokenAsyncStorage);
+      if (isValid) {
+        setAuthToken(accessTokenAsyncStorage);
+        setUserInfo(userInfoAsyncStorage);
+        AxiosConfig(accessTokenAsyncStorage);
+      } else {
+        logout();
+      }
+    }
+  };
 
   const value = {
     token: authToken,
+    userInfo,
     isAuthenticated: !!authToken,
     authenticate,
-    logout
+    logout,
+    initializeState
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -12,14 +12,17 @@ import { Alert, StyleSheet, View } from 'react-native';
 interface Props {
   isLogin: boolean;
   onAuthenticate: (params: { email?: string; password?: string }) => void;
-  socialLoginCallback: (token: {
-    access_token: string;
-    expires_in: string;
-    refresh_token: string;
+  facebookCallback?: (params: {
+    facebook_access_token: string;
+    app_id: string;
+    user_id: string;
+    username: string;
+    email: string;
+    pictureUrl: string;
   }) => void;
 }
 
-const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, socialLoginCallback }) => {
+const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallback }) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [credentialsInvalid, setCredentialsInvalid] = useState({
@@ -79,12 +82,14 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, socialLoginCall
           </FlatButton>
         </View>
       </View>
-      <View style={styles.facebookContent}>
-        <FacebookAuthentication
-          isLogin={isLogin}
-          callback={socialLoginCallback}
-        ></FacebookAuthentication>
-      </View>
+      {isLogin && (
+        <View style={styles.facebookContent}>
+          <FacebookAuthentication
+            isLogin={isLogin}
+            callback={facebookCallback!}
+          ></FacebookAuthentication>
+        </View>
+      )}
     </>
   );
 };

@@ -4,16 +4,11 @@ import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
-
-// Keep the splash screen visible while we fetch resources
-//SplashScreen.preventAutoHideAsync();
+import { ActivityIndicator, SafeAreaView, StyleSheet } from 'react-native';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -78,21 +73,17 @@ const Root = () => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    async function fetchToken() {
-      const storedToken = await AsyncStorage.getItem('token');
-
-      if (storedToken) {
-        authCtx.authenticate(storedToken);
-      }
+    async function initialSetup() {
+      await authCtx.initializeState();
     }
     try {
-      fetchToken();
+      initialSetup();
     } catch (e: any) {
       console.log(e);
     } finally {
       setIsTryingLogin(false);
     }
-  }, [authCtx]);
+  }, []);
 
   if (isTryingLogin) {
     return <ActivityIndicator size="large" />;
@@ -104,12 +95,21 @@ const Root = () => {
 const App: React.FC = () => {
   return (
     <>
-      <StatusBar style="light" />
-      <AuthContextProvider>
-        <Root />
-      </AuthContextProvider>
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="light" />
+        <AuthContextProvider>
+          <Root />
+        </AuthContextProvider>
+      </SafeAreaView>
     </>
   );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+    // paddingTop: Constants.statusBarHeight
+  }
+});

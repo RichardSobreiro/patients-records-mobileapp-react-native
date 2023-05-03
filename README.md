@@ -159,6 +159,14 @@ Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/goo
 
 ## Start Android Emulator
 
-1. emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
+1. Start the emulator
 
-2. npm start
+```
+emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
+```
+
+2. Run the app
+
+```
+npm start
+```

@@ -4,16 +4,18 @@ import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-
 interface Props {
   children: any;
   onPress: ((event: GestureResponderEvent) => void) | null | undefined;
+  buttonTextStyles?;
+  buttonStyles?;
 }
 
-const FlatButton: React.FC<Props> = ({ children, onPress }) => {
+const FlatButton: React.FC<Props> = ({ children, onPress, buttonTextStyles, buttonStyles }) => {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, buttonStyles]}
       onPress={onPress}
     >
       <View>
-        <Text style={styles.buttonText}>{children}</Text>
+        <Text style={[styles.buttonText, buttonTextStyles]}>{children}</Text>
       </View>
     </Pressable>
   );

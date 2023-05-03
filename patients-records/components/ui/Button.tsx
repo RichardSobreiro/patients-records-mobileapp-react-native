@@ -1,19 +1,38 @@
 import { Colors } from '../../constants/styles';
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
+export enum ButtonTypes {
+  Primary = 'primary'
+}
+
 interface Props {
   children: any;
   onPress: ((event: GestureResponderEvent) => void) | null | undefined;
+  type?: ButtonTypes;
+  pressable?;
+  view?;
+  text?;
 }
 
-const Button: React.FC<Props> = ({ children, onPress }) => {
+const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, type }) => {
+  let BUTTON_COLOR = { backgroundColor: Colors.primary500 };
+  if (type) {
+    switch (type) {
+      case ButtonTypes.Primary:
+        BUTTON_COLOR = { backgroundColor: Colors.secondary500 };
+        break;
+      default:
+        BUTTON_COLOR = { backgroundColor: Colors.primary500 };
+        break;
+    }
+  }
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, BUTTON_COLOR, pressed && styles.pressed, pressable]}
       onPress={onPress}
     >
-      <View>
-        <Text style={styles.buttonText}>{children}</Text>
+      <View style={view}>
+        <Text style={[styles.buttonText, text]}>{children}</Text>
       </View>
     </Pressable>
   );
