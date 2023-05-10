@@ -4,6 +4,7 @@ import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
+import AxiosContextProvider from './store/axios-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -98,7 +99,9 @@ const App: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <AuthContextProvider>
-          <Root />
+          <AxiosContextProvider>
+            <Root />
+          </AxiosContextProvider>
         </AuthContextProvider>
       </SafeAreaView>
     </>
@@ -110,6 +113,5 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1
-    // paddingTop: Constants.statusBarHeight
   }
 });

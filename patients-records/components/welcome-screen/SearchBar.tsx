@@ -1,63 +1,117 @@
+/* eslint-disable import/order */
+import { Colors } from '../../constants/styles';
+import IconButton from '../ui/IconButton';
+import Filters from './Filters';
 import { Feather, Entypo } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, TextInput, View, Keyboard, Button } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TextInput, View, Keyboard, Modal, Alert } from 'react-native';
 
-type Props = { clicked; searchPhrase; setSearchPhrase; setClicked };
+type Props = {
+  clicked;
+  searchPhrase;
+  searchPhraseRef;
+  setSearchPhrase;
+  setClicked;
+};
 
-const SearchBar: React.FC<Props> = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
+const SearchBar: React.FC<Props> = ({
+  clicked,
+  searchPhrase,
+  searchPhraseRef,
+  setSearchPhrase,
+  setClicked
+}) => {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   return (
-    <View style={styles.container}>
-      <View style={clicked ? styles.searchBar__clicked : styles.searchBar__unclicked}>
-        {/* search Icon */}
-        <Feather name="search" size={20} color="black" style={{ marginLeft: 1 }} />
-        {/* Input field */}
-        <TextInput
-          style={styles.input}
-          placeholder="Search"
-          value={searchPhrase}
-          onChangeText={setSearchPhrase}
-          onFocus={() => {
-            setClicked(true);
+    <>
+      <View style={styles.centeredModalView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(false);
           }}
-        />
-        {/* cross Icon, depending on whether the search bar is clicked or not */}
-        {clicked && (
-          <Entypo
-            name="cross"
-            size={20}
-            color="black"
-            style={{ padding: 1 }}
-            onPress={() => {
-              setSearchPhrase('');
+        >
+          <Filters modalVisible={modalVisible} setModalVisible={setModalVisible} />
+        </Modal>
+      </View>
+      <View style={styles.container}>
+        <View style={clicked ? styles.searchBar__clicked : styles.searchBar__unclicked}>
+          {/* search Icon */}
+          <Feather name="search" size={20} color="black" style={{ marginLeft: 1 }} />
+          {/* Input field */}
+          <TextInput
+            style={styles.input}
+            placeholder="Search"
+            value={searchPhrase}
+            onChangeText={setSearchPhrase}
+            ref={searchPhraseRef}
+            onFocus={() => {
+              setClicked(true);
             }}
           />
+          {/* cross Icon, depending on whether the search bar is clicked or not */}
+          {clicked && (
+            <Entypo
+              name="cross"
+              size={20}
+              color="black"
+              style={{ padding: 1 }}
+              onPress={() => {
+                setSearchPhrase('');
+              }}
+            />
+          )}
+        </View>
+        {/* cancel button, depending on whether the search bar is clicked or not */}
+        {clicked && (
+          <View>
+            <IconButton
+              icon="filter"
+              color={Colors.primary800}
+              size={30}
+              onPress={() => {
+                Keyboard.dismiss();
+                setModalVisible(true);
+              }}
+              pressable={{ borderColor: '#000000', borderWidth: 2, padding: 4, borderRadius: 10 }}
+            ></IconButton>
+            <IconButton
+              icon="close"
+              color={Colors.primary800}
+              size={30}
+              onPress={() => {
+                Keyboard.dismiss();
+                setClicked(false);
+              }}
+              pressable={{ borderColor: '#000000', borderWidth: 2, padding: 4, borderRadius: 10 }}
+            ></IconButton>
+          </View>
         )}
       </View>
-      {/* cancel button, depending on whether the search bar is clicked or not */}
-      {clicked && (
-        <View>
-          <Button
-            title="Cancel"
-            onPress={() => {
-              Keyboard.dismiss();
-              setClicked(false);
-            }}
-          ></Button>
-        </View>
-      )}
-    </View>
+    </>
   );
 };
 export default SearchBar;
 
 // styles
 const styles = StyleSheet.create({
+  centeredModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22
+  },
   container: {
-    margin: 15,
+    marginHorizontal: 15,
     justifyContent: 'flex-start',
     alignItems: 'center',
     flexDirection: 'row',
-    width: '90%'
+    width: '90%',
+    minHeight: 100
   },
   searchBar__unclicked: {
     padding: 10,

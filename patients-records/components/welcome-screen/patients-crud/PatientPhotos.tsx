@@ -13,8 +13,6 @@ type Props = {
   values;
   errors;
   touched;
-  isValid;
-  isFormValid;
 };
 
 const PatientPhotos: React.FC<Props> = ({
@@ -25,9 +23,7 @@ const PatientPhotos: React.FC<Props> = ({
   handleSubmit,
   values,
   errors,
-  touched,
-  isValid,
-  isFormValid
+  touched
 }) => {
   const [images, setImages] = useState<any>(null);
 
@@ -44,7 +40,6 @@ const PatientPhotos: React.FC<Props> = ({
     console.log(result);
 
     if (!result.canceled) {
-      isFormValid();
       values[field] = result.assets;
       setImages(result.assets);
     }
@@ -53,19 +48,21 @@ const PatientPhotos: React.FC<Props> = ({
   return (
     <>
       <View style={styles.container}>
-        <View>
-          <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{title}</Text>
+        <View style={{ alignItems: 'center' }}>
+          {images?.map(
+            (image, index) =>
+              index === 0 && <Image key={index} source={{ uri: image.uri }} style={styles.image} />
+          )}
+          {images?.length - 1 > 0 && <Text style={{ fontSize: 20 }}>+{images.length - 1}</Text>}
         </View>
         <FlatButton
           onPress={pickImage}
-          buttonTextStyles={styles.selectButtonText}
-          buttonStyles={styles.selectButton}
+          text={styles.selectButtonText}
+          pressable={styles.selectButton}
         >
           Selecionar imagens da galeria
         </FlatButton>
-        {images?.map((image, index) => (
-          <Image key={index} source={{ uri: image.uri }} style={styles.image} />
-        ))}
       </View>
     </>
   );
@@ -74,10 +71,11 @@ const PatientPhotos: React.FC<Props> = ({
 export default PatientPhotos;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, marginHorizontal: 4 },
   title: {
     fontSize: 18,
-    color: Colors.primary100
+    color: Colors.primary500,
+    marginBottom: 4
   },
   selectButtonText: {
     fontSize: 20,

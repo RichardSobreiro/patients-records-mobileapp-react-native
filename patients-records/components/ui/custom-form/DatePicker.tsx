@@ -1,55 +1,36 @@
 //import { styles } from './styles';
-import Button from './Button';
+import { Colors } from '../../../constants/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 type Props = {
   field?;
   label?;
-  secureTextEntry?;
-  autoCapitalize?;
   values?;
   touched?;
   errors?;
-  handleChange?;
-  handleBlur?;
+  onChangeHandler: (field: string, value: any) => void;
 };
 
-const FormDatePicker: React.FC<Props> = ({
+const DatePicker: React.FC<Props> = ({
   field,
   label,
-  secureTextEntry,
-  autoCapitalize,
   values,
   touched,
   errors,
-  handleChange,
-  handleBlur
+  onChangeHandler
 }) => {
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-
-  values[field] = date;
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setShow(false);
-    setDate(currentDate);
-    values[field] = currentDate;
-  };
-
-  const showMode = (currentMode) => {
-    if (Platform.OS === 'android') {
-      setShow(false);
-      // for iOS, add a button that closes the picker
-    }
-    setMode(currentMode);
+    values[field].value = currentDate;
+    onChangeHandler(field, currentDate);
   };
 
   const showDatepicker = () => {
-    showMode('date');
     setShow(true);
   };
 
@@ -59,13 +40,13 @@ const FormDatePicker: React.FC<Props> = ({
 
       <Pressable style={({ pressed }) => [pressed && styles.pressed]} onPress={showDatepicker}>
         <View style={styles.inputTextContainer}>
-          <Text style={styles.input}>{date.toDateString()}</Text>
+          <Text style={styles.input}>{values[field].value.toDateString()}</Text>
         </View>
       </Pressable>
       {show && (
         <DateTimePicker
           testID="dateTimePicker"
-          value={date}
+          value={values[field].value}
           mode={'date'}
           is24Hour={true}
           onChange={onChange}
@@ -81,16 +62,16 @@ const FormDatePicker: React.FC<Props> = ({
   );
 };
 
-export default FormDatePicker;
+export default DatePicker;
 
 const styles = StyleSheet.create({
   formGroup: {
     marginBottom: 10
   },
   label: {
-    color: '#7d7e79',
-    fontSize: 16,
-    lineHeight: 30
+    fontSize: 18,
+    color: Colors.primary500,
+    marginBottom: 4
   },
   pressed: {
     opacity: 0.7
@@ -98,13 +79,13 @@ const styles = StyleSheet.create({
   input: {
     textAlign: 'center',
     textAlignVertical: 'center',
-    fontSize: 16,
+    fontSize: 18,
     height: 50,
-    //paddingHorizontal: 20,
     borderRadius: 5,
     borderWidth: 2,
     borderColor: '#e3e3e3',
-    backgroundColor: '#fff'
+    backgroundColor: Colors.secondary100,
+    color: Colors.primary800
   },
   inputTextContainer: {
     justifyContent: 'center',

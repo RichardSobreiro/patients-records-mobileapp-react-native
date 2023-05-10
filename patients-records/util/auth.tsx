@@ -58,7 +58,7 @@ export const authenticateFacebook = async (
       return response.data as Token;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(`util\\auth.tsx: authenticateFacebook method Error:${err}`);
       return undefined;
     });
 
@@ -71,8 +71,8 @@ export const validadeToken = async (params: Token): Promise<boolean> => {
   const options = {
     headers: { 'content-type': 'application/x-www-form-urlencoded' }
   };
-
-  const isValid: boolean = await axios
+  const uninterceptedAxiosInstance = axios.create();
+  const isValid: boolean = await uninterceptedAxiosInstance
     .post(
       url,
       {
@@ -86,7 +86,7 @@ export const validadeToken = async (params: Token): Promise<boolean> => {
       return response.data.active as boolean;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(`util\\auth.tsx: validadeToken method Error:${err}`);
       return false;
     });
 

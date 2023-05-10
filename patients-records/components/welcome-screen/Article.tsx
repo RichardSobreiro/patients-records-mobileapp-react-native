@@ -1,6 +1,6 @@
 //import { formatDistanceToNow } from 'date-fns';
 import { Colors } from '../../constants/styles';
-import { GetPatient } from '../../models/Patient';
+import { GetPatient } from '../../models/GetPatient';
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 

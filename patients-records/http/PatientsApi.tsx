@@ -1,4 +1,4 @@
-import { GetPatientsResponse, GetPatient } from '../models/Patient';
+import { GetPatientsResponse, GetPatient } from '../models/GetPatient';
 import axios from 'axios';
 
 export type PatientCreatedResponse = {
@@ -28,7 +28,7 @@ export const createNewPatient = async (request: PatientCreatedRequest) => {
       return response.data as PatientCreatedResponse;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(`createNewPatient method Error:${err}`);
       return undefined;
     });
 
@@ -44,15 +44,15 @@ export const getPatientById = async (patientId: string) => {
       return response.data as GetPatient;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(`getPatientById method Error:${err}`);
       return undefined;
     });
 
   return response;
 };
 
-export const getPatients = async () => {
-  const url = `http://10.0.2.2:3006/patients`;
+export const getPatients = async (patientName?: string) => {
+  const url = `http://10.0.2.2:3006/patients${patientName ? '?patientName=' + patientName : ''}`;
 
   const response: GetPatientsResponse | undefined = await axios
     .get(url)
@@ -60,7 +60,7 @@ export const getPatients = async () => {
       return response.data as GetPatientsResponse;
     })
     .catch((err) => {
-      console.log(err);
+      console.log(`getPatients method Error:${err}`);
       return undefined;
     });
 

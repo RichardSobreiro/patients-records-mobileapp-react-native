@@ -170,3 +170,5 @@ emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
 ```
 npm start
 ```
+
+UPDATE ADB FILE

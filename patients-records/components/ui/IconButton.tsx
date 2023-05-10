@@ -1,17 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
-import { GestureResponderEvent, Pressable, StyleSheet } from 'react-native';
+import { GestureResponderEvent, Pressable, StyleSheet, View } from 'react-native';
 
 interface Props {
   icon;
   color;
   size;
   onPress: ((event: GestureResponderEvent) => void) | null | undefined;
+  pressable?;
 }
 
-const IconButton: React.FC<Props> = ({ icon, color, size, onPress }) => {
+const IconButton: React.FC<Props> = ({ icon, color, size, onPress, pressable }) => {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, pressable]}
       onPress={onPress}
     >
       <Ionicons name={icon} color={color} size={size} />

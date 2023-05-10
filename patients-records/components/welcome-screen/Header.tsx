@@ -7,13 +7,17 @@ type Props = {
   isAddingPatientScreen?: boolean;
   onCreateEditPatient?: () => void;
   onSkipBackPressed?: () => void;
+  title?: string;
+  subtitle?: string;
 };
 
 const Header: React.FC<Props> = ({
   isWelcomeScreen,
   isAddingPatientScreen,
   onCreateEditPatient,
-  onSkipBackPressed
+  onSkipBackPressed,
+  title,
+  subtitle
 }) => {
   return (
     <>
@@ -35,7 +39,8 @@ const Header: React.FC<Props> = ({
           </TouchableOpacity> */}
 
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Novo Paciente</Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.subtitle}>{subtitle}</Text>
           </View>
         </View>
       )}
@@ -64,7 +69,15 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 25,
+    color: '#262626',
+    //marginLeft: 12,
+    paddingLeft: 8,
+    fontWeight: 'bold'
+  },
+  subtitle: {
+    textAlign: 'center',
+    fontSize: 15,
     color: '#262626',
     //marginLeft: 12,
     paddingLeft: 8,

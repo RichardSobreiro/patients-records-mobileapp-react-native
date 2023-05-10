@@ -7,7 +7,8 @@ import { getPatients } from '../http/PatientsApi';
 import { AuthContext } from '../store/auth-context';
 import { useNavigation } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
-import { GetPatient } from 'models/Patient';
+import { GetPatient } from 'models/GetPatient';
+import React from 'react';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -16,11 +17,11 @@ import {
   SafeAreaView,
   Text,
   ActivityIndicator,
-  FlatList
+  FlatList,
+  TextInput
 } from 'react-native';
 
-const PRIMARY_COLOR = '#e74c3c';
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 const WelcomeScreen: React.FC = () => {
   const authCtx = useContext(AuthContext);
@@ -28,15 +29,16 @@ const WelcomeScreen: React.FC = () => {
 
   const [isLoading, setLoading] = useState(true);
 
-  const [searchPhrase, setSearchPhrase] = useState('');
-  const [clicked, setClicked] = useState(false);
+  const [searchPhrase, setSearchPhrase] = useState<string>('');
+  const searchPhraseRef = React.createRef<TextInput>();
+  const [clicked, setClicked] = useState<boolean>(false);
 
   const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
   const [patientBeingEditedId, setPatientBeingEditedId] = useState<string | undefined>(undefined);
 
   const [patients, setPatients] = useState<GetPatient[]>([]);
-  const [page, setPage] = useState(1);
-  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const hasMoreData = useRef(true);
 
   const backFromAddPatient = useCallback(() => {
@@ -55,32 +57,45 @@ const WelcomeScreen: React.FC = () => {
     return () => backHandler.remove();
   }, [backFromAddPatient]);
 
+  const fetchData = async (patientName?: string) => {
+    //if (!hasMoreData.current) return;
+
+    const newPatients = await getPatients(patientName);
+
+    // if (newArticles!.length < PAGE_SIZE) {
+    //   hasMoreData.current = false;
+    // }
+
+    setPatients((currentPatients) => {
+      if (!newPatients) {
+        return currentPatients;
+      } else if (currentPatients) {
+        const allPatients = patientName
+          ? newPatients.patients!
+          : [...currentPatients, ...newPatients.patients!];
+        return uniqBy(allPatients, 'patientId');
+      } else {
+        return currentPatients;
+      }
+    });
+    setLoading(false);
+    setRefreshing(false);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      //if (!hasMoreData.current) return;
-
-      const newPatients = await getPatients();
-
-      // if (newArticles!.length < PAGE_SIZE) {
-      //   hasMoreData.current = false;
-      // }
-
-      setPatients((currentPatients) => {
-        if (!newPatients) {
-          return currentPatients;
-        } else if (currentPatients) {
-          const allPatients = [...currentPatients, ...newPatients.patients!];
-          return uniqBy(allPatients, 'patientId');
-        } else {
-          return patients;
-        }
-      });
-      setLoading(false);
-      setRefreshing(false);
-    };
-
     fetchData();
-  }, [patients, searchPhrase]);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      //if (searchPhrase === searchPhraseRef.current?.state) {
+      fetchData(searchPhrase);
+      //}
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchPhrase]);
 
   useEffect(() => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
@@ -115,7 +130,7 @@ const WelcomeScreen: React.FC = () => {
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
   const renderFooter = () => (
     <View style={styles.center}>
-      {hasMoreData.current && <ActivityIndicator color={PRIMARY_COLOR} />}
+      {hasMoreData.current && <ActivityIndicator color={Colors.error500} />}
     </View>
   );
   const keyExtractor = (item) => item.patientId;
@@ -129,33 +144,35 @@ const WelcomeScreen: React.FC = () => {
         <View style={styles.content}>
           <Text style={styles.headlines}>Seus Pacientes</Text>
 
-          <SearchBar
-            searchPhrase={searchPhrase}
-            setSearchPhrase={setSearchPhrase}
-            clicked={clicked}
-            setClicked={setClicked}
-          />
-
           {isLoading ? (
             <View style={styles.center}>
               {/* https://reactnative.dev/docs/activityindicator */}
-              <ActivityIndicator size="large" color={PRIMARY_COLOR} />
+              <ActivityIndicator size="large" color={Colors.error500} />
             </View>
           ) : (
-            // Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration
-            <FlatList
-              data={patients}
-              renderItem={renderArticle}
-              keyExtractor={keyExtractor}
-              showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={renderDivider}
-              ListFooterComponent={renderFooter}
-              initialNumToRender={6}
-              onEndReached={() => setPage((page) => page + 1)}
-              onEndReachedThreshold={1}
-              onRefresh={refreshData}
-              refreshing={refreshing}
-            />
+            <>
+              <SearchBar
+                searchPhrase={searchPhrase}
+                searchPhraseRef={searchPhraseRef}
+                setSearchPhrase={setSearchPhrase}
+                clicked={clicked}
+                setClicked={setClicked}
+              />
+              {/* Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration */}
+              <FlatList
+                data={patients}
+                renderItem={renderArticle}
+                keyExtractor={keyExtractor}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={renderDivider}
+                ListFooterComponent={renderFooter}
+                initialNumToRender={6}
+                onEndReached={() => setPage((page) => page + 1)}
+                onEndReachedThreshold={1}
+                onRefresh={refreshData}
+                refreshing={refreshing}
+              />
+            </>
           )}
         </View>
       </SafeAreaView>

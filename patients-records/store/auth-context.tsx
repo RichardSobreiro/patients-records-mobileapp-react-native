@@ -1,4 +1,3 @@
-import AxiosConfig from '../util/AxiosConfig';
 import { Token, validadeToken, UserInfo } from '../util/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState } from 'react';
@@ -26,13 +25,11 @@ export const AuthContext = createContext(initialState);
 const AuthContextProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState<Token | undefined>(undefined);
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
-
   const authenticate = (token: Token, userInfo: UserInfo): void => {
     setAuthToken(token);
     setUserInfo(userInfo);
     AsyncStorage.setItem('ACCESS_TOKEN', JSON.stringify(token));
     AsyncStorage.setItem('USER_INFO', JSON.stringify(userInfo));
-    AxiosConfig(token);
   };
 
   const logout = (): void => {
@@ -51,7 +48,6 @@ const AuthContextProvider = ({ children }) => {
       if (isValid) {
         setAuthToken(accessTokenAsyncStorage);
         setUserInfo(userInfoAsyncStorage);
-        AxiosConfig(accessTokenAsyncStorage);
       } else {
         logout();
       }
