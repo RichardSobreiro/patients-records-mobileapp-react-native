@@ -9,18 +9,11 @@ import { StyleSheet, TextInput, View, Keyboard, Modal, Alert } from 'react-nativ
 type Props = {
   clicked;
   searchPhrase;
-  searchPhraseRef;
   setSearchPhrase;
   setClicked;
 };
 
-const SearchBar: React.FC<Props> = ({
-  clicked,
-  searchPhrase,
-  searchPhraseRef,
-  setSearchPhrase,
-  setClicked
-}) => {
+const SearchBar: React.FC<Props> = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   return (
@@ -35,7 +28,7 @@ const SearchBar: React.FC<Props> = ({
             setModalVisible(false);
           }}
         >
-          <Filters modalVisible={modalVisible} setModalVisible={setModalVisible} />
+          <Filters setModalVisible={setModalVisible} />
         </Modal>
       </View>
       <View style={styles.container}>
@@ -48,7 +41,6 @@ const SearchBar: React.FC<Props> = ({
             placeholder="Search"
             value={searchPhrase}
             onChangeText={setSearchPhrase}
-            ref={searchPhraseRef}
             onFocus={() => {
               setClicked(true);
             }}

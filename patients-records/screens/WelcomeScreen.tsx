@@ -8,7 +8,6 @@ import { AuthContext } from '../store/auth-context';
 import { useNavigation } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
 import { GetPatient } from 'models/GetPatient';
-import React from 'react';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -18,7 +17,7 @@ import {
   Text,
   ActivityIndicator,
   FlatList,
-  TextInput
+  Keyboard
 } from 'react-native';
 
 const PAGE_SIZE = 10;
@@ -30,7 +29,6 @@ const WelcomeScreen: React.FC = () => {
   const [isLoading, setLoading] = useState(true);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
-  const searchPhraseRef = React.createRef<TextInput>();
   const [clicked, setClicked] = useState<boolean>(false);
 
   const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
@@ -78,6 +76,7 @@ const WelcomeScreen: React.FC = () => {
         return currentPatients;
       }
     });
+    Keyboard.dismiss();
     setLoading(false);
     setRefreshing(false);
   };
@@ -153,7 +152,6 @@ const WelcomeScreen: React.FC = () => {
             <>
               <SearchBar
                 searchPhrase={searchPhrase}
-                searchPhraseRef={searchPhraseRef}
                 setSearchPhrase={setSearchPhrase}
                 clicked={clicked}
                 setClicked={setClicked}

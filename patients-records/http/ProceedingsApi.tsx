@@ -2,6 +2,7 @@ import { CreateProceedingRequest } from '../models/proceedings/CreateProceedingR
 import { CreateProceedingResponse } from '../models/proceedings/CreateProceedingResponse';
 import axios from 'axios';
 import { GetProceedingsResponse } from 'models/proceedings/GetProceedingResponse';
+import { GetProceedingTypesResponse } from 'models/proceedings/GetProceedingTypesResponse';
 
 export const createNewProceeding = async (
   patientId: string,
@@ -36,6 +37,22 @@ export const getProceedings = async (patientId: string, pageNumber: number, limi
     })
     .catch((err) => {
       console.log(`getProceedings method Error:${err}`);
+      return undefined;
+    });
+
+  return response;
+};
+
+export const getProceedingTypesByUserEmail = async (username: string) => {
+  const url = `http://10.0.2.2:3006/professionals/${username}/proceedings/types`;
+
+  const response: GetProceedingTypesResponse | undefined = await axios
+    .get(url)
+    .then((response) => {
+      return response.data as GetProceedingTypesResponse;
+    })
+    .catch((err) => {
+      console.log(`getProceedingTypesByUsername method Error:${err}`);
       return undefined;
     });
 

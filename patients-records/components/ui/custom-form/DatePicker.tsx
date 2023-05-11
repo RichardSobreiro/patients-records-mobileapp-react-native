@@ -10,6 +10,7 @@ type Props = {
   values?;
   touched?;
   errors?;
+  text?;
   onChangeHandler: (field: string, value: any) => void;
 };
 
@@ -19,6 +20,7 @@ const DatePicker: React.FC<Props> = ({
   values,
   touched,
   errors,
+  text,
   onChangeHandler
 }) => {
   const [show, setShow] = useState(false);
@@ -40,7 +42,7 @@ const DatePicker: React.FC<Props> = ({
 
       <Pressable style={({ pressed }) => [pressed && styles.pressed]} onPress={showDatepicker}>
         <View style={styles.inputTextContainer}>
-          <Text style={styles.input}>{values[field].value.toDateString()}</Text>
+          <Text style={[styles.input, text]}>{values[field].value.toDateString()}</Text>
         </View>
       </Pressable>
       {show && (
@@ -79,12 +81,12 @@ const styles = StyleSheet.create({
   input: {
     textAlign: 'center',
     textAlignVertical: 'center',
-    fontSize: 18,
+    fontSize: 16,
     height: 50,
     borderRadius: 5,
     borderWidth: 2,
     borderColor: '#e3e3e3',
-    backgroundColor: Colors.secondary100,
+    backgroundColor: Colors.primary100,
     color: Colors.primary800
   },
   inputTextContainer: {
