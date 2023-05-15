@@ -4,10 +4,10 @@ import SearchBar from '../components/welcome-screen/SearchBar';
 import CreateEditPatient from '../components/welcome-screen/patients-crud/CreateEditPatient';
 import { Colors } from '../constants/styles';
 import { getPatients } from '../http/PatientsApi';
+import { GetPatient } from '../models/GetPatientsResponse';
 import { AuthContext } from '../store/auth-context';
 import { useNavigation } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
-import { GetPatient } from 'models/GetPatient';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -30,6 +30,7 @@ const WelcomeScreen: React.FC = () => {
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [advancedFilters, setAdvancedFilters] = useState<any | undefined>(undefined);
 
   const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
   const [patientBeingEditedId, setPatientBeingEditedId] = useState<string | undefined>(undefined);
@@ -42,6 +43,7 @@ const WelcomeScreen: React.FC = () => {
   const backFromAddPatient = useCallback(() => {
     setPatientBeingEditedId(undefined);
     setIsAddingEditingPatient(false);
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -55,10 +57,10 @@ const WelcomeScreen: React.FC = () => {
     return () => backHandler.remove();
   }, [backFromAddPatient]);
 
-  const fetchData = async (patientName?: string) => {
+  const fetchData = async (patientName?: string, advancedFilters?: any) => {
     //if (!hasMoreData.current) return;
 
-    const newPatients = await getPatients(patientName);
+    const newPatients = await getPatients(patientName, advancedFilters);
 
     // if (newArticles!.length < PAGE_SIZE) {
     //   hasMoreData.current = false;
@@ -68,9 +70,10 @@ const WelcomeScreen: React.FC = () => {
       if (!newPatients) {
         return currentPatients;
       } else if (currentPatients) {
-        const allPatients = patientName
-          ? newPatients.patients!
-          : [...currentPatients, ...newPatients.patients!];
+        // const allPatients = !patientName
+        //   ? newPatients.patients!
+        //   : [...currentPatients, ...newPatients.patients!];
+        const allPatients = newPatients.patients!;
         return uniqBy(allPatients, 'patientId');
       } else {
         return currentPatients;
@@ -79,6 +82,7 @@ const WelcomeScreen: React.FC = () => {
     Keyboard.dismiss();
     setLoading(false);
     setRefreshing(false);
+    hasMoreData.current = false;
   };
 
   useEffect(() => {
@@ -88,13 +92,13 @@ const WelcomeScreen: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       //if (searchPhrase === searchPhraseRef.current?.state) {
-      fetchData(searchPhrase);
+      fetchData(searchPhrase, advancedFilters);
       //}
     }, 600);
     return () => {
       clearTimeout(timer);
     };
-  }, [searchPhrase]);
+  }, [searchPhrase, advancedFilters]);
 
   useEffect(() => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
@@ -129,7 +133,7 @@ const WelcomeScreen: React.FC = () => {
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
   const renderFooter = () => (
     <View style={styles.center}>
-      {hasMoreData.current && <ActivityIndicator color={Colors.error500} />}
+      {hasMoreData.current && <ActivityIndicator color={Colors.error500} size={40} />}
     </View>
   );
   const keyExtractor = (item) => item.patientId;
@@ -140,39 +144,47 @@ const WelcomeScreen: React.FC = () => {
         <View style={styles.header}>
           <Header isWelcomeScreen={true} onCreateEditPatient={handleCreatePatient} />
         </View>
-        <View style={styles.content}>
+        <View>
           <Text style={styles.headlines}>Seus Pacientes</Text>
-
-          {isLoading ? (
-            <View style={styles.center}>
-              {/* https://reactnative.dev/docs/activityindicator */}
-              <ActivityIndicator size="large" color={Colors.error500} />
-            </View>
-          ) : (
-            <>
-              <SearchBar
-                searchPhrase={searchPhrase}
-                setSearchPhrase={setSearchPhrase}
-                clicked={clicked}
-                setClicked={setClicked}
-              />
-              {/* Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration */}
-              <FlatList
-                data={patients}
-                renderItem={renderArticle}
-                keyExtractor={keyExtractor}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={renderDivider}
-                ListFooterComponent={renderFooter}
-                initialNumToRender={6}
-                onEndReached={() => setPage((page) => page + 1)}
-                onEndReachedThreshold={1}
-                onRefresh={refreshData}
-                refreshing={refreshing}
-              />
-            </>
-          )}
         </View>
+        {isLoading ? (
+          <View style={styles.center}>
+            {/* https://reactnative.dev/docs/activityindicator */}
+            <ActivityIndicator size="large" color={Colors.error500} />
+          </View>
+        ) : (
+          <View>
+            <SearchBar
+              searchPhrase={searchPhrase}
+              setSearchPhrase={setSearchPhrase}
+              clicked={clicked}
+              setClicked={setClicked}
+              setAdvancedFilters={setAdvancedFilters}
+            />
+            {/* Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration */}
+            <FlatList
+              style={{ paddingHorizontal: 25 }}
+              data={patients}
+              renderItem={renderArticle}
+              keyExtractor={keyExtractor}
+              showsVerticalScrollIndicator={false}
+              ItemSeparatorComponent={renderDivider}
+              ListFooterComponent={renderFooter}
+              initialNumToRender={6}
+              onEndReached={() => setPage((page) => page + 1)}
+              onEndReachedThreshold={1}
+              onRefresh={refreshData}
+              refreshing={refreshing}
+              ListEmptyComponent={() => {
+                return (
+                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
+                    Nenhum paciente encontrado!
+                  </Text>
+                );
+              }}
+            />
+          </View>
+        )}
       </SafeAreaView>
     </>
   );
@@ -193,10 +205,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     height: 55
-  },
-  content: {
-    flex: 1,
-    padding: 15
   },
   center: {
     flex: 1,

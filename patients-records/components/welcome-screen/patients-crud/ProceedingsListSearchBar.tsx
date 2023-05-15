@@ -1,6 +1,8 @@
+import { Colors } from '../../../constants/styles';
+import IconButton from '../../ui/IconButton';
 import { Feather, Entypo } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, TextInput, View, Keyboard, Button } from 'react-native';
+import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
 
 type Props = { clicked; searchPhrase; setSearchPhrase; setClicked };
 
@@ -38,16 +40,18 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
           />
         )}
       </View>
-      {/* cancel button, depending on whether the search bar is clicked or not */}
       {clicked && (
         <View>
-          <Button
-            title="Cancel"
+          <IconButton
+            icon="close"
+            color={Colors.primary800}
+            size={30}
             onPress={() => {
               Keyboard.dismiss();
               setClicked(false);
             }}
-          ></Button>
+            pressable={{ borderColor: '#000000', borderWidth: 2, padding: 4, borderRadius: 10 }}
+          ></IconButton>
         </View>
       )}
     </View>

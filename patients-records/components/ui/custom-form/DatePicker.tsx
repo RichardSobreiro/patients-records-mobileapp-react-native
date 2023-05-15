@@ -26,10 +26,18 @@ const DatePicker: React.FC<Props> = ({
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    values[field].value = currentDate;
-    onChangeHandler(field, currentDate);
+    if (event.type === 'set') {
+      const currentDate = selectedDate;
+      setShow(false);
+      values[field].value = currentDate;
+      onChangeHandler(field, currentDate);
+    } else {
+      const currentDate = null;
+      setShow(false);
+      touched[field] = false;
+      values[field].value = currentDate;
+      onChangeHandler(field, currentDate);
+    }
   };
 
   const showDatepicker = () => {
@@ -42,20 +50,24 @@ const DatePicker: React.FC<Props> = ({
 
       <Pressable style={({ pressed }) => [pressed && styles.pressed]} onPress={showDatepicker}>
         <View style={styles.inputTextContainer}>
-          <Text style={[styles.input, text]}>{values[field].value.toDateString()}</Text>
+          <Text style={[styles.input, text]}>
+            {values[field].value ? values[field].value.toDateString() : null}
+          </Text>
         </View>
       </Pressable>
       {show && (
         <DateTimePicker
           testID="dateTimePicker"
-          value={values[field].value}
+          value={values[field].value ? values[field].value : new Date()}
           mode={'date'}
           is24Hour={true}
           onChange={onChange}
+          positiveButton={{ label: 'Selecionar' }}
+          negativeButton={{ label: 'Cancelar' }}
         />
       )}
 
-      {touched[field] && errors[field] ? (
+      {errors[field] ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errors[field]}</Text>
         </View>

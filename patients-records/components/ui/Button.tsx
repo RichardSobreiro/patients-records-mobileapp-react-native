@@ -2,7 +2,8 @@ import { Colors } from '../../constants/styles';
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export enum ButtonTypes {
-  Primary = 'primary'
+  Primary = 'primary',
+  Cancel = 'cancel'
 }
 
 interface Props {
@@ -20,6 +21,9 @@ const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, typ
     switch (type) {
       case ButtonTypes.Primary:
         BUTTON_COLOR = { backgroundColor: Colors.secondary500 };
+        break;
+      case ButtonTypes.Cancel:
+        BUTTON_COLOR = { backgroundColor: Colors.tertiary500 };
         break;
       default:
         BUTTON_COLOR = { backgroundColor: Colors.primary500 };

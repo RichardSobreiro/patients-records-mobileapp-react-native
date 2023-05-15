@@ -1,34 +1,36 @@
-import { GetPatientsResponse, GetPatient } from '../models/GetPatient';
+import { CreatePatientRequest } from '../models/CreatePatientRequest';
+import { CreatePatientResponse } from '../models/CreatePatientResponse';
+import { GetPatient, GetPatientsResponse } from '../models/GetPatientsResponse';
 import axios from 'axios';
+import { UpdatePatientRequest } from 'models/UpdatePatientRequest';
+import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 
-export type PatientCreatedResponse = {
-  username: string;
-  patientId: string;
-  patientName: string;
-  phoneNumber: string;
-  birthDate: Date;
-  creationDate: Date;
-  email?: string;
-};
-
-export type PatientCreatedRequest = {
-  username: string;
-  patientName: string;
-  phoneNumber: string;
-  email?: string;
-  birthDate: Date;
-};
-
-export const createNewPatient = async (request: PatientCreatedRequest) => {
+export const createNewPatient = async (request: CreatePatientRequest) => {
   const url = `http://10.0.2.2:3006/patients`;
 
-  const response: PatientCreatedResponse | undefined = await axios
+  const response: CreatePatientResponse | undefined = await axios
     .post(url, request)
     .then((response) => {
-      return response.data as PatientCreatedResponse;
+      return response.data as CreatePatientResponse;
     })
     .catch((err) => {
       console.log(`createNewPatient method Error:${err}`);
+      return undefined;
+    });
+
+  return response;
+};
+
+export const updatePatient = async (request: UpdatePatientRequest) => {
+  const url = `http://10.0.2.2:3006/patients/${request.patientId}`;
+
+  const response: UpdatePatientResponse | undefined = await axios
+    .put(url, request)
+    .then((response) => {
+      return response.data as UpdatePatientResponse;
+    })
+    .catch((err) => {
+      console.log(`updatePatient method Error:${err}`);
       return undefined;
     });
 
@@ -51,8 +53,30 @@ export const getPatientById = async (patientId: string) => {
   return response;
 };
 
-export const getPatients = async (patientName?: string) => {
-  const url = `http://10.0.2.2:3006/patients${patientName ? '?patientName=' + patientName : ''}`;
+export const getPatients = async (patientName?: string, advancedFilters?: any) => {
+  let url = `http://10.0.2.2:3006/patients${patientName ? '?patientName=' + patientName : ''}`;
+
+  url += `${
+    advancedFilters?.startDate
+      ? (patientName ? '&' : '?') + 'startDate=' + advancedFilters.startDate.toString()
+      : ''
+  }`;
+
+  url += `${
+    advancedFilters?.endDate
+      ? (patientName || advancedFilters?.startDate ? '&' : '?') +
+        'endDate=' +
+        advancedFilters.endDate.toString()
+      : ''
+  }`;
+
+  url += `${
+    advancedFilters?.proceedingTypeId
+      ? (patientName || advancedFilters?.startDate || advancedFilters?.endDate ? '&' : '?') +
+        'proceedingTypeId=' +
+        advancedFilters?.proceedingTypeId
+      : ''
+  }`;
 
   const response: GetPatientsResponse | undefined = await axios
     .get(url)

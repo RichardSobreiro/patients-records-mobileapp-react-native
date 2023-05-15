@@ -6,12 +6,54 @@ import { GetProceedingTypesResponse } from 'models/proceedings/GetProceedingType
 
 export const createNewProceeding = async (
   patientId: string,
-  proceeding: CreateProceedingRequest
+  proceeding: CreateProceedingRequest,
+  access_token: string
 ) => {
   const url = `http://10.0.2.2:3006/patients/${patientId}/proceedings`;
 
-  const response: CreateProceedingResponse | undefined = await axios
-    .post(url, proceeding)
+  const axiosMultiPartFormData = axios.create();
+
+  const formData = new FormData();
+  formData.append('date', proceeding.date.toDateString());
+  formData.append('proceedingTypeDescription', proceeding.proceedingTypeDescription);
+  formData.append('notes', proceeding.notes);
+  for (const photo of proceeding.beforePhotos) {
+    let localUri = photo.uri;
+    let filename = localUri?.split('/').pop();
+    let match = /\.(\w+)$/.exec(filename!);
+    let type = match ? `image/${match[1]}` : `image`;
+    formData.append('beforePhotos', {
+      name: filename,
+      type: type,
+      uri: localUri,
+      width: photo.width,
+      height: photo.height
+    } as unknown as Blob);
+  }
+  for (const photo of proceeding.afterPhotos) {
+    let localUri = photo.uri;
+    let filename = localUri?.split('/').pop();
+    let match = /\.(\w+)$/.exec(filename!);
+    let type = match ? `image/${match[1]}` : `image`;
+    formData.append('afterPhotos', {
+      name: filename,
+      type: type,
+      uri: localUri,
+      width: photo.width,
+      height: photo.height
+    } as unknown as Blob);
+  }
+
+  const response: CreateProceedingResponse | undefined = await axiosMultiPartFormData
+    .post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${access_token}`
+      },
+      transformRequest: (data, headers) => {
+        return formData;
+      }
+    })
     .then((response) => {
       return response.data as CreateProceedingResponse;
     })

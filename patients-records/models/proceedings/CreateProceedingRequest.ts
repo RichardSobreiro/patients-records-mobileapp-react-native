@@ -3,7 +3,7 @@ export class CreateProceedingRequest {
     public date: Date,
     public proceedingTypeDescription: string,
     public notes: string,
-    public beforePictures?: any,
-    public afterPictures?: any
+    public beforePhotos?: any,
+    public afterPhotos?: any
   ) {}
 }

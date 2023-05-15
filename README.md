@@ -163,6 +163,8 @@ Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/goo
 
 ```
 emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
+
+emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan -no-cache
 ```
 
 2. Run the app

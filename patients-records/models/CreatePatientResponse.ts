@@ -1,6 +1,8 @@
-export class GetPatient {
+/** @format */
+
+export class CreatePatientResponse {
   constructor(
-    public username: string,
+    public userId: string,
     public patientId: string,
     public patientName: string,
     public phoneNumber: string,
@@ -8,8 +10,4 @@ export class GetPatient {
     public creationDate: Date,
     public email?: string
   ) {}
-}
-
-export class GetPatientsResponse {
-  constructor(public count: number, public patients?: GetPatient[]) {}
 }

@@ -11,9 +11,16 @@ type Props = {
   searchPhrase;
   setSearchPhrase;
   setClicked;
+  setAdvancedFilters;
 };
 
-const SearchBar: React.FC<Props> = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
+const SearchBar: React.FC<Props> = ({
+  clicked,
+  searchPhrase,
+  setSearchPhrase,
+  setClicked,
+  setAdvancedFilters
+}) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   return (
@@ -28,7 +35,7 @@ const SearchBar: React.FC<Props> = ({ clicked, searchPhrase, setSearchPhrase, se
             setModalVisible(false);
           }}
         >
-          <Filters setModalVisible={setModalVisible} />
+          <Filters setModalVisible={setModalVisible} setAdvancedFilters={setAdvancedFilters} />
         </Modal>
       </View>
       <View style={styles.container}>

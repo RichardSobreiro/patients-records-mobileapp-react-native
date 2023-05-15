@@ -25,7 +25,13 @@ const PatientPhotos: React.FC<Props> = ({
   errors,
   touched
 }) => {
-  const [images, setImages] = useState<any>(null);
+  const [images, setImages] = useState<any>(
+    values[field]?.value && values[field]?.value?.length >= 0
+      ? values[field]?.value.map((image) => {
+          return { uri: image.url };
+        })
+      : null
+  );
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

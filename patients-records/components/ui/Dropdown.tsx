@@ -6,12 +6,16 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, Modal, View } from 'react
 export type DropdownData = { label: string; value: string };
 
 interface Props {
-  label: string;
+  field?;
+  label?;
+  values?;
+  touched?;
+  errors?;
+  onChangeHandler: (field: string, value: any) => void;
   data: DropdownData[] | undefined;
-  onSelect: (item: DropdownData) => void;
 }
 
-const Dropdown: FC<Props> = ({ label, data, onSelect }) => {
+const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHandler, data }) => {
   const DropdownButton = useRef<TouchableOpacity | null>(null);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<DropdownData | undefined>(undefined);
@@ -35,7 +39,8 @@ const Dropdown: FC<Props> = ({ label, data, onSelect }) => {
 
   const onItemPress = (item): void => {
     setSelected(item);
-    onSelect(item);
+    //onSelect(item);
+    onChangeHandler(field, item.value);
     setVisible(false);
   };
 
@@ -66,6 +71,11 @@ const Dropdown: FC<Props> = ({ label, data, onSelect }) => {
 
   return (
     <TouchableOpacity ref={DropdownButton} style={styles.button} onPress={toggleDropdown}>
+      {touched[field] && errors[field] ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errors[field]}</Text>
+        </View>
+      ) : null}
       {renderDropdown()}
       <Text style={styles.buttonText}>{selected?.label ?? label}</Text>
       <Ionicons style={styles.icon} size={25} name="chevron-down" />
@@ -110,6 +120,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     borderBottomWidth: 1
+  },
+  errorContainer: {
+    marginVertical: 5
+  },
+  errorText: {
+    color: '#ff7675'
   }
 });
 

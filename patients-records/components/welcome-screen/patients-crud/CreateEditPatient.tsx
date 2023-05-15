@@ -1,16 +1,15 @@
 /* eslint-disable import/order */
-import {
-  PatientCreatedResponse,
-  createNewPatient,
-  getPatientById
-} from '../../../http/PatientsApi';
-import { GetPatient } from '../../../models/GetPatient';
+import { Colors } from '../../../constants/styles';
+import { createNewPatient, getPatientById, updatePatient } from '../../../http/PatientsApi';
+import { GetPatient } from '../../../models/GetPatientsResponse';
 import { AuthContext } from '../../../store/auth-context';
 import Button, { ButtonTypes } from '../../ui/Button';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import Header from '../Header';
 import ProceedingsList from './ProceedingsList';
+import { CreatePatientResponse } from 'models/CreatePatientResponse';
+import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, BackHandler } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -153,16 +152,20 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
   };
 
   const validateForm = (createPatientRequest: any, validateAll?: boolean): boolean => {
-    const patientNameIsValid =
-      (validateAll || touched['patientName']) &&
-      createPatientRequest.patientName.value.trim().length > 0;
+    let patientNameIsValid = true;
+    let phoneNumberIsValid = true;
+    let birthDateIsValid = true;
+
+    if (validateAll || touched['patientName']) {
+      patientNameIsValid = createPatientRequest.patientName.value.trim().length > 0;
+    }
     const emailIsValid = true;
-    const phoneNumberIsValid =
-      (validateAll || touched['phoneNumber']) &&
-      createPatientRequest.phoneNumber.value.trim().length > 0;
-    const birthDateIsValid =
-      (validateAll || touched['birthDate']) &&
-      createPatientRequest.birthDate.value.toString() !== 'Invalid Date';
+    if (validateAll || touched['phoneNumber']) {
+      phoneNumberIsValid = createPatientRequest.phoneNumber.value.trim().length > 0;
+    }
+    if (validateAll || touched['birthDate']) {
+      birthDateIsValid = createPatientRequest.birthDate.value.toString() !== 'Invalid Date';
+    }
 
     setErrors((curErrors) => {
       if (!patientNameIsValid) {
@@ -210,12 +213,20 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
         birthDate: inputs.birthDate.value
       };
 
-      const callCreatePatientApi = async () => {
-        let response: PatientCreatedResponse | undefined;
+      const callCreateUpdatePatientApi = async () => {
+        let response: CreatePatientResponse | UpdatePatientResponse | undefined;
         if (isEditing) {
+          response = await updatePatient({
+            userId: authCtx.userInfo?.email!,
+            patientId: patientId!,
+            patientName: createPatientRequest.patientName,
+            phoneNumber: createPatientRequest.phoneNumber,
+            email: createPatientRequest.email,
+            birthDate: createPatientRequest.birthDate
+          });
         } else {
           response = await createNewPatient({
-            username: authCtx.userInfo?.username!,
+            userId: authCtx.userInfo?.email!,
             patientName: createPatientRequest.patientName,
             phoneNumber: createPatientRequest.phoneNumber,
             email: createPatientRequest.email,
@@ -238,7 +249,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
         }
       };
 
-      callCreatePatientApi();
+      callCreateUpdatePatientApi();
     }
   };
   //----------------------------------------------------------------------------------------
@@ -365,7 +376,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.formBackgroundColor,
     flex: 1
   },
   button: {

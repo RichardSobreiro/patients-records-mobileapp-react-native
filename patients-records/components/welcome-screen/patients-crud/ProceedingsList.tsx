@@ -1,13 +1,15 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
 import { getProceedings } from '../../../http/ProceedingsApi';
-import { GetPatient } from '../../../models/GetPatient';
+import { GetPatient } from '../../../models/GetPatientsResponse';
 import {
   GetProceedingResponse,
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
+import Button from '../../ui/Button';
 import CreateEditPatientsProceedings from './CreateEditPatientsProceedings';
 import ProceedingsListItem from './ProceedingListItem';
+import ProceedingsListSearchBar from './ProceedingsListSearchBar';
 import { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
 
@@ -33,17 +35,21 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
     GetProceedingResponse | undefined
   >(undefined);
 
-  const getProceedingsPage = async (pageNumber: number, limit: number) => {
-    if (!hasMoreData.current) return;
+  const [searchPhrase, setSearchPhrase] = useState<string>('');
+  const [clicked, setClicked] = useState<boolean>(false);
+
+  const getProceedingsPage = async (pageNumber: number, limit: number, forceListing?: boolean) => {
+    if (!hasMoreData.current && !forceListing) return;
 
     const response = await getProceedings(currentPatient.patientId, pageNumber, limit);
     if (response) {
       setProceedings((prevState) => {
         const newState = {
           ...response,
-          proceedings: prevState?.proceedings
-            ? prevState?.proceedings?.concat(response.proceedings!)
-            : response.proceedings
+          proceedings:
+            prevState?.proceedings && !refreshing
+              ? prevState?.proceedings?.concat(response.proceedings!)
+              : response.proceedings
         };
         hasMoreData.current = !!(
           newState.proceedings && newState.proceedings?.length < newState.proceedingsCount
@@ -79,6 +85,8 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
   const onReturnFromCreateEditingProceeding = () => {
     setIsCreatingEditingProceeding(false);
     setProceedingBeingEdited(undefined);
+    refreshData();
+    getProceedingsPage(page, PAGE_SIZE, true);
   };
 
   const renderArticle = ({ item }) => (
@@ -126,10 +134,37 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
               // style={{ alignSelf: 'center' }}
             />
           </View>
-        ) : proceedings?.proceedingsCount === 0 ? (
-          <Text>Nenhum Procedimento Encontrado</Text>
         ) : (
           <View style={styles.content}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <View style={{ flex: clicked ? 1 : 8 }}>
+                <ProceedingsListSearchBar
+                  clicked={clicked}
+                  setClicked={setClicked}
+                  searchPhrase={searchPhrase}
+                  setSearchPhrase={setSearchPhrase}
+                />
+              </View>
+              {clicked ? (
+                ''
+              ) : (
+                <View style={{ flex: 2 }}>
+                  <Button
+                    onPress={() => {
+                      setIsCreatingEditingProceeding(true);
+                    }}
+                  >
+                    Novo
+                  </Button>
+                </View>
+              )}
+            </View>
             <FlatList
               data={proceedings?.proceedings}
               renderItem={renderArticle}
@@ -142,6 +177,13 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
               onEndReachedThreshold={1}
               onRefresh={refreshData}
               refreshing={refreshing}
+              ListEmptyComponent={() => {
+                return (
+                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
+                    Nenhum procedimento encontrado!
+                  </Text>
+                );
+              }}
             />
           </View>
         )}

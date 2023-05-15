@@ -1,8 +1,9 @@
 import DatePicker from '../../components/ui/custom-form/DatePicker';
-import { Colors } from '../../constants/styles';
 import { getProceedingTypesByUserEmail } from '../../http/ProceedingsApi';
 import { AuthContext } from '../../store/auth-context';
+import Button, { ButtonTypes } from '../ui/Button';
 import Dropdown, { DropdownData } from '../ui/Dropdown';
+import Title from '../ui/custom-form/Title';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, Pressable, View, Dimensions } from 'react-native';
 
@@ -10,16 +11,19 @@ const windowDimensions = Dimensions.get('window');
 
 type Props = {
   setModalVisible;
+  setAdvancedFilters;
 };
 
 type ErrorType = {
   startDate: null | string;
   endDate: null | string;
+  proceedingType: null | string;
 };
 
-const Filters: React.FC<Props> = ({ setModalVisible }) => {
+const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters }) => {
   const authCtx = useContext(AuthContext);
   const [proceedingTypes, setProceedingTypes] = useState<DropdownData[] | undefined>(undefined);
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const [selected, setSelected] = useState<DropdownData | undefined>(undefined);
 
   const getProceedingTypes = async () => {
@@ -44,21 +48,27 @@ const Filters: React.FC<Props> = ({ setModalVisible }) => {
 
   const [inputs, setInputs] = useState({
     startDate: {
-      value: new Date(),
+      value: null,
       isValid: true
     },
     endDate: {
-      value: new Date(),
+      value: null,
+      isValid: true
+    },
+    proceedingType: {
+      value: '',
       isValid: true
     }
   });
   const [touched, setTouched] = useState({
     startDate: false,
-    endDate: false
+    endDate: false,
+    proceedingType: false
   });
   const [errors, setErrors] = useState<ErrorType>({
     startDate: null,
-    endDate: null
+    endDate: null,
+    proceedingType: null
   });
 
   const handleChange = (field: string, enteredValue: any) => {
@@ -75,49 +85,109 @@ const Filters: React.FC<Props> = ({ setModalVisible }) => {
       return newInputs;
     });
   };
+
+  const validateForm = (advancedFitlers: any, validateAll?: boolean): boolean => {
+    let startDateIsValid =
+      //validateAll &&
+      touched['startDate'] && advancedFitlers.startDate.toString() !== 'Invalid Date';
+
+    let endDateIsValid =
+      //validateAll &&
+      touched['endDate'] && advancedFitlers.endDate.toString() !== 'Invalid Date';
+
+    const proceedingTypeIsValid = true;
+
+    if (touched['startDate'] && !touched['endDate']) {
+      endDateIsValid = false;
+    }
+
+    if (!touched['startDate'] && touched['endDate']) {
+      startDateIsValid = false;
+    }
+
+    if (
+      touched['startDate'] &&
+      touched['endDate'] &&
+      advancedFitlers.startDate > advancedFitlers.endDate
+    ) {
+      startDateIsValid = false;
+    }
+
+    setErrors((curErrors) => {
+      if (!startDateIsValid) {
+        curErrors['startDate'] = 'A data início é inválida';
+        setIsFormValid(false);
+      } else {
+        curErrors['startDate'] = null;
+      }
+
+      if (!endDateIsValid) {
+        curErrors['endDate'] = 'A data fim é inválida';
+        setIsFormValid(false);
+      } else {
+        curErrors['endDate'] = null;
+      }
+
+      if (touched['startDate'] && !touched['endDate']) {
+        curErrors['endDate'] = 'A data fim deve ser preenchida';
+        setIsFormValid(false);
+      } else {
+        curErrors['endDate'] = !curErrors['endDate'] ? null : curErrors['endDate'];
+      }
+
+      if (!touched['startDate'] && touched['endDate']) {
+        curErrors['startDate'] = 'A data início deve ser preenchida';
+        setIsFormValid(false);
+      } else {
+        curErrors['startDate'] = !curErrors['startDate'] ? null : curErrors['startDate'];
+      }
+
+      if (
+        touched['startDate'] &&
+        touched['endDate'] &&
+        advancedFitlers.startDate > advancedFitlers.endDate
+      ) {
+        curErrors['startDate'] = 'A data início deve ser menor que a data fim';
+        setIsFormValid(false);
+      } else {
+        curErrors['startDate'] = !curErrors['startDate'] ? null : curErrors['startDate'];
+      }
+
+      return curErrors;
+    });
+
+    if (startDateIsValid && endDateIsValid && proceedingTypeIsValid) {
+      setIsFormValid(true);
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const onSubmitHandler = () => {
+    const advancedFilters = {
+      startDate: inputs.startDate.value,
+      endDate: inputs.endDate.value,
+      proceedingTypeId: inputs.proceedingType.value
+    };
+    if (validateForm(advancedFilters, true)) {
+      setAdvancedFilters(advancedFilters);
+      setModalVisible(false);
+    }
+  };
+
+  const onCancelHandler = () => {
+    setModalVisible(false);
+    setAdvancedFilters(undefined);
+  };
+
   return (
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
-        <View
-          style={{
-            padding: 10,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignContent: 'center'
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              color: Colors.primary800,
-              fontWeight: 'bold',
-              textAlign: 'center'
-            }}
-          >
-            Filtrar pacientes por...
-          </Text>
-        </View>
+        <Title text="Filtrar pacientes por..."></Title>
         <View style={{ minWidth: 250 }}>
           <View style={styles.filterSeparator}></View>
-          <View
-            style={{
-              padding: 10,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignContent: 'center'
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: Colors.primary800,
-                fontWeight: 'bold',
-                textAlign: 'center'
-              }}
-            >
-              ...data do último procedimento
-            </Text>
-          </View>
+          <Title text="...data do último procedimento"></Title>
           <DatePicker
             field="startDate"
             label="Início"
@@ -139,38 +209,33 @@ const Filters: React.FC<Props> = ({ setModalVisible }) => {
           <View style={styles.filterSeparator}></View>
         </View>
         <View style={{ minWidth: 250 }}>
-          <View
-            style={{
-              padding: 10,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignContent: 'center'
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: Colors.primary800,
-                fontWeight: 'bold',
-                textAlign: 'center'
-              }}
-            >
-              ...tipo de procedimento
-            </Text>
-          </View>
+          <Title text="...tipo de procedimento"></Title>
           <Dropdown
+            field="proceedingType"
             label="Selecione o tipo de procedimento..."
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
             data={proceedingTypes}
-            onSelect={setSelected}
           />
           <View style={styles.filterSeparator}></View>
         </View>
-        <Pressable
-          style={[styles.button, styles.buttonClose]}
-          onPress={() => setModalVisible(false)}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            marginVertical: 15,
+            minWidth: 250
+          }}
         >
-          <Text style={styles.textStyle}>Hide Modal</Text>
-        </Pressable>
+          <Button type={ButtonTypes.Cancel} onPress={onCancelHandler}>
+            Cancelar
+          </Button>
+          <Button type={ButtonTypes.Primary} onPress={onSubmitHandler}>
+            Filtrar
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -200,7 +265,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     minHeight: 350,
-    maxHeight: windowDimensions.height * 0.6,
+    maxHeight: windowDimensions.height * 0.65,
     minWidth: 300,
     flex: 1
   },
