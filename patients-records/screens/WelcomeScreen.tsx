@@ -199,6 +199,8 @@ const styles = StyleSheet.create({
   },
   header: {
     borderBottomWidth: 1,
+    backgroundColor: Colors.primary800,
+    color: 'white',
     borderBottomColor: '#dbdbdb',
     flexDirection: 'row',
     justifyContent: 'space-between',

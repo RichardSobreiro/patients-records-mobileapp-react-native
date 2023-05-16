@@ -370,19 +370,23 @@ const styles = StyleSheet.create({
     borderBottomColor: '#dbdbdb',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    height: 55
+    alignItems: 'center'
   },
   content: {
-    padding: 20,
-    backgroundColor: Colors.formBackgroundColor,
-    flex: 1
+    backgroundColor: Colors.primary800,
+    marginTop: 20,
+    marginBottom: 150,
+    marginHorizontal: 32,
+    padding: 16,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: 'black',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4
   },
   button: {
-    marginTop: 20,
     backgroundColor: '#2980b9',
-    padding: 15,
     borderRadius: 15
   },
   buttonText: {

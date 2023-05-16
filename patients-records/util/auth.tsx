@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const API_KEY = 'AIzaSyDCYasArcOwcALFhIj2szug5aD2PgUQu1E';
 
@@ -94,17 +95,27 @@ export const validadeToken = async (params: Token): Promise<boolean> => {
 };
 
 const authenticate = async (mode, email, password) => {
-  const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${API_KEY}`;
+  let url = '';
+  if (mode === 'signUp') {
+    url = `http://10.0.2.2:3000/users`;
+  } else {
+    url = `http://10.0.2.2:3000/interaction/${uuidv4()}/login`;
+  }
 
-  const response = await axios.post(url, {
-    email,
-    password,
-    returnSecureToken: true
-  });
+  const response = await axios
+    .post(url, {
+      email,
+      password
+    })
+    .then((response) => {
+      return true;
+    })
+    .catch((err) => {
+      console.log(`authenticate - mode: ${mode}:${err}`);
+      return false;
+    });
 
-  const token = response.data.idToken;
-
-  return token;
+  return response;
 };
 
 export const createUser = (email, password) => {

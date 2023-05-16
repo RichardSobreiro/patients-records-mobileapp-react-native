@@ -43,6 +43,7 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
 
   const [inputs, setInputs] = useState({
     patientId: patient.patientId,
+    proceedingId: isEditing ? proceeding?.proceedingId : '',
     date: {
       value: isEditing ? new Date(proceeding?.date!) : new Date(),
       isValid: true
@@ -57,11 +58,13 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
     },
     beforePhotos: {
       value: isEditing ? proceeding?.beforePhotos : [],
-      isValid: true
+      isValid: true,
+      wasUpdated: false
     },
     afterPhotos: {
       value: isEditing ? proceeding?.afterPhotos : [],
-      isValid: true
+      isValid: true,
+      wasUpdated: false
     }
   });
   const [touched, setTouched] = useState({
@@ -86,7 +89,10 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
     });
     setInputs((curInputs) => {
       if (field === 'beforePhotos' || field === 'afterPhotos') {
-        return { ...curInputs };
+        return {
+          ...curInputs,
+          [field]: { value: enteredValue, isValid: true, wasUpdated: isEditing }
+        };
       } else {
         return {
           ...curInputs,
@@ -104,17 +110,18 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
   };
 
   const submitHandler = () => {
-    const createProceedingRequest = {
+    const createUpdateProceedingRequest = {
+      proceedingId: inputs.proceedingId,
       date: inputs.date.value,
-      proceedingTypeDescription: inputs.type.value,
+      proceedingTypeDescription: inputs.type.value!,
       notes: inputs.notes.value,
-      beforePhotos: inputs.beforePhotos,
-      afterPhotos: inputs.afterPhotos
+      beforePhotos: inputs.beforePhotos.value,
+      afterPhotos: inputs.afterPhotos.value
     };
 
-    const dateIsValid = createProceedingRequest.date.toString() !== 'Invalid Date';
-    const typeIsValid = createProceedingRequest.proceedingTypeDescription!.trim().length > 0;
-    const notesIsValid = createProceedingRequest.notes!.trim().length > 0;
+    const dateIsValid = createUpdateProceedingRequest.date.toString() !== 'Invalid Date';
+    const typeIsValid = createUpdateProceedingRequest.proceedingTypeDescription!.trim().length > 0;
+    const notesIsValid = createUpdateProceedingRequest.notes!.trim().length > 0;
 
     setErrors((curErrors) => {
       if (!dateIsValid) {
@@ -138,17 +145,48 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
     const callApi = async () => {
       let response: any;
       if (isEditing) {
-        response = await updateProceeding();
+        response = await updateProceeding(
+          patient.patientId,
+          createUpdateProceedingRequest.proceedingId!,
+          createUpdateProceedingRequest,
+          authCtx.token?.access_token!
+        );
       } else {
         response = await createNewProceeding(
           patient.patientId,
-          createProceedingRequest,
+          createUpdateProceedingRequest,
           authCtx.token?.access_token!
         );
       }
       if (response) {
         Alert.alert('Sucesso', 'Procedimento criado!');
         setIsEditing(true);
+        setInputs({
+          patientId: patient.patientId,
+          proceedingId: response.proceedingId,
+          date: {
+            value: new Date(response?.date!),
+            isValid: true
+          },
+          type: {
+            value: response?.proceedingTypeDescription,
+            isValid: true
+          },
+          notes: {
+            value: response?.notes,
+            isValid: true
+          },
+          beforePhotos: {
+            value: response?.beforePhotos,
+            isValid: true,
+            wasUpdated: false
+          },
+          afterPhotos: {
+            value: response?.afterPhotos,
+            isValid: true,
+            wasUpdated: false
+          }
+        });
       } else {
         Alert.alert(
           'Erro',
@@ -214,7 +252,7 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
         touched={touched}
       />
       <View style={styles.patientInfoContainer}>
-        <View>
+        <View style={{ flex: 1, marginRight: 5 }}>
           <Button
             type={ButtonTypes.Cancel}
             onPress={navigateToProceedingsList}
@@ -223,7 +261,7 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
             {isEditing ? 'Voltar' : 'Cancelar'}
           </Button>
         </View>
-        <View>
+        <View style={{ flex: 1, marginLeft: 5 }}>
           <Button type={ButtonTypes.Primary} onPress={submitHandler} text={{ fontSize: 18 }}>
             Salvar
           </Button>
@@ -248,8 +286,16 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   content: {
-    padding: 20,
-    backgroundColor: Colors.formBackgroundColor,
-    flex: 1
+    backgroundColor: Colors.primary800,
+    marginTop: 20,
+    marginBottom: 15,
+    marginHorizontal: 32,
+    padding: 16,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: 'black',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4
   }
 });

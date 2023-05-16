@@ -28,8 +28,20 @@ const AuthStack = () => {
         contentStyle: { backgroundColor: Colors.primary100 }
       }}
     >
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerTitle: 'Entrar'
+        }}
+      />
+      <Stack.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{
+          headerTitle: 'Cadastro'
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -48,6 +60,7 @@ const AuthenticatedStack = () => {
         name="Welcome"
         component={WelcomeScreen}
         options={{
+          headerTitle: 'Inicio',
           headerRight: ({ tintColor }) => (
             <IconButton icon="exit" color={tintColor} size={24} onPress={authCtx.logout} />
           )

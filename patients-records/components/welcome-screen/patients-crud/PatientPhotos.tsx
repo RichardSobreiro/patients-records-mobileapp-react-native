@@ -46,7 +46,8 @@ const PatientPhotos: React.FC<Props> = ({
     console.log(result);
 
     if (!result.canceled) {
-      values[field] = result.assets;
+      //values[field] = result.assets;
+      handleChange(field, result.assets);
       setImages(result.assets);
     }
   };
@@ -80,12 +81,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, marginHorizontal: 4 },
   title: {
     fontSize: 18,
-    color: Colors.primary500,
+    color: 'white',
     marginBottom: 4
   },
   selectButtonText: {
     fontSize: 20,
-    color: Colors.primary500
+    color: 'white'
   },
   selectButton: {
     margin: 5,

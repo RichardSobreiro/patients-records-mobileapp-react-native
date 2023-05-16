@@ -78,7 +78,7 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
         />
         <View style={styles.buttons}>
           <FlatButton onPress={switchAuthModeHandler}>
-            {isLogin ? 'Create a new user' : 'Log in instead'}
+            {isLogin ? 'Criar novo usuário' : 'Entrar'}
           </FlatButton>
         </View>
       </View>

@@ -48,7 +48,7 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
   const handlePressAsync = async () => {
     const result = await promptAsync();
     if (result.type !== 'success') {
-      alert('Uh oh, something went wrong');
+      alert('Ops!?!!Alguma deu errado. Tente novamente!');
     }
   };
 
@@ -58,7 +58,7 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
       onPress={handlePressAsync}
     >
       <View style={styles.container}>
-        <Text style={styles.buttonText}>Sign in with Facebook</Text>
+        <Text style={styles.buttonText}>Entrar com o Facebook</Text>
         <AntDesign name="facebook-square" size={36} color="white" />
       </View>
     </Pressable>

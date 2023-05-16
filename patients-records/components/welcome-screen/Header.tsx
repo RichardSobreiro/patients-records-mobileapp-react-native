@@ -1,3 +1,4 @@
+import { Colors } from '../../constants/styles';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
@@ -24,11 +25,11 @@ const Header: React.FC<Props> = ({
       {isWelcomeScreen && (
         <>
           <TouchableOpacity onPress={onCreateEditPatient}>
-            <Feather name="user-plus" size={40} />
+            <Feather name="user-plus" size={40} color={'white'} />
           </TouchableOpacity>
 
           <TouchableOpacity>
-            <Feather name="settings" size={40} />
+            <Feather name="settings" size={40} color={'white'} />
           </TouchableOpacity>
         </>
       )}
@@ -55,22 +56,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignContent: 'center'
+    alignContent: 'center',
+    color: 'white',
+    backgroundColor: Colors.primary800
   },
   skipBackIcon: {
     alignSelf: 'flex-start'
   },
   titleContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#dbdbdb'
-    // paddingVertical: 10,
-    // paddingLeft: 8,
-    //backgroundColor: '#fafafa'
+    //borderBottomWidth: 1
+    //borderBottomColor: '#dbdbdb'
   },
   title: {
     textAlign: 'center',
     fontSize: 25,
-    color: '#262626',
+    color: 'white',
     //marginLeft: 12,
     paddingLeft: 8,
     fontWeight: 'bold'
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     fontSize: 15,
-    color: '#262626',
+    color: 'white',
     //marginLeft: 12,
     paddingLeft: 8,
     fontWeight: 'bold'

@@ -1,4 +1,6 @@
-export class CreateProceedingPhotosResponse {
+/** @format */
+
+export class UpdateProceedingPhotosResponse {
   constructor(
     public proceedingId: string,
     public proceedingPhotoId: string,
@@ -9,13 +11,13 @@ export class CreateProceedingPhotosResponse {
   ) {}
 }
 
-export class CreateProceedingResponse {
+export class UpdateProceedingResponse {
   constructor(
     public proceedingId: string,
     public date: Date,
-    public proceedingTypeDescription?: string,
+    public proceedingTypeDescription: string,
     public notes?: string,
-    public beforePhotos?: CreateProceedingPhotosResponse[] | null,
-    public afterPhotos?: CreateProceedingPhotosResponse[] | null
+    public beforePhotos?: UpdateProceedingPhotosResponse[] | null,
+    public afterPhotos?: UpdateProceedingPhotosResponse[] | null
   ) {}
 }

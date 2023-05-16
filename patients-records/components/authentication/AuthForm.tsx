@@ -60,7 +60,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
     <View style={styles.form}>
       <View>
         <Input
-          label="Email Address"
+          label="E-mail"
           onUpdateValue={updateInputValueHandler.bind(this, 'email')}
           value={enteredEmail}
           keyboardType="email-address"
@@ -68,7 +68,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
         />
         {!isLogin && (
           <Input
-            label="Confirm Email Address"
+            label="Confirme seu E-mail"
             onUpdateValue={updateInputValueHandler.bind(this, 'confirmEmail')}
             value={enteredConfirmEmail}
             keyboardType="email-address"
@@ -76,7 +76,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
           />
         )}
         <Input
-          label="Password"
+          label="Senha"
           onUpdateValue={updateInputValueHandler.bind(this, 'password')}
           secure
           value={enteredPassword}
@@ -84,7 +84,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
         />
         {!isLogin && (
           <Input
-            label="Confirm Password"
+            label="Confirme sua Senha"
             onUpdateValue={updateInputValueHandler.bind(this, 'confirmPassword')}
             secure
             value={enteredConfirmPassword}
@@ -92,7 +92,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
           />
         )}
         <View style={styles.buttons}>
-          <Button onPress={submitHandler}>{isLogin ? 'Log In' : 'Sign Up'}</Button>
+          <Button onPress={submitHandler}>{isLogin ? 'Entrar' : 'Cadastrar-se'}</Button>
         </View>
       </View>
     </View>
