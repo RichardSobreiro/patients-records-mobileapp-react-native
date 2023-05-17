@@ -17,6 +17,17 @@ export type UserInfo = {
   email: string;
 };
 
+export type TokenPasswordGranType = {
+  access_token: string;
+  expires_in: number;
+  id_token: string;
+  refresh_token: string;
+  scope: string;
+  token_type: string;
+  username: string;
+  email: string;
+};
+
 export type facebookCallbackParams = {
   facebook_access_token: string;
   app_id: string;
@@ -94,7 +105,7 @@ export const validadeToken = async (params: Token): Promise<boolean> => {
   return isValid;
 };
 
-const authenticate = async (mode, email, password) => {
+const authenticate = async (mode, email, password): Promise<TokenPasswordGranType | undefined> => {
   let url = '';
   if (mode === 'signUp') {
     url = `http://10.0.2.2:3000/users`;
@@ -104,15 +115,21 @@ const authenticate = async (mode, email, password) => {
 
   const response = await axios
     .post(url, {
+      client_id: 'social_facebook',
+      client_secret: 'social_facebook',
+      grant_type: 'password',
+      scope: 'openid offline_access api:read',
+      prompt: 'consent',
       email,
-      password
+      password,
+      resource: 'http://localhost:3006'
     })
     .then((response) => {
-      return true;
+      return response as unknown as TokenPasswordGranType;
     })
     .catch((err) => {
       console.log(`authenticate - mode: ${mode}:${err}`);
-      return false;
+      return undefined;
     });
 
   return response;
@@ -122,6 +139,35 @@ export const createUser = (email, password) => {
   return authenticate('signUp', email, password);
 };
 
-export const login = (email, password) => {
-  return authenticate('signInWithPassword', email, password);
+export const login = async (email, password) => {
+  const url = `http://10.0.2.2:3000/token`;
+
+  const uninterceptedAxiosInstance = axios.create();
+  const options = {
+    headers: { 'content-type': 'application/x-www-form-urlencoded' }
+  };
+  const response = await uninterceptedAxiosInstance
+    .post(
+      url,
+      {
+        client_id: 'social_facebook',
+        client_secret: 'social_facebook',
+        grant_type: 'password',
+        scope: 'openid offline_access api:read',
+        prompt: 'consent',
+        email,
+        password,
+        resource: 'http://localhost:3006'
+      },
+      options
+    )
+    .then((response) => {
+      return response.data as unknown as TokenPasswordGranType;
+    })
+    .catch((err) => {
+      console.log(`login: ${err}`);
+      return undefined;
+    });
+
+  return response;
 };

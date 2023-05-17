@@ -13,13 +13,20 @@ const LoginScreen: React.FC = () => {
   async function loginHandler({ email, password }) {
     setIsAuthenticating(true);
     try {
-      const token = await login(email, password);
-      //authCtx.authenticate(token);
+      const accessToken = await login(email, password);
+      if (accessToken) {
+        authCtx.authenticate(accessToken, {
+          username: accessToken.username,
+          email: accessToken.email
+        });
+      } else {
+        Alert.alert(
+          'Ops?!?! Falha na autenticação.',
+          'Verifique suas credencias e tente novamente!'
+        );
+      }
     } catch (error) {
-      Alert.alert(
-        'Authentication failed!',
-        'Could not log you in. Please check your credentials or try again later!'
-      );
+      Alert.alert('Ops?!?! Falha na autenticação.', 'Verifique suas credencias e tente novamente!');
     }
     setIsAuthenticating(false);
   }
@@ -42,8 +49,8 @@ const LoginScreen: React.FC = () => {
         }
       } catch {
         Alert.alert(
-          'Authentication failed!',
-          'Could not log you in. Please check your credentials or try again later!'
+          'Ops?!?! Falha na autenticação.',
+          'Verifique suas credencias e tente novamente!'
         );
       } finally {
         setIsAuthenticating(false);

@@ -56,7 +56,7 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
       !passwordIsValid ||
       (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
     ) {
-      Alert.alert('Invalid input', 'Please check your entered credentials.');
+      Alert.alert('Parâmetros inválidos!', 'Verifique seu e-mail e senha!');
       setCredentialsInvalid({
         email: !emailIsValid,
         confirmEmail: !emailIsValid || !emailsAreEqual,
