@@ -333,6 +333,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
               onPress={handleCancel}
               text={styles.buttonTextStyles}
               pressable={[styles.buttonPressable]}
+              type={ButtonTypes.Cancel}
             >
               Cancelar
             </Button>
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
   },
   buttonPressable: {
     flex: 1,
-    marginHorizontal: 5
+    marginHorizontal: 3
   },
   buttonTextStyles: { fontSize: 20 },
   header: {
@@ -375,9 +376,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   content: {
+    // flexBasis: 'auto',
+    // alignContent: 'flex-start',
     backgroundColor: Colors.primary800,
     marginTop: 20,
-    marginBottom: 150,
+    marginBottom: 15,
     marginHorizontal: 32,
     padding: 16,
     borderRadius: 8,
