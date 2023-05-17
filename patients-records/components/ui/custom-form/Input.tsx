@@ -4,6 +4,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 type Props = {
   field: string;
   label: string;
+  keyboardType?: string;
   values?;
   touched?;
   errors?;
@@ -15,6 +16,7 @@ type Props = {
 const Input: React.FC<Props> = ({
   field,
   label,
+  keyboardType,
   values,
   touched,
   errors,
@@ -36,6 +38,7 @@ const Input: React.FC<Props> = ({
         onChangeText={onChangeHandler.bind(null, field)}
         onBlur={onBlurHandler.bind(null, field)}
         {...textInputConfig}
+        keyboardType={keyboardType}
       />
       {errors[field] ? (
         <View style={styles.errorContainer}>

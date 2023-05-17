@@ -11,10 +11,11 @@ const SignupScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  async function signupHandler({ email, password }) {
+  async function signupHandler({ email, password, username }) {
     setIsAuthenticating(true);
     try {
-      await createUser(email, password);
+      await createUser(email, password, username);
+      Alert.alert('Usuário criado com sucesso', 'Agora faça o login!');
       navigation.replace('Login');
     } catch (error) {
       Alert.alert('Ops!?!? Algo deu errado.', 'Tente novamente!');

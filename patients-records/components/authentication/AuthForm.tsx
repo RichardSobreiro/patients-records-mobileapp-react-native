@@ -9,6 +9,7 @@ interface OnSubmitParams {
   confirmEmail: string;
   password: string;
   confirmPassword: string;
+  username: string;
 }
 
 interface Props {
@@ -22,12 +23,14 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
   const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
+  const [enteredUsername, setEnteredUsername] = useState('');
 
   const {
     email: emailIsInvalid,
     confirmEmail: emailsDontMatch,
     password: passwordIsInvalid,
-    confirmPassword: passwordsDontMatch
+    confirmPassword: passwordsDontMatch,
+    username: usernameIsValid
   } = credentialsInvalid;
 
   function updateInputValueHandler(inputType, enteredValue) {
@@ -44,6 +47,9 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
       case 'confirmPassword':
         setEnteredConfirmPassword(enteredValue);
         break;
+      case 'username':
+        setEnteredUsername(enteredValue);
+        break;
     }
   }
 
@@ -52,13 +58,23 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
       email: enteredEmail,
       confirmEmail: enteredConfirmEmail,
       password: enteredPassword,
-      confirmPassword: enteredConfirmPassword
+      confirmPassword: enteredConfirmPassword,
+      username: enteredUsername
     });
   }
 
   return (
     <View style={styles.form}>
       <View>
+        {!isLogin && (
+          <Input
+            label="Nome do Usuário"
+            onUpdateValue={updateInputValueHandler.bind(this, 'username')}
+            value={enteredUsername}
+            keyboardType="default"
+            isInvalid={usernameIsValid}
+          />
+        )}
         <Input
           label="E-mail"
           onUpdateValue={updateInputValueHandler.bind(this, 'email')}

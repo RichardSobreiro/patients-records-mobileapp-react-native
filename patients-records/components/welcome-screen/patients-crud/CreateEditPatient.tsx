@@ -164,7 +164,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
       phoneNumberIsValid = createPatientRequest.phoneNumber.value.trim().length > 0;
     }
     if (validateAll || touched['birthDate']) {
-      birthDateIsValid = createPatientRequest.birthDate.value.toString() !== 'Invalid Date';
+      birthDateIsValid = createPatientRequest.birthDate.value?.toString() !== 'Invalid Date';
     }
 
     setErrors((curErrors) => {
@@ -273,8 +273,8 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
       ) : (
         <KeyboardAwareScrollView
           style={styles.content}
-          showsVerticalScrollIndicator={true}
-          keyboardShouldPersistTaps="handled"
+          // showsVerticalScrollIndicator={true}
+          // keyboardShouldPersistTaps="handled"
         >
           <Input
             field="patientName"
@@ -288,6 +288,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
           <Input
             field="email"
             label="E-mail (Opicional)"
+            keyboardType="email-address"
             values={inputs}
             touched={touched}
             errors={errors}
@@ -297,6 +298,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
           <Input
             field="phoneNumber"
             label="Número de Telefone"
+            keyboardType="phone-pad"
             values={inputs}
             touched={touched}
             errors={errors}

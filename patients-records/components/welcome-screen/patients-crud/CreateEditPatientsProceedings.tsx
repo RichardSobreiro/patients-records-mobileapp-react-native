@@ -4,7 +4,6 @@ import { createNewProceeding, updateProceeding } from '../../../http/Proceedings
 import { GetPatient } from '../../../models/GetPatientsResponse';
 import { AuthContext } from '../../../store/auth-context';
 import Button, { ButtonTypes } from '../../ui/Button';
-import FlatButton from '../../ui/FlatButton';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import PatientPhotos from './PatientPhotos';
@@ -38,7 +37,7 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
   const authCtx = useContext(AuthContext);
 
   useLayoutEffect(() => {
-    setHeaderSubtitle('Novo Procedimento');
+    setHeaderSubtitle(isEditing ? 'Editando Procedimento' : 'Criando Procedimento');
   });
 
   const [inputs, setInputs] = useState({
@@ -59,12 +58,12 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
     beforePhotos: {
       value: isEditing ? proceeding?.beforePhotos : [],
       isValid: true,
-      wasUpdated: false
+      createNew: false
     },
     afterPhotos: {
       value: isEditing ? proceeding?.afterPhotos : [],
       isValid: true,
-      wasUpdated: false
+      createNew: false
     }
   });
   const [touched, setTouched] = useState({
@@ -91,7 +90,11 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
       if (field === 'beforePhotos' || field === 'afterPhotos') {
         return {
           ...curInputs,
-          [field]: { value: enteredValue, isValid: true, wasUpdated: isEditing }
+          [field]: {
+            value: enteredValue,
+            isValid: true,
+            createNew: isEditing
+          }
         };
       } else {
         return {
@@ -116,7 +119,9 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
       proceedingTypeDescription: inputs.type.value!,
       notes: inputs.notes.value,
       beforePhotos: inputs.beforePhotos.value,
-      afterPhotos: inputs.afterPhotos.value
+      beforePhotosCreateNew: inputs.beforePhotos.createNew,
+      afterPhotos: inputs.afterPhotos.value,
+      afterPhotosCreateNew: inputs.afterPhotos.createNew
     };
 
     const dateIsValid = createUpdateProceedingRequest.date.toString() !== 'Invalid Date';
@@ -159,7 +164,7 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
         );
       }
       if (response) {
-        Alert.alert('Sucesso', 'Procedimento criado!');
+        Alert.alert('Sucesso', `Procedimento ${isEditing ? 'salvo' : 'criado'}!`);
         setIsEditing(true);
         setInputs({
           patientId: patient.patientId,
@@ -179,12 +184,12 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
           beforePhotos: {
             value: response?.beforePhotos,
             isValid: true,
-            wasUpdated: false
+            createNew: false
           },
           afterPhotos: {
             value: response?.afterPhotos,
             isValid: true,
-            wasUpdated: false
+            createNew: false
           }
         });
       } else {

@@ -60,7 +60,7 @@ const AuthenticatedStack = () => {
         name="Welcome"
         component={WelcomeScreen}
         options={{
-          headerTitle: 'Inicio',
+          headerTitle: authCtx.userInfo?.username ?? 'Inicio',
           headerRight: ({ tintColor }) => (
             <IconButton icon="exit" color={tintColor} size={24} onPress={authCtx.logout} />
           )

@@ -8,10 +8,11 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack/';
 import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {
   isLogin: boolean;
-  onAuthenticate: (params: { email?: string; password?: string }) => void;
+  onAuthenticate: (params: { email?: string; password?: string; username?: string }) => void;
   facebookCallback?: (params: {
     facebook_access_token: string;
     app_id: string;
@@ -29,7 +30,8 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
     email: false,
     password: false,
     confirmEmail: false,
-    confirmPassword: false
+    confirmPassword: false,
+    username: false
   });
 
   function switchAuthModeHandler() {
@@ -41,35 +43,38 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
   }
 
   function submitHandler(credentials) {
-    let { email, confirmEmail, password, confirmPassword } = credentials;
+    let { email, confirmEmail, password, confirmPassword, username } = credentials;
 
     email = email.trim();
     password = password.trim();
+    username = username.trim();
 
     const emailIsValid = email.includes('@');
     const passwordIsValid = password.length > 6;
     const emailsAreEqual = email === confirmEmail;
     const passwordsAreEqual = password === confirmPassword;
+    const usernameIsValid = username.length >= 3;
 
     if (
       !emailIsValid ||
       !passwordIsValid ||
-      (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
+      (!isLogin && (!emailsAreEqual || !passwordsAreEqual || !usernameIsValid))
     ) {
-      Alert.alert('Parâmetros inválidos!', 'Verifique seu e-mail e senha!');
+      Alert.alert('Parâmetros inválidos!', 'Verifique seu e-mail, senha e nome de usuário!');
       setCredentialsInvalid({
         email: !emailIsValid,
         confirmEmail: !emailIsValid || !emailsAreEqual,
         password: !passwordIsValid,
-        confirmPassword: !passwordIsValid || !passwordsAreEqual
+        confirmPassword: !passwordIsValid || !passwordsAreEqual,
+        username: !usernameIsValid
       });
       return;
     }
-    onAuthenticate({ email, password });
+    onAuthenticate({ email, password, username });
   }
 
   return (
-    <>
+    <KeyboardAwareScrollView>
       <View style={styles.authContent}>
         <AuthForm
           isLogin={isLogin}
@@ -90,7 +95,7 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
           ></FacebookAuthentication>
         </View>
       )}
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 

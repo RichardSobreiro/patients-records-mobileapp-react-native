@@ -7,6 +7,7 @@ import {
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
 import Button from '../../ui/Button';
+import IconButton from '../../ui/IconButton';
 import CreateEditPatientsProceedings from './CreateEditPatientsProceedings';
 import ProceedingsListItem from './ProceedingListItem';
 import ProceedingsListSearchBar from './ProceedingsListSearchBar';
@@ -155,13 +156,29 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
                 ''
               ) : (
                 <View style={{ flex: 2 }}>
-                  <Button
+                  {/* <Button
                     onPress={() => {
                       setIsCreatingEditingProceeding(true);
                     }}
                   >
                     Novo
-                  </Button>
+                  </Button> */}
+                  <IconButton
+                    icon="return-down-back-outline"
+                    color={Colors.primary800}
+                    size={50}
+                    onPress={() => {
+                      onReturnAction();
+                    }}
+                  />
+                  <IconButton
+                    icon="add-circle-outline"
+                    color={Colors.primary800}
+                    size={50}
+                    onPress={() => {
+                      setIsCreatingEditingProceeding(true);
+                    }}
+                  />
                 </View>
               )}
             </View>

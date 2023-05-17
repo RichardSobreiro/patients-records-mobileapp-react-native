@@ -8,7 +8,7 @@ import { GetPatient } from '../models/GetPatientsResponse';
 import { AuthContext } from '../store/auth-context';
 import { useNavigation } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   BackHandler,
@@ -39,6 +39,10 @@ const WelcomeScreen: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const hasMoreData = useRef(true);
+
+  useEffect(() => {
+    navigation.setOptions({ title: authCtx.userInfo?.username });
+  }, [authCtx.userInfo?.username, navigation]);
 
   const backFromAddPatient = useCallback(() => {
     setPatientBeingEditedId(undefined);

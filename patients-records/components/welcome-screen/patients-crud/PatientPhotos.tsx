@@ -46,7 +46,6 @@ const PatientPhotos: React.FC<Props> = ({
     console.log(result);
 
     if (!result.canceled) {
-      //values[field] = result.assets;
       handleChange(field, result.assets);
       setImages(result.assets);
     }
@@ -61,7 +60,9 @@ const PatientPhotos: React.FC<Props> = ({
             (image, index) =>
               index === 0 && <Image key={index} source={{ uri: image.uri }} style={styles.image} />
           )}
-          {images?.length - 1 > 0 && <Text style={{ fontSize: 20 }}>+{images.length - 1}</Text>}
+          {images?.length - 1 > 0 && (
+            <Text style={{ fontSize: 20, color: 'white' }}>+{images.length - 1}</Text>
+          )}
         </View>
         <FlatButton
           onPress={pickImage}

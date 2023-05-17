@@ -81,31 +81,37 @@ export const updateProceeding = async (
   formData.append('date', proceeding.date.toDateString());
   formData.append('proceedingTypeDescription', proceeding.proceedingTypeDescription!);
   formData.append('notes', proceeding.notes!);
-  for (const photo of proceeding.beforePhotos) {
-    let localUri = photo.uri ?? photo.url;
-    let filename = localUri?.split('/').pop();
-    let match = /\.(\w+)$/.exec(filename!);
-    let type = match ? `image/${match[1]}` : `image`;
-    formData.append('beforePhotos', {
-      name: filename,
-      type: type,
-      uri: localUri,
-      width: photo.width,
-      height: photo.height
-    } as unknown as Blob);
+  if (proceeding.beforePhotosCreateNew!) {
+    formData.append('beforePhotosCreateNew', proceeding.beforePhotosCreateNew!.toString());
+    for (const photo of proceeding.beforePhotos) {
+      let localUri = photo.uri ?? photo.url;
+      let filename = localUri?.split('/').pop();
+      let match = /\.(\w+)$/.exec(filename!);
+      let type = match ? `image/${match[1]}` : `image`;
+      formData.append('beforePhotos', {
+        name: filename,
+        type: type,
+        uri: localUri,
+        width: photo.width,
+        height: photo.height
+      } as unknown as Blob);
+    }
   }
-  for (const photo of proceeding.afterPhotos) {
-    let localUri = photo.uri ?? photo.url;
-    let filename = localUri?.split('/').pop();
-    let match = /\.(\w+)$/.exec(filename!);
-    let type = match ? `image/${match[1]}` : `image`;
-    formData.append('afterPhotos', {
-      name: filename,
-      type: type,
-      uri: localUri,
-      width: photo.width,
-      height: photo.height
-    } as unknown as Blob);
+  if (proceeding.afterPhotosCreateNew!) {
+    formData.append('afterPhotosCreateNew', proceeding.afterPhotosCreateNew!.toString());
+    for (const photo of proceeding.afterPhotos) {
+      let localUri = photo.uri ?? photo.url;
+      let filename = localUri?.split('/').pop();
+      let match = /\.(\w+)$/.exec(filename!);
+      let type = match ? `image/${match[1]}` : `image`;
+      formData.append('afterPhotos', {
+        name: filename,
+        type: type,
+        uri: localUri,
+        width: photo.width,
+        height: photo.height
+      } as unknown as Blob);
+    }
   }
 
   const response: UpdateProceedingResponse | undefined = await axiosMultiPartFormData

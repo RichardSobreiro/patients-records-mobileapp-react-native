@@ -135,8 +135,32 @@ const authenticate = async (mode, email, password): Promise<TokenPasswordGranTyp
   return response;
 };
 
-export const createUser = (email, password) => {
-  return authenticate('signUp', email, password);
+export const createUser = async (email, password, username) => {
+  const url = `http://10.0.2.2:3000/users`;
+
+  const uninterceptedAxiosInstance = axios.create();
+  const options = {
+    headers: { 'content-type': 'application/x-www-form-urlencoded' }
+  };
+  const response = await uninterceptedAxiosInstance
+    .post(
+      url,
+      {
+        email,
+        password,
+        username
+      },
+      options
+    )
+    .then((response) => {
+      return response as unknown as string;
+    })
+    .catch((err) => {
+      console.log(`createUser: ${err}`);
+      return undefined;
+    });
+
+  return response;
 };
 
 export const login = async (email, password) => {
