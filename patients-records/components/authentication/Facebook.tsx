@@ -59,7 +59,7 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
     >
       <View style={styles.container}>
         <Text style={styles.buttonText}>Entrar com o Facebook</Text>
-        <AntDesign name="facebook-square" size={36} color="white" />
+        <AntDesign name="facebook-square" size={36} color="#FFFFFF" />
       </View>
     </Pressable>
   );
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: Colors.primary500,
     elevation: 2,
-    shadowColor: 'black',
+    shadowColor: '#000000',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.25,
     shadowRadius: 4
@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
-    color: 'white',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: '900'
   }
 });

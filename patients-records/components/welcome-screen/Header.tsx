@@ -25,11 +25,11 @@ const Header: React.FC<Props> = ({
       {isWelcomeScreen && (
         <>
           <TouchableOpacity onPress={onCreateEditPatient}>
-            <Feather name="user-plus" size={40} color={'white'} />
+            <Feather name="user-plus" size={40} color={'#ffffff'} />
           </TouchableOpacity>
 
           <TouchableOpacity>
-            <Feather name="settings" size={40} color={'white'} />
+            <Feather name="settings" size={40} color={'#ffffff'} />
           </TouchableOpacity>
         </>
       )}
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
-    color: 'white',
+    color: '#ffffff',
     backgroundColor: Colors.primary800
   },
   skipBackIcon: {
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: 25,
-    color: 'white',
+    color: '#ffffff',
     //marginLeft: 12,
     paddingLeft: 8,
     fontWeight: 'bold'
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     fontSize: 15,
-    color: 'white',
+    color: '#ffffff',
     //marginLeft: 12,
     paddingLeft: 8,
     fontWeight: 'bold'

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "patients-records",
+    "name": "Meu Negócio",
     "slug": "patients-records",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,11 +12,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sobreirostechnologies.patientsrecords"
     },
     "android": {
       "package": "com.sobreirostechnologies.patientsrecords",
@@ -34,18 +34,14 @@
         "projectId": "29bd022f-4e58-4283-8160-3a2bdbbdc380"
       }
     },
-    "expo": {
-      "plugins": [
-        [
-          "expo-image-picker",
-          {
-            "photosPermission": "O applicativo acessa sua galeria para gerenciar as fotos do antes e depois de seus pacientes."
-          }
-        ]
-      ]
-    },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O applicativo acessa sua galeria para gerenciar as fotos do antes e depois de seus pacientes."
+        }
+      ]
     ]
   }
 }

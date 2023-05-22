@@ -61,7 +61,7 @@ const PatientPhotos: React.FC<Props> = ({
               index === 0 && <Image key={index} source={{ uri: image.uri }} style={styles.image} />
           )}
           {images?.length - 1 > 0 && (
-            <Text style={{ fontSize: 20, color: 'white' }}>+{images.length - 1}</Text>
+            <Text style={{ fontSize: 20, color: '#ffffff' }}>+{images.length - 1}</Text>
           )}
         </View>
         <FlatButton
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, marginHorizontal: 4 },
   title: {
     fontSize: 18,
-    color: 'white',
+    color: '#ffffff',
     marginBottom: 4
   },
   selectButtonText: {
     fontSize: 20,
-    color: 'white'
+    color: '#ffffff'
   },
   selectButton: {
     margin: 5,

@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     width: '100%',
-    shadowColor: 'black',
+    shadowColor: '#000000',
     shadowRadius: 4,
     shadowOffset: { height: 4, width: 0 },
     shadowOpacity: 0.5

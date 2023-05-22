@@ -130,7 +130,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
         {isLoading ? (
           <View style={styles.loading}>
             <ActivityIndicator
-              size={'large'}
+              size="large"
               color={Colors.error500}
               // style={{ alignSelf: 'center' }}
             />

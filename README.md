@@ -174,3 +174,45 @@ npm start
 ```
 
 UPDATE ADB FILE
+
+## Create the Production Build
+
+### **[Check the EAS Build documentation before going into the following steps. EAS Build is a rapidly evolving service and those step may change in a weekly basis.](https://docs.expo.dev/build/setup/#install-the-latest-eas-cli)**
+
+1. Install the latest EAS CLI
+
+```
+npm install -g eas-cli
+```
+
+2. Log in to your Expo account
+
+```
+eas login
+```
+
+3. [Configure the project](https://docs.expo.dev/build-reference/build-configuration/)
+
+```
+eas build:configure
+```
+
+4. Execute the build
+
+- **preview** Profile for Android
+
+```
+eas build -p android --profile preview
+```
+
+- **preview** Profile for All platforms
+
+```
+eas build -p all --profile preview
+```
+
+- **production** Profile
+
+```
+eas build -p android --profile production
+```

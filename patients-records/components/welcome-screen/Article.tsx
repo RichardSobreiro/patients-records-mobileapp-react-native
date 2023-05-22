@@ -1,8 +1,8 @@
 //import { formatDistanceToNow } from 'date-fns';
 import { Colors } from '../../constants/styles';
-import { GetPatient } from '../../models/GetPatient';
+import { GetPatient } from '../../models/GetPatientsResponse';
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Linking, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
   item: GetPatient;

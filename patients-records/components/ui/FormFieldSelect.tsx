@@ -83,7 +83,7 @@ const FormFieldSelect: React.FC<Props> = ({
                     <Text>{item.value}</Text>
                   </View>
                   <View style={styles.selectedItemIcon}>
-                    <AntDesign name="closecircleo" size={16} color="black" />
+                    <AntDesign name="closecircleo" size={16} color="#000000" />
                   </View>
                 </View>
               </FlatButton>
@@ -104,7 +104,7 @@ export default FormFieldSelect;
 
 const styles = StyleSheet.create({
   selectContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     height: 50,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 2,
     borderColor: '#e3e3e3',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     padding: 4
   },
   selectedItemIcon: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 2,
     borderColor: '#e3e3e3',
-    backgroundColor: '#fff'
+    backgroundColor: '#ffffff'
   },
   errorContainer: {
     marginVertical: 5

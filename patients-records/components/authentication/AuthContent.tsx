@@ -5,7 +5,7 @@ import FlatButton from '../ui/FlatButton';
 import AuthForm from './AuthForm';
 import FacebookAuthentication from './Facebook';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack/';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallback }) => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
@@ -107,24 +107,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 32,
     padding: 16,
     borderRadius: 8,
-    backgroundColor: Colors.primary800,
-    elevation: 2,
-    shadowColor: 'black',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4
+    backgroundColor: Colors.primary800
+    // elevation: 2,
+    // shadowColor: '#000000',
+    // shadowOffset: { width: 1, height: 1 },
+    // shadowOpacity: 0.35,
+    // shadowRadius: 4
   },
   authContent: {
     marginTop: 64,
     marginHorizontal: 32,
     padding: 16,
     borderRadius: 8,
-    backgroundColor: Colors.primary800,
-    elevation: 2,
-    shadowColor: 'black',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4
+    backgroundColor: Colors.primary800
+    // elevation: 2,
+    // shadowColor: '#000000',
+    // shadowOffset: { width: 1, height: 1 },
+    // shadowOpacity: 0.35,
+    // shadowRadius: 4
   },
   buttons: {
     marginTop: 8

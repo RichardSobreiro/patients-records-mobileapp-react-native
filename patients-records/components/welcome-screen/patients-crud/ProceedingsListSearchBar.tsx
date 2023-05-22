@@ -16,7 +16,7 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
     <View style={styles.container}>
       <View style={clicked ? styles.searchBar__clicked : styles.searchBar__unclicked}>
         {/* search Icon */}
-        <Feather name="search" size={20} color="black" style={{ marginLeft: 1 }} />
+        <Feather name="search" size={20} color="#000000" style={{ marginLeft: 1 }} />
         {/* Input field */}
         <TextInput
           style={styles.input}
@@ -32,7 +32,7 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
           <Entypo
             name="cross"
             size={20}
-            color="black"
+            color="#000000"
             style={{ padding: 1 }}
             onPress={() => {
               setSearchPhrase('');

@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2196F3'
   },
   textStyle: {
-    color: 'white',
+    color: '#ffffff',
     fontWeight: 'bold',
     textAlign: 'center'
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column'

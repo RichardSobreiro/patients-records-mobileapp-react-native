@@ -64,7 +64,7 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
   }
 
   return (
-    <View style={styles.form}>
+    <View>
       <View>
         {!isLogin && (
           <Input
@@ -118,7 +118,6 @@ const AuthForm: React.FC<Props> = ({ isLogin, onSubmit, credentialsInvalid }) =>
 export default AuthForm;
 
 const styles = StyleSheet.create({
-  form: {},
   buttons: {
     marginTop: 12
   }

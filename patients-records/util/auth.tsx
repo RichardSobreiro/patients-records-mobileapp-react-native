@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-const API_KEY = 'AIzaSyDCYasArcOwcALFhIj2szug5aD2PgUQu1E';
-
 export type Token = {
   access_token: string;
   expires_in: number;
@@ -40,7 +38,7 @@ export type facebookCallbackParams = {
 export const authenticateFacebook = async (
   params: facebookCallbackParams
 ): Promise<Token | undefined> => {
-  const url = `http://10.0.2.2:3000/token`;
+  const url = `${process.env.AUTHNZ_URL}/token`;
 
   let accessToken: Token | undefined = undefined;
 
@@ -78,7 +76,7 @@ export const authenticateFacebook = async (
 };
 
 export const validadeToken = async (params: Token): Promise<boolean> => {
-  const url = `http://10.0.2.2:3000/token/introspection`;
+  const url = `${process.env.AUTHNZ_URL}/token/introspection`;
 
   const options = {
     headers: { 'content-type': 'application/x-www-form-urlencoded' }
@@ -105,38 +103,8 @@ export const validadeToken = async (params: Token): Promise<boolean> => {
   return isValid;
 };
 
-const authenticate = async (mode, email, password): Promise<TokenPasswordGranType | undefined> => {
-  let url = '';
-  if (mode === 'signUp') {
-    url = `http://10.0.2.2:3000/users`;
-  } else {
-    url = `http://10.0.2.2:3000/interaction/${uuidv4()}/login`;
-  }
-
-  const response = await axios
-    .post(url, {
-      client_id: 'social_facebook',
-      client_secret: 'social_facebook',
-      grant_type: 'password',
-      scope: 'openid offline_access api:read',
-      prompt: 'consent',
-      email,
-      password,
-      resource: 'http://localhost:3006'
-    })
-    .then((response) => {
-      return response as unknown as TokenPasswordGranType;
-    })
-    .catch((err) => {
-      console.log(`authenticate - mode: ${mode}:${err}`);
-      return undefined;
-    });
-
-  return response;
-};
-
 export const createUser = async (email, password, username) => {
-  const url = `http://10.0.2.2:3000/users`;
+  const url = `${process.env.AUTHNZ_URL}/users`;
 
   const uninterceptedAxiosInstance = axios.create();
   const options = {
@@ -164,7 +132,7 @@ export const createUser = async (email, password, username) => {
 };
 
 export const login = async (email, password) => {
-  const url = `http://10.0.2.2:3000/token`;
+  const url = `${process.env.AUTHNZ_URL}/token`;
 
   const uninterceptedAxiosInstance = axios.create();
   const options = {
@@ -177,7 +145,7 @@ export const login = async (email, password) => {
         client_id: 'social_facebook',
         client_secret: 'social_facebook',
         grant_type: 'password',
-        scope: 'openid offline_access api:read',
+        scope: 'openid',
         prompt: 'consent',
         email,
         password,

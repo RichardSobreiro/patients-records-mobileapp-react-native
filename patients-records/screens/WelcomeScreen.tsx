@@ -8,7 +8,7 @@ import { GetPatient } from '../models/GetPatientsResponse';
 import { AuthContext } from '../store/auth-context';
 import { useNavigation } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   BackHandler,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   header: {
     borderBottomWidth: 1,
     backgroundColor: Colors.primary800,
-    color: 'white',
+    color: '#ffffff',
     borderBottomColor: '#dbdbdb',
     flexDirection: 'row',
     justifyContent: 'space-between',
