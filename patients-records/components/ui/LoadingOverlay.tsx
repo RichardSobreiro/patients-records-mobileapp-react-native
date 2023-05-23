@@ -1,13 +1,13 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 interface Props {
-  message: string;
+  message?: string;
 }
 
 const LoadingOverlay: React.FC<Props> = ({ message }) => {
   return (
     <View style={styles.rootContainer}>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={styles.message}>{message ? message : 'Carregando...'}</Text>
       <ActivityIndicator size="large" />
     </View>
   );

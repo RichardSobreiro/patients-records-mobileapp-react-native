@@ -1,17 +1,18 @@
 import Article from '../components/welcome-screen/Article';
 import Header from '../components/welcome-screen/Header';
 import SearchBar from '../components/welcome-screen/SearchBar';
-import CreateEditPatient from '../components/welcome-screen/patients-crud/CreateEditPatient';
 import { Colors } from '../constants/styles';
 import { getPatients } from '../http/PatientsApi';
 import { GetPatient } from '../models/GetPatientsResponse';
 import { AuthContext } from '../store/auth-context';
-import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp, BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { EditPatientStackParamList, RootStackParamList } from 'App';
 import { uniqBy } from 'lodash';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
-  BackHandler,
   View,
   SafeAreaView,
   Text,
@@ -20,11 +21,13 @@ import {
   Keyboard
 } from 'react-native';
 
-const PAGE_SIZE = 10;
+type HomeScreenNavigationProp = CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList, 'Welcome'>,
+  BottomTabScreenProps<EditPatientStackParamList>
+>;
 
-const WelcomeScreen: React.FC = () => {
+const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   const authCtx = useContext(AuthContext);
-  const navigation = useNavigation();
 
   const [isLoading, setLoading] = useState(true);
 
@@ -32,8 +35,8 @@ const WelcomeScreen: React.FC = () => {
   const [clicked, setClicked] = useState<boolean>(false);
   const [advancedFilters, setAdvancedFilters] = useState<any | undefined>(undefined);
 
-  const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
-  const [patientBeingEditedId, setPatientBeingEditedId] = useState<string | undefined>(undefined);
+  // const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
+  // const [patientBeingEditedId, setPatientBeingEditedId] = useState<string | undefined>(undefined);
 
   const [patients, setPatients] = useState<GetPatient[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -44,39 +47,13 @@ const WelcomeScreen: React.FC = () => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
   }, [authCtx.userInfo?.username, navigation]);
 
-  const backFromAddPatient = useCallback(() => {
-    setPatientBeingEditedId(undefined);
-    setIsAddingEditingPatient(false);
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const backAction = () => {
-      backFromAddPatient();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
-  }, [backFromAddPatient]);
-
   const fetchData = async (patientName?: string, advancedFilters?: any) => {
-    //if (!hasMoreData.current) return;
-
     const newPatients = await getPatients(patientName, advancedFilters);
-
-    // if (newArticles!.length < PAGE_SIZE) {
-    //   hasMoreData.current = false;
-    // }
 
     setPatients((currentPatients) => {
       if (!newPatients) {
         return currentPatients;
       } else if (currentPatients) {
-        // const allPatients = !patientName
-        //   ? newPatients.patients!
-        //   : [...currentPatients, ...newPatients.patients!];
         const allPatients = newPatients.patients!;
         return uniqBy(allPatients, 'patientId');
       } else {
@@ -95,36 +72,20 @@ const WelcomeScreen: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      //if (searchPhrase === searchPhraseRef.current?.state) {
       fetchData(searchPhrase, advancedFilters);
-      //}
     }, 600);
     return () => {
       clearTimeout(timer);
     };
   }, [searchPhrase, advancedFilters]);
 
-  useEffect(() => {
-    navigation.setOptions({ title: authCtx.userInfo?.username });
-  }, [navigation, authCtx.userInfo]);
-
-  const handleEditPatient = (patientId: string) => {
-    setPatientBeingEditedId(patientId);
-    setIsAddingEditingPatient(true);
+  const handleEditPatient = (patientId: string, patient?: GetPatient) => {
+    navigation.navigate('EditPatient', { patientId, patient });
   };
 
   const handleCreatePatient = () => {
-    setIsAddingEditingPatient(true);
+    navigation.navigate('CreatePatient', { patientId: undefined });
   };
-
-  if (isAddingEditingPatient) {
-    return (
-      <CreateEditPatient
-        onBackFromCreateEditPatientPress={backFromAddPatient}
-        patientId={patientBeingEditedId}
-      />
-    );
-  }
 
   const refreshData = () => {
     setPage(1);

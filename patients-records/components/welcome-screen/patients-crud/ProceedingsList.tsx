@@ -6,7 +6,6 @@ import {
   GetProceedingResponse,
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
-import Button from '../../ui/Button';
 import IconButton from '../../ui/IconButton';
 import CreateEditPatientsProceedings from './CreateEditPatientsProceedings';
 import ProceedingsListItem from './ProceedingListItem';
@@ -18,11 +17,9 @@ const PAGE_SIZE = 10;
 
 type Props = {
   patient: GetPatient;
-  onReturnAction: () => void;
-  setHeaderSubtitle?;
 };
 
-const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSubtitle }) => {
+const ProceedingsList: React.FC<Props> = ({ patient }) => {
   const [currentPatient] = useState<GetPatient>(patient);
   const [proceedings, setProceedings] = useState<GetProceedingsResponse | undefined | null>(
     undefined
@@ -66,7 +63,6 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
   };
 
   useEffect(() => {
-    setHeaderSubtitle('Procedimentos');
     const pageNumber: number = proceedings ? proceedings.next?.pageNumber! : 0;
     getProceedingsPage(pageNumber, PAGE_SIZE);
   }, [page, currentPatient]);
@@ -118,7 +114,6 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
       <CreateEditPatientsProceedings
         patient={patient}
         navigateToProceedingsList={onReturnFromCreateEditingProceeding}
-        setHeaderSubtitle={setHeaderSubtitle}
         proceeding={proceedingBeingEdited}
       />
     );
@@ -129,11 +124,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
       <View style={styles.container}>
         {isLoading ? (
           <View style={styles.loading}>
-            <ActivityIndicator
-              size="large"
-              color={Colors.error500}
-              // style={{ alignSelf: 'center' }}
-            />
+            <ActivityIndicator size="large" color={Colors.error500} />
           </View>
         ) : (
           <View style={styles.content}>
@@ -144,7 +135,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
                 alignItems: 'center'
               }}
             >
-              <View style={{ flex: clicked ? 1 : 8 }}>
+              <View>
                 <ProceedingsListSearchBar
                   clicked={clicked}
                   setClicked={setClicked}
@@ -152,25 +143,10 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
                   setSearchPhrase={setSearchPhrase}
                 />
               </View>
-              {clicked ? (
+              {/* {clicked ? (
                 ''
               ) : (
                 <View style={{ flex: 2 }}>
-                  {/* <Button
-                    onPress={() => {
-                      setIsCreatingEditingProceeding(true);
-                    }}
-                  >
-                    Novo
-                  </Button> */}
-                  <IconButton
-                    icon="return-down-back-outline"
-                    color={Colors.primary800}
-                    size={50}
-                    onPress={() => {
-                      onReturnAction();
-                    }}
-                  />
                   <IconButton
                     icon="add-circle-outline"
                     color={Colors.primary800}
@@ -180,7 +156,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, onReturnAction, setHeaderSu
                     }}
                   />
                 </View>
-              )}
+              )} */}
             </View>
             <FlatList
               data={proceedings?.proceedings}

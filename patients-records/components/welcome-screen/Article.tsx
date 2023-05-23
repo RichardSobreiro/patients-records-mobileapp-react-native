@@ -11,7 +11,7 @@ type Props = {
 
 const Article: React.FC<Props> = ({ item, editPatient }) => {
   return (
-    <TouchableOpacity onPress={editPatient.bind(null, item.patientId)}>
+    <TouchableOpacity onPress={editPatient.bind(null, item.patientId, item)}>
       <View style={styles.article}>
         {/* Caching image for better performance: https://github.com/DylanVann/react-native-fast-image */}
         {/* <Image

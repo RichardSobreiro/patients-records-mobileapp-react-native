@@ -199,13 +199,13 @@ eas build:configure
 
 4. Execute the build
 
-- **preview** Profile for Android
+- **preview** Profile for Android Local
 
 ```
-eas build -p android --profile preview
+eas build -p android --profile preview --local
 ```
 
-- **preview** Profile for All platforms
+- **preview** Profile for All platforms Remote
 
 ```
 eas build -p all --profile preview

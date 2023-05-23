@@ -4,10 +4,15 @@ import { createNewPatient, getPatientById, updatePatient } from '../../../http/P
 import { GetPatient } from '../../../models/GetPatientsResponse';
 import { AuthContext } from '../../../store/auth-context';
 import Button, { ButtonTypes } from '../../ui/Button';
+import LoadingOverlay from '../../ui/LoadingOverlay';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import Header from '../Header';
 import ProceedingsList from './ProceedingsList';
+import { BottomTabNavigationProp, BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { EditPatientStackParamList, RootStackParamList } from 'App';
 import { CreatePatientResponse } from 'models/CreatePatientResponse';
 import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -22,25 +27,35 @@ type ErrorType = {
 };
 
 type Props = {
-  onBackFromCreateEditPatientPress: () => void;
+  navigation: HomeScreenNavigationProp;
   patientId?: string;
 };
 
-const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, patientId }) => {
+type HomeScreenNavigationProp = CompositeScreenProps<
+  NativeStackScreenProps<RootStackParamList, 'Welcome'>,
+  BottomTabScreenProps<EditPatientStackParamList>
+>;
+
+const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   const authCtx = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMessage, setIsLoadingMessage] = useState<string | undefined>(undefined);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isAtProceedingsList, setIsAtProceedingsList] = useState<boolean>(false);
   const [patient, setPatient] = useState<GetPatient | undefined>(undefined);
   const [headerSubtitle, setHeaderSubtitle] = useState<string | undefined>('Informações Básicas');
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
 
   const handleCancel = useCallback(() => {
-    onBackFromCreateEditPatientPress();
-  }, [onBackFromCreateEditPatientPress]);
+    navigation.navigate('Welcome');
+  }, [navigation]);
 
   useEffect(() => {
     if (patientId) {
       setIsEditing(true);
+      setIsLoading(true);
       const getPatient = async () => {
         const response = await getPatientById(patientId);
         if (response) {
@@ -63,6 +78,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
                 isValid: true
               }
             });
+            setIsLoading(false);
             return response;
           });
         } else {
@@ -70,6 +86,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
             'Erro',
             'Ocorreu um erro ao buscar as informações do paciente! Tente novamenete.'
           );
+          setIsLoading(false);
           handleCancel();
         }
       };
@@ -206,6 +223,8 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
 
   const submitHandler = () => {
     if (validateForm(inputs, true)) {
+      setIsLoading(true);
+      setIsLoadingMessage('Salvando...');
       const createPatientRequest = {
         patientName: inputs.patientName.value,
         email: inputs.email.value,
@@ -233,7 +252,8 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
             birthDate: createPatientRequest.birthDate
           });
         }
-
+        setIsLoading(false);
+        setIsLoadingMessage(undefined);
         if (response?.patientId) {
           setIsEditing(true);
           setPatient(response);
@@ -254,28 +274,24 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
   };
   //----------------------------------------------------------------------------------------
 
+  if (isLoading) {
+    return <LoadingOverlay message={isLoadingMessage} />;
+  }
+
   return (
     <>
       <View style={styles.header}>
         <Header
           isAddingPatientScreen={true}
-          onSkipBackPressed={onBackFromCreateEditPatientPress}
-          title={isEditing ? `Paciente ${patient?.patientName!}` : 'Novo Paciente'}
+          onSkipBackPressed={handleCancel}
+          title={isEditing ? `${patient?.patientName!}` : 'Novo Paciente'}
           subtitle={headerSubtitle}
         />
       </View>
       {isEditing && isAtProceedingsList ? (
-        <ProceedingsList
-          patient={patient!}
-          onReturnAction={handleBackFromProceedingsList}
-          setHeaderSubtitle={setHeaderSubtitle}
-        />
+        <ProceedingsList patient={patient!} />
       ) : (
-        <KeyboardAwareScrollView
-          style={styles.content}
-          // showsVerticalScrollIndicator={true}
-          // keyboardShouldPersistTaps="handled"
-        >
+        <KeyboardAwareScrollView style={styles.content}>
           <Input
             field="patientName"
             label="Nome"
@@ -287,7 +303,7 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
           />
           <Input
             field="email"
-            label="E-mail (Opicional)"
+            label="E-mail (Opcional)"
             keyboardType="email-address"
             values={inputs}
             touched={touched}
@@ -318,7 +334,9 @@ const CreateEditPatient: React.FC<Props> = ({ onBackFromCreateEditPatientPress, 
             <View style={styles.buttons}>
               <Button
                 onPress={() => {
-                  setIsAtProceedingsList(true);
+                  navigationEditPatient.navigate('ProceedingsList', {
+                    patient: patient!
+                  });
                 }}
                 type={ButtonTypes.Primary}
                 text={styles.buttonTextStyles}
@@ -376,8 +394,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   content: {
-    // flexBasis: 'auto',
-    // alignContent: 'flex-start',
     backgroundColor: Colors.primary800,
     marginTop: 20,
     marginBottom: 15,

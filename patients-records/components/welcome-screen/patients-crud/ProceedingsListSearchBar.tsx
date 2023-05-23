@@ -33,7 +33,6 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
             name="cross"
             size={20}
             color="#000000"
-            style={{ padding: 1 }}
             onPress={() => {
               setSearchPhrase('');
             }}
@@ -50,7 +49,13 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
               Keyboard.dismiss();
               setClicked(false);
             }}
-            pressable={{ borderColor: '#000000', borderWidth: 2, padding: 4, borderRadius: 10 }}
+            pressable={{
+              borderColor: '#000000',
+              borderWidth: 2,
+              padding: 4,
+              borderRadius: 10,
+              marginLeft: 30
+            }}
           ></IconButton>
         </View>
       )}

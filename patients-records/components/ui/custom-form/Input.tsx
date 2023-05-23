@@ -1,5 +1,6 @@
 import { Colors } from '../../../constants/styles';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import MaskInput from 'react-native-mask-input';
 
 type Props = {
   field: string;
@@ -28,18 +29,53 @@ const Input: React.FC<Props> = ({
   return (
     <View style={[styles.inputContainer]}>
       <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
-      <TextInput
-        style={[
-          styles.input,
-          textInputConfig?.multiline && styles.inputMultiline,
-          invalid && styles.invalidInput
-        ]}
-        value={values[field].value}
-        onChangeText={onChangeHandler.bind(null, field)}
-        onBlur={onBlurHandler.bind(null, field)}
-        {...textInputConfig}
-        keyboardType={keyboardType}
-      />
+
+      {keyboardType === 'phone-pad' ? (
+        <MaskInput
+          style={[
+            styles.input,
+            textInputConfig?.multiline && styles.inputMultiline,
+            invalid && styles.invalidInput
+          ]}
+          value={values[field].value}
+          onChangeText={onChangeHandler.bind(null, field)}
+          onBlur={onBlurHandler.bind(null, field)}
+          {...textInputConfig}
+          keyboardType={keyboardType}
+          returnKeyType="next"
+          mask={[
+            '(',
+            /\d/,
+            /\d/,
+            ')',
+            ' ',
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/,
+            '-',
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/
+          ]}
+        />
+      ) : (
+        <TextInput
+          style={[
+            styles.input,
+            textInputConfig?.multiline && styles.inputMultiline,
+            invalid && styles.invalidInput
+          ]}
+          value={values[field].value}
+          onChangeText={onChangeHandler.bind(null, field)}
+          onBlur={onBlurHandler.bind(null, field)}
+          {...textInputConfig}
+          keyboardType={keyboardType}
+          returnKeyType="next"
+        />
+      )}
       {errors[field] ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errors[field]}</Text>
