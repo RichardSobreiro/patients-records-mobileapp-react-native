@@ -163,7 +163,11 @@ Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/goo
 
 ```
 emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
+```
 
+- Restart the emulator from zero (delete all data)
+
+```
 emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan -no-cache
 ```
 

@@ -1,5 +1,5 @@
 import Header from '../components/welcome-screen/Header';
-import ProceedingsList from '../components/welcome-screen/patients-crud/ProceedingsList';
+import CreateEditPatientsProceedings from '../components/welcome-screen/patients-crud/CreateEditPatientsProceedings';
 import { View, StyleSheet } from 'react-native';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
   navigation: any;
 };
 
-const ProceedingsListScreen: React.FC<Props> = ({ route, navigation }) => {
+const CreateEditProceedingScreen: React.FC<Props> = ({ route, navigation }) => {
   const { patient } = route.params;
 
   return (
@@ -16,15 +16,15 @@ const ProceedingsListScreen: React.FC<Props> = ({ route, navigation }) => {
         <Header
           isAddingPatientScreen={true}
           title={`${patient?.patientName!}`}
-          subtitle="Procedimentos"
+          subtitle="Novo Procedimentos"
         />
       </View>
-      <ProceedingsList patient={patient} />
+      <CreateEditPatientsProceedings patient={patient} />
     </>
   );
 };
 
-export default ProceedingsListScreen;
+export default CreateEditProceedingScreen;
 
 const styles = StyleSheet.create({
   header: {

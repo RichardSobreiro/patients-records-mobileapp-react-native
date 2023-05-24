@@ -1,5 +1,6 @@
 import IconButton from './components/ui/IconButton';
 import { Colors } from './constants/styles';
+import CreateEditProceedingScreen from './screens/CreateEditProceedingScreen';
 import LoginScreen from './screens/LoginScreen';
 import PatientScreen from './screens/PatientScreen';
 import ProceedingsListScreen from './screens/ProceedingsListScreen';
@@ -14,11 +15,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { GetPatient } from 'models/GetPatientsResponse';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, SafeAreaView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Button, SafeAreaView, StyleSheet } from 'react-native';
 
 export type EditPatientStackParamList = {
   PatientInfo: { patientId: string };
   ProceedingsList: { patient: GetPatient };
+  CreateProceeding: { patient: GetPatient };
 };
 
 export type RootStackParamList = {
@@ -35,7 +37,9 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
   const { patientId, patient } = route.params;
 
   useEffect(() => {
-    navigation.setOptions({ title: 'Atualizando Paciente' });
+    navigation.setOptions({
+      title: 'Atualizando Paciente'
+    });
   });
 
   return (
@@ -59,6 +63,17 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
           tabBarLabel: 'Procedimentos',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="book-medical" size={size} color={color} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="CreateProceeding"
+        component={CreateEditProceedingScreen}
+        initialParams={{ patient }}
+        options={{
+          tabBarLabel: 'Novo Procedimentos',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="plus-square" size={size} color={color} />
           )
         }}
       />

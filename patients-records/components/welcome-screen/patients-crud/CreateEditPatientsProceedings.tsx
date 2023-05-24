@@ -7,15 +7,16 @@ import Button, { ButtonTypes } from '../../ui/Button';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import PatientPhotos from './PatientPhotos';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
+import { EditPatientStackParamList } from 'App';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
-import { useContext, useLayoutEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
   patient: GetPatient;
-  navigateToProceedingsList: () => void;
-  setHeaderSubtitle?;
   proceeding?: GetProceedingResponse;
 };
 
@@ -27,18 +28,10 @@ type ErrorType = {
   afterPhotos: null | string;
 };
 
-const CreateEditPatientsProceedings: React.FC<Props> = ({
-  patient,
-  navigateToProceedingsList,
-  setHeaderSubtitle,
-  proceeding
-}) => {
+const CreateEditPatientsProceedings: React.FC<Props> = ({ patient, proceeding }) => {
   const [isEditing, setIsEditing] = useState<boolean>(!!proceeding);
   const authCtx = useContext(AuthContext);
-
-  useLayoutEffect(() => {
-    setHeaderSubtitle(isEditing ? 'Editando Procedimento' : 'Criando Procedimento');
-  });
+  const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
 
   const [inputs, setInputs] = useState({
     patientId: patient.patientId,
@@ -260,7 +253,11 @@ const CreateEditPatientsProceedings: React.FC<Props> = ({
         <View style={{ flex: 1, marginRight: 5 }}>
           <Button
             type={ButtonTypes.Cancel}
-            onPress={navigateToProceedingsList}
+            onPress={() => {
+              navigationEditPatient.navigate('ProceedingsList', {
+                patient: patient!
+              });
+            }}
             text={{ fontSize: 18 }}
           >
             {isEditing ? 'Voltar' : 'Cancelar'}

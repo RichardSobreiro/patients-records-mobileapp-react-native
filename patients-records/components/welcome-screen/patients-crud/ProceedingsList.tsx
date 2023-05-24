@@ -6,7 +6,6 @@ import {
   GetProceedingResponse,
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
-import IconButton from '../../ui/IconButton';
 import CreateEditPatientsProceedings from './CreateEditPatientsProceedings';
 import ProceedingsListItem from './ProceedingListItem';
 import ProceedingsListSearchBar from './ProceedingsListSearchBar';
@@ -79,13 +78,6 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
     setProceedingBeingEdited(proceeding);
   };
 
-  const onReturnFromCreateEditingProceeding = () => {
-    setIsCreatingEditingProceeding(false);
-    setProceedingBeingEdited(undefined);
-    refreshData();
-    getProceedingsPage(page, PAGE_SIZE, true);
-  };
-
   const renderArticle = ({ item }) => (
     <ProceedingsListItem
       proceeding={item}
@@ -110,13 +102,7 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   const keyExtractor = (item: GetProceedingResponse) => item.proceedingId;
 
   if (isCreatingEditingProceeding) {
-    return (
-      <CreateEditPatientsProceedings
-        patient={patient}
-        navigateToProceedingsList={onReturnFromCreateEditingProceeding}
-        proceeding={proceedingBeingEdited}
-      />
-    );
+    return <CreateEditPatientsProceedings patient={patient} proceeding={proceedingBeingEdited} />;
   }
 
   return (
@@ -143,20 +129,6 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
                   setSearchPhrase={setSearchPhrase}
                 />
               </View>
-              {/* {clicked ? (
-                ''
-              ) : (
-                <View style={{ flex: 2 }}>
-                  <IconButton
-                    icon="add-circle-outline"
-                    color={Colors.primary800}
-                    size={50}
-                    onPress={() => {
-                      setIsCreatingEditingProceeding(true);
-                    }}
-                  />
-                </View>
-              )} */}
             </View>
             <FlatList
               data={proceedings?.proceedings}
