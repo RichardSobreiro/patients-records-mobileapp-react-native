@@ -1,37 +1,32 @@
 import { Colors } from '../../../constants/styles';
 import FlatButton from '../../ui/FlatButton';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Image, View, Text } from 'react-native';
+import { SliderBox } from 'react-native-image-slider-box';
 
 type Props = {
   title: string;
   field: string;
-  handleChange;
-  handleBlur;
-  handleSubmit;
-  values;
-  errors;
-  touched;
+  handleChange?;
+  handleBlur?;
+  values?;
+  errors?;
+  touched?;
 };
 
-const PatientPhotos: React.FC<Props> = ({
-  title,
-  field,
-  handleChange,
-  handleBlur,
-  handleSubmit,
-  values,
-  errors,
-  touched
-}) => {
-  const [images, setImages] = useState<any>(
-    values[field]?.value && values[field]?.value?.length >= 0
-      ? values[field]?.value.map((image) => {
-          return { uri: image.url };
-        })
-      : null
-  );
+const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) => {
+  const [images, setImages] = useState<any>([]);
+
+  useEffect(() => {
+    const imagesArray: any = [];
+    if (values[field]?.value && values[field]?.value?.length >= 0) {
+      values[field]?.value.map((image) => {
+        imagesArray.push(image.uri ?? image.url);
+      });
+    }
+    setImages(imagesArray);
+  }, [values, field]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -43,11 +38,13 @@ const PatientPhotos: React.FC<Props> = ({
       selectionLimit: 4
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       handleChange(field, result.assets);
-      setImages(result.assets);
+      const imagesArray: any = [];
+      result.assets.map((image) => {
+        imagesArray.push(image.uri);
+      });
+      setImages(imagesArray);
     }
   };
 
@@ -55,22 +52,39 @@ const PatientPhotos: React.FC<Props> = ({
     <>
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>
-        <View style={{ alignItems: 'center' }}>
-          {images?.map(
-            (image, index) =>
-              index === 0 && <Image key={index} source={{ uri: image.uri }} style={styles.image} />
-          )}
-          {images?.length - 1 > 0 && (
-            <Text style={{ fontSize: 20, color: '#ffffff' }}>+{images.length - 1}</Text>
-          )}
-        </View>
-        <FlatButton
-          onPress={pickImage}
-          text={styles.selectButtonText}
-          pressable={styles.selectButton}
-        >
-          Selecionar imagens da galeria
-        </FlatButton>
+        <SliderBox
+          images={images}
+          sliderBoxHeight={400}
+          dotColor="#FFEE58"
+          inactiveDotColor="#90A4AE"
+          onCurrentImagePressed={(index) => console.log(`image ${index} pressed`)}
+          paginationBoxVerticalPadding={40}
+          autoplay
+          circleLoop
+        />
+        {images && images.length === 0 && (
+          <View
+            style={{
+              padding: 10,
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>
+              Nenhuma imagem selecionada
+            </Text>
+          </View>
+        )}
+        {handleChange && (
+          <FlatButton
+            onPress={pickImage}
+            text={styles.selectButtonText}
+            pressable={styles.selectButton}
+          >
+            Selecionar imagens da galeria
+          </FlatButton>
+        )}
       </View>
     </>
   );

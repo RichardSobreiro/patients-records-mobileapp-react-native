@@ -1,6 +1,6 @@
 import IconButton from './components/ui/IconButton';
+import CreateEditProceedingTopTabs from './components/ui/navigations/CreateEditProceedingTopTabs';
 import { Colors } from './constants/styles';
-import CreateEditProceedingScreen from './screens/CreateEditProceedingScreen';
 import LoginScreen from './screens/LoginScreen';
 import PatientScreen from './screens/PatientScreen';
 import ProceedingsListScreen from './screens/ProceedingsListScreen';
@@ -15,7 +15,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { GetPatient } from 'models/GetPatientsResponse';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, SafeAreaView, StyleSheet } from 'react-native';
+import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
+
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
 export type EditPatientStackParamList = {
   PatientInfo: { patientId: string };
@@ -68,7 +70,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
       />
       <Tab.Screen
         name="CreateProceeding"
-        component={CreateEditProceedingScreen}
+        component={CreateEditProceedingTopTabs}
         initialParams={{ patient }}
         options={{
           tabBarLabel: 'Novo Procedimentos',

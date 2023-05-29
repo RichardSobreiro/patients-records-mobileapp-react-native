@@ -1,4 +1,5 @@
 import { Colors } from '../../../constants/styles';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import MaskInput from 'react-native-mask-input';
 
@@ -9,8 +10,8 @@ type Props = {
   values?;
   touched?;
   errors?;
-  onChangeHandler: (field: string, value: any) => void;
-  onBlurHandler: (field: string, value: any) => void;
+  onChangeHandler?: (field: string, value: any) => void;
+  onBlurHandler?: (field: string, value: any) => void;
   textInputConfig?;
 };
 
@@ -26,6 +27,7 @@ const Input: React.FC<Props> = ({
   textInputConfig
 }) => {
   const invalid = errors[field];
+
   return (
     <View style={[styles.inputContainer]}>
       <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
@@ -38,8 +40,8 @@ const Input: React.FC<Props> = ({
             invalid && styles.invalidInput
           ]}
           value={values[field].value}
-          onChangeText={onChangeHandler.bind(null, field)}
-          onBlur={onBlurHandler.bind(null, field)}
+          onChangeText={onChangeHandler?.bind(null, field)}
+          onBlur={onBlurHandler?.bind(null, field)}
           {...textInputConfig}
           keyboardType={keyboardType}
           returnKeyType="next"
@@ -69,11 +71,13 @@ const Input: React.FC<Props> = ({
             invalid && styles.invalidInput
           ]}
           value={values[field].value}
-          onChangeText={onChangeHandler.bind(null, field)}
-          onBlur={onBlurHandler.bind(null, field)}
+          onChangeText={onChangeHandler?.bind(null, field)}
+          onBlur={onBlurHandler?.bind(null, field)}
           {...textInputConfig}
           keyboardType={keyboardType}
           returnKeyType="next"
+          editable={!!(onBlurHandler && onChangeHandler)}
+          selectTextOnFocus={!!(onBlurHandler && onChangeHandler)}
         />
       )}
       {errors[field] ? (

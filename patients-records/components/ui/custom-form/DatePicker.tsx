@@ -11,7 +11,8 @@ type Props = {
   touched?;
   errors?;
   text?;
-  onChangeHandler: (field: string, value: any) => void;
+  onChangeHandler?: (field: string, value: any) => void;
+  onPress?: () => void;
 };
 
 const DatePicker: React.FC<Props> = ({
@@ -21,7 +22,8 @@ const DatePicker: React.FC<Props> = ({
   touched,
   errors,
   text,
-  onChangeHandler
+  onChangeHandler,
+  onPress
 }) => {
   const [show, setShow] = useState(false);
 
@@ -30,18 +32,22 @@ const DatePicker: React.FC<Props> = ({
       const currentDate = selectedDate;
       setShow(false);
       values[field].value = currentDate;
-      onChangeHandler(field, currentDate);
+      onChangeHandler?.(field, currentDate);
     } else {
       const currentDate = null;
       setShow(false);
       touched[field] = false;
       values[field].value = currentDate;
-      onChangeHandler(field, currentDate);
+      onChangeHandler?.(field, currentDate);
     }
   };
 
   const showDatepicker = () => {
-    setShow(true);
+    if (onPress) {
+      onPress();
+    } else {
+      setShow(true);
+    }
   };
 
   return (
@@ -55,7 +61,7 @@ const DatePicker: React.FC<Props> = ({
           </Text>
         </View>
       </Pressable>
-      {show && (
+      {show && onChangeHandler && (
         <DateTimePicker
           testID="dateTimePicker"
           value={values[field].value ? values[field].value : new Date()}

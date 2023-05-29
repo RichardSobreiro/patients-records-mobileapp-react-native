@@ -3,9 +3,10 @@ import { View, Text } from 'react-native';
 
 type Props = {
   text: string;
+  color?: string;
 };
 
-const Title: React.FC<Props> = ({ text }) => {
+const Title: React.FC<Props> = ({ text, color }) => {
   return (
     <View
       style={{
@@ -18,7 +19,7 @@ const Title: React.FC<Props> = ({ text }) => {
       <Text
         style={{
           fontSize: 16,
-          color: Colors.primary800,
+          color: color ?? Colors.primary800,
           fontWeight: 'bold',
           textAlign: 'center'
         }}
