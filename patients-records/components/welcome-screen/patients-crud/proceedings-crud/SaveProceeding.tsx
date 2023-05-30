@@ -10,7 +10,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { EditPatientStackParamList } from 'App';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -21,8 +21,46 @@ const SaveProceeding: React.FC = () => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   useEffect(() => {
-    createEditProceedingCtx.validate(undefined);
+    console.log('CONTEXT UPDATED');
   }, [createEditProceedingCtx]);
+
+  const DatePickerMemo = useMemo(() => {
+    return (
+      <DatePicker
+        field="date"
+        label="Data do Procedimento"
+        values={createEditProceedingCtx.inputs}
+        touched={createEditProceedingCtx.touched}
+        errors={createEditProceedingCtx.errors}
+        onPress={() => {
+          navigationCreateEditProceeding.navigate('ProceedingInfoScreen');
+        }}
+      />
+    );
+  }, [
+    createEditProceedingCtx.errors,
+    createEditProceedingCtx.inputs,
+    createEditProceedingCtx.touched,
+    navigationCreateEditProceeding
+  ]);
+
+  const TypeMemo = useMemo(() => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigationCreateEditProceeding.navigate('ProceedingInfoScreen');
+        }}
+      >
+        <Input
+          field="type"
+          label="Tipo"
+          values={createEditProceedingCtx.inputs}
+          touched={createEditProceedingCtx.touched}
+          errors={createEditProceedingCtx.errors}
+        />
+      </TouchableOpacity>
+    );
+  }, [createEditProceedingCtx, navigationCreateEditProceeding]);
 
   return (
     <KeyboardAwareScrollView
@@ -57,29 +95,8 @@ const SaveProceeding: React.FC = () => {
           </Button>
         </View>
       </View>
-      <DatePicker
-        field="date"
-        label="Data do Procedimento"
-        values={createEditProceedingCtx.inputs}
-        touched={createEditProceedingCtx.touched}
-        errors={createEditProceedingCtx.errors}
-        onPress={() => {
-          navigationCreateEditProceeding.navigate('ProceedingInfoScreen');
-        }}
-      />
-      <TouchableOpacity
-        onPress={() => {
-          navigationCreateEditProceeding.navigate('ProceedingInfoScreen');
-        }}
-      >
-        <Input
-          field="type"
-          label="Tipo"
-          values={createEditProceedingCtx.inputs}
-          touched={createEditProceedingCtx.touched}
-          errors={createEditProceedingCtx.errors}
-        />
-      </TouchableOpacity>
+      {DatePickerMemo}
+      {TypeMemo}
       <TouchableOpacity
         onPress={() => {
           navigationCreateEditProceeding.navigate('ProceedingInfoScreen');

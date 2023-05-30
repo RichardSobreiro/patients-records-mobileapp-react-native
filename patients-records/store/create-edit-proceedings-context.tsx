@@ -8,7 +8,7 @@ import {
 import { AuthContext } from './auth-context';
 import { CreateProceedingRequest } from 'models/proceedings/CreateProceedingRequest';
 import { UpdateProceedingRequest } from 'models/proceedings/UpdateProceedingRequest';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { Alert } from 'react-native';
 
 export type ErrorType = {
@@ -96,11 +96,45 @@ const initialState: ProceedingState = {
 
 export const CreateEditProceedingContext = createContext(initialState);
 
-const CreateEditProceedingProvider = ({ children, patientInit }) => {
+// const createEditProceedingReducer = (state, action) => {
+//   switch (action.type) {
+//     case 'HANDLE_CHANGE':
+//       state.errors[action.field] = true;
+//       setTouched((curTouched) => {
+//         curTouched[field] = true;
+//         return curTouched;
+//       });
+//       setInputs((curInputs) => {
+//         if (field === 'beforePhotos' || field === 'afterPhotos') {
+//           return {
+//             ...curInputs,
+//             [field]: {
+//               value: enteredValue,
+//               isValid: true,
+//               createNew
+//             }
+//           };
+//         } else {
+//           return {
+//             ...curInputs,
+//             [field]: { value: enteredValue, isValid: true }
+//           };
+//         }
+//       });
+//   }
+// };
+
+const CreateEditProceedingProvider = ({
+  children,
+  patientInitialValue,
+  proceedingInitialValue
+}) => {
   const authCtx = useContext(AuthContext);
-  const [patient, setPatient] = useState<GetPatient>(patientInit);
-  const [proceeding, setProceeding] = useState<GetProceedingResponse | undefined>(undefined);
-  const [isEditing, setIsEditing] = useState<boolean>(!!proceeding);
+  const [patient, setPatient] = useState<GetPatient>(patientInitialValue);
+  const [proceeding, setProceeding] = useState<GetProceedingResponse | undefined>(
+    proceedingInitialValue
+  );
+  const [isEditing, setIsEditing] = useState<boolean>(!!proceedingInitialValue);
 
   const initializeState = (
     patientParam: GetPatient,
@@ -112,27 +146,27 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
   };
 
   const [inputs, setInputs] = useState<Inputs>({
-    patientId: patient!.patientId,
-    proceedingId: proceeding?.proceedingId,
+    patientId: patientInitialValue!.patientId,
+    proceedingId: proceedingInitialValue?.proceedingId,
     date: {
-      value: isEditing ? new Date(proceeding?.date!) : new Date(),
+      value: isEditing ? new Date(proceedingInitialValue?.date!) : new Date(),
       isValid: true
     },
     type: {
-      value: isEditing ? proceeding?.proceedingTypeDescription : '',
+      value: isEditing ? proceedingInitialValue?.proceedingTypeDescription : '',
       isValid: true
     },
     notes: {
-      value: isEditing ? proceeding?.notes : '',
+      value: isEditing ? proceedingInitialValue?.notes : '',
       isValid: true
     },
     beforePhotos: {
-      value: isEditing ? proceeding?.beforePhotos : [],
+      value: isEditing ? proceedingInitialValue?.beforePhotos : [],
       isValid: true,
       createNew: false
     },
     afterPhotos: {
-      value: isEditing ? proceeding?.afterPhotos : [],
+      value: isEditing ? proceedingInitialValue?.afterPhotos : [],
       isValid: true,
       createNew: false
     }
@@ -154,7 +188,7 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
     afterPhotos: null
   });
 
-  const handleChange = (field: string, enteredValue: any) => {
+  const handleChange = useCallback((field: string, enteredValue: any, createNew?: boolean) => {
     setTouched((curTouched) => {
       curTouched[field] = true;
       return curTouched;
@@ -166,7 +200,7 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
           [field]: {
             value: enteredValue,
             isValid: true,
-            createNew: isEditing
+            createNew
           }
         };
       } else {
@@ -176,7 +210,7 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
         };
       }
     });
-  };
+  }, []);
 
   const handleBlur = (field: string) => {
     setTouched((curTouched) => {
@@ -185,7 +219,7 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
     });
   };
 
-  const createRequest = (): UpdateProceedingRequest | CreateProceedingRequest => {
+  const createRequest = useCallback((): UpdateProceedingRequest | CreateProceedingRequest => {
     const createUpdateProceedingRequest = {
       proceedingId: inputs.proceedingId,
       date: inputs.date.value,
@@ -197,105 +231,158 @@ const CreateEditProceedingProvider = ({ children, patientInit }) => {
       afterPhotosCreateNew: inputs.afterPhotos.createNew
     };
     return createUpdateProceedingRequest;
-  };
+  }, [
+    inputs.afterPhotos.createNew,
+    inputs.afterPhotos.value,
+    inputs.beforePhotos.createNew,
+    inputs.beforePhotos.value,
+    inputs.date.value,
+    inputs.notes.value,
+    inputs.proceedingId,
+    inputs.type.value
+  ]);
 
-  const validate = (
-    createUpdateProceedingRequestParam:
-      | UpdateProceedingRequest
-      | CreateProceedingRequest
-      | undefined
-  ): boolean => {
-    const createUpdateProceedingRequest = createUpdateProceedingRequestParam
-      ? createUpdateProceedingRequestParam
-      : createRequest();
-    const dateIsValid = createUpdateProceedingRequest.date.toString() !== 'Invalid Date';
-    const typeIsValid = createUpdateProceedingRequest.proceedingTypeDescription!.trim().length > 0;
-    const notesIsValid = createUpdateProceedingRequest.notes!.trim().length > 0;
-
-    setErrors((curErrors) => {
-      if (!dateIsValid) {
-        curErrors['date'] = 'A data do procedimento é inválida';
-      } else {
-        curErrors['date'] = null;
-      }
-      if (!typeIsValid) {
-        curErrors['type'] = 'O tipo do procedimento é inválido';
-      } else {
-        curErrors['type'] = null;
-      }
-      if (!notesIsValid) {
-        curErrors['notes'] = 'Você precisa preencher as observações do procedimento';
-      } else {
-        curErrors['notes'] = null;
-      }
-      return curErrors;
-    });
-
-    return dateIsValid && typeIsValid && notesIsValid;
-  };
-
-  const submitHandler = (navigate?: any) => {
-    const createUpdateProceedingRequest = createRequest();
-
-    const callApi = async () => {
-      let response: any;
-      if (isEditing) {
-        response = await updateProceeding(
-          patient!.patientId,
-          inputs.proceedingId!,
-          createUpdateProceedingRequest,
-          authCtx.token?.access_token!
+  const validate = useCallback(
+    (
+      createUpdateProceedingRequestParam:
+        | UpdateProceedingRequest
+        | CreateProceedingRequest
+        | undefined
+    ): boolean => {
+      const createUpdateProceedingRequest = createUpdateProceedingRequestParam
+        ? createUpdateProceedingRequestParam
+        : createRequest();
+      const dateIsValid = createUpdateProceedingRequest.date.toString() !== 'Invalid Date';
+      const typeIsValid =
+        touched['type'] &&
+        !!(
+          createUpdateProceedingRequest.proceedingTypeDescription &&
+          createUpdateProceedingRequest.proceedingTypeDescription!.trim().length > 0
         );
-      } else {
-        response = await createNewProceeding(
-          patient!.patientId,
-          createUpdateProceedingRequest,
-          authCtx.token?.access_token!
-        );
-      }
-      if (response) {
-        Alert.alert('Sucesso', `Procedimento ${isEditing ? 'salvo' : 'criado'}!`);
-        setIsEditing(true);
-        setInputs({
-          patientId: patient!.patientId,
-          proceedingId: response.proceedingId,
-          date: {
-            value: new Date(response?.date!),
-            isValid: true
-          },
-          type: {
-            value: response?.proceedingTypeDescription,
-            isValid: true
-          },
-          notes: {
-            value: response?.notes,
-            isValid: true
-          },
-          beforePhotos: {
-            value: response?.beforePhotos,
-            isValid: true,
-            createNew: false
-          },
-          afterPhotos: {
-            value: response?.afterPhotos,
-            isValid: true,
-            createNew: false
-          }
-        });
-      } else {
-        Alert.alert(
-          'Erro',
-          'Ocorreu um erro ao salvar as informações do procedimento! Tente novamenete.'
-        );
-      }
-    };
+      const notesIsValid =
+        touched['notes'] && createUpdateProceedingRequest.notes!.trim().length > 0;
 
-    if (validate(createUpdateProceedingRequest)) {
-      callApi();
-    } else {
-      navigate?.navigate('ProceedingInfoScreen');
+      setErrors((curErrors) => {
+        if (!dateIsValid) {
+          curErrors['date'] = 'A data do procedimento é inválida';
+        } else {
+          curErrors['date'] = null;
+        }
+        if (!typeIsValid) {
+          curErrors['type'] = 'O tipo do procedimento é inválido';
+        } else {
+          curErrors['type'] = null;
+        }
+        if (!notesIsValid) {
+          curErrors['notes'] = 'Você precisa preencher as observações do procedimento';
+        } else {
+          curErrors['notes'] = null;
+        }
+        return curErrors;
+      });
+
+      return dateIsValid && typeIsValid && notesIsValid;
+    },
+    [createRequest, touched]
+  );
+
+  const submitHandler = useCallback(
+    (navigate?: any) => {
+      const createUpdateProceedingRequest = createRequest();
+
+      const callApi = async () => {
+        let response: any;
+        if (isEditing) {
+          response = await updateProceeding(
+            patient!.patientId,
+            proceeding!.proceedingId!,
+            createUpdateProceedingRequest,
+            authCtx.token?.access_token!
+          );
+        } else {
+          response = await createNewProceeding(
+            patient!.patientId,
+            createUpdateProceedingRequest,
+            authCtx.token?.access_token!
+          );
+        }
+        if (response) {
+          Alert.alert('Sucesso', `Procedimento ${isEditing ? 'salvo' : 'criado'}!`);
+          setIsEditing(true);
+          setInputs({
+            patientId: patient!.patientId,
+            proceedingId: response.proceedingId,
+            date: {
+              value: new Date(response?.date!),
+              isValid: true
+            },
+            type: {
+              value: response?.proceedingTypeDescription,
+              isValid: true
+            },
+            notes: {
+              value: response?.notes,
+              isValid: true
+            },
+            beforePhotos: {
+              value: response?.beforePhotos,
+              isValid: true,
+              createNew: false
+            },
+            afterPhotos: {
+              value: response?.afterPhotos,
+              isValid: true,
+              createNew: false
+            }
+          });
+        } else {
+          Alert.alert(
+            'Erro',
+            'Ocorreu um erro ao salvar as informações do procedimento! Tente novamenete.'
+          );
+        }
+      };
+
+      if (validate(createUpdateProceedingRequest)) {
+        callApi();
+      } else {
+        //navigate?.navigate('ProceedingInfoScreen');
+      }
+    },
+    [authCtx.token?.access_token, createRequest, isEditing, patient, proceeding, validate]
+  );
+
+  useEffect(() => {
+    setPatient(patientInitialValue);
+  }, [patientInitialValue]);
+
+  useEffect(() => {
+    if (proceedingInitialValue) {
+      handleChange('date', new Date(proceedingInitialValue.date));
+      handleChange('type', proceedingInitialValue.proceedingTypeDescription);
+      handleChange('notes', proceedingInitialValue.notes);
+      handleChange('beforePhotos', proceedingInitialValue.beforePhotos, false);
+      handleChange('afterPhotos', proceedingInitialValue.afterPhotos, false);
     }
-  };
+    setProceeding(proceedingInitialValue);
+  }, [proceedingInitialValue]);
+
+  // const value = useMemo(
+  //   () => ({
+  //     patient,
+  //     proceeding,
+  //     isEditing,
+  //     inputs,
+  //     touched,
+  //     errors,
+  //     submitHandler,
+  //     handleChange,
+  //     handleBlur,
+  //     initializeState,
+  //     validate
+  //   }),
+  //   [errors, handleChange, inputs, isEditing, patient, proceeding, submitHandler, touched, validate]
+  // );
 
   const value = {
     patient,

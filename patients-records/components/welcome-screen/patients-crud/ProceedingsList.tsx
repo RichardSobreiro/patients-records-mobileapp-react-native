@@ -6,9 +6,11 @@ import {
   GetProceedingResponse,
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
-import CreateEditPatientsProceedings from './CreateEditPatientsProceedings';
 import ProceedingsListItem from './ProceedingListItem';
 import ProceedingsListSearchBar from './ProceedingsListSearchBar';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
+import { EditPatientStackParamList } from 'App';
 import { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
 
@@ -27,10 +29,7 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [isCreatingEditingProceeding, setIsCreatingEditingProceeding] = useState<boolean>(false);
-  const [proceedingBeingEdited, setProceedingBeingEdited] = useState<
-    GetProceedingResponse | undefined
-  >(undefined);
+  const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
@@ -74,8 +73,7 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   };
 
   const navigateToCreateEditingProceeding = (proceeding: GetProceedingResponse) => {
-    setIsCreatingEditingProceeding(true);
-    setProceedingBeingEdited(proceeding);
+    navigationEditPatient.navigate('EditProceeding', { patient, proceeding });
   };
 
   const renderArticle = ({ item }) => (
@@ -100,10 +98,6 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   );
 
   const keyExtractor = (item: GetProceedingResponse) => item.proceedingId;
-
-  if (isCreatingEditingProceeding) {
-    return <CreateEditPatientsProceedings patient={patient} proceeding={proceedingBeingEdited} />;
-  }
 
   return (
     <>

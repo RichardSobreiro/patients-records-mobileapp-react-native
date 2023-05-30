@@ -17,8 +17,14 @@ const ProceedingTopTabs = createMaterialTopTabNavigator<TopBarCreateEditProceedi
 const CreateEditProceedingTopTabs = ({ route, navigation }) => {
   const { patient, proceeding } = route.params;
 
+  // Reinitialize INPUTS when proceeding === null
+
+  // Validate just the input touched
+
+  // Fix the empty photos array when saving proceeding without modification
+
   return (
-    <CreateEditProceedingProvider patientInit={patient}>
+    <CreateEditProceedingProvider patientInitialValue={patient} proceedingInitialValue={proceeding}>
       <ProceedingTopTabs.Navigator>
         <ProceedingTopTabs.Screen
           name="ProceedingInfoScreen"

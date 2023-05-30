@@ -1,7 +1,7 @@
 import Header from '../../components/welcome-screen/Header';
 import ProceedingsInfo from '../../components/welcome-screen/patients-crud/proceedings-crud/ProceedingsInfo';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
 
 const ProceedingsInfoScreen: React.FC<Props> = ({ route, navigation }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
+
   return (
     <>
       <View style={styles.header}>

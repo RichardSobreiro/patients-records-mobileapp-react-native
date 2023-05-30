@@ -35,9 +35,6 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   const [clicked, setClicked] = useState<boolean>(false);
   const [advancedFilters, setAdvancedFilters] = useState<any | undefined>(undefined);
 
-  // const [isAddingEditingPatient, setIsAddingEditingPatient] = useState<boolean>(false);
-  // const [patientBeingEditedId, setPatientBeingEditedId] = useState<string | undefined>(undefined);
-
   const [patients, setPatients] = useState<GetPatient[]>([]);
   const [page, setPage] = useState<number>(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);

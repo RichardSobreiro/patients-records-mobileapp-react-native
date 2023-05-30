@@ -14,6 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { GetPatient } from 'models/GetPatientsResponse';
+import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
 
@@ -23,6 +24,7 @@ export type EditPatientStackParamList = {
   PatientInfo: { patientId: string };
   ProceedingsList: { patient: GetPatient };
   CreateProceeding: { patient: GetPatient };
+  EditProceeding: { patient: GetPatient; proceeding: GetProceedingResponse };
 };
 
 export type RootStackParamList = {
@@ -73,10 +75,19 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         component={CreateEditProceedingTopTabs}
         initialParams={{ patient }}
         options={{
-          tabBarLabel: 'Novo Procedimentos',
+          tabBarLabel: 'Novo Procedimento',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="plus-square" size={size} color={color} />
           )
+        }}
+      />
+      <Tab.Screen
+        name="EditProceeding"
+        component={CreateEditProceedingTopTabs}
+        initialParams={{ patient }}
+        options={{
+          tabBarIconStyle: { display: 'none' },
+          tabBarButton: () => null
         }}
       />
     </Tab.Navigator>

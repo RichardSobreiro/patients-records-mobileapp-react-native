@@ -39,7 +39,7 @@ const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) 
     });
 
     if (!result.canceled) {
-      handleChange(field, result.assets);
+      handleChange(field, result.assets, true);
       const imagesArray: any = [];
       result.assets.map((image) => {
         imagesArray.push(image.uri);
