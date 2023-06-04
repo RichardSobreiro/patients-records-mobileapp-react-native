@@ -142,22 +142,19 @@ Add new lint script to our package.json:
 ...
 ```
 
-## Publishing the App with EAS Build
-
-Take a look at the [Expo Build](https://docs.expo.dev/build/introduction/) page for more details.
-
-1. npm install -g eas-cli
-2. eas login
-3. eas build:configure
-4. eas build -p android --profile preview
-
 ## Setup Social Login with Google
 
 Take a look at the [Expo Google Authentication](https://docs.expo.dev/guides/google-authentication/) page for more details.
 
-# Run Locally (Windows)
+### Remarks
 
-## Start Android Emulator
+The Redirect URL which uses the proxy was removed due security reasons:
+
+```
+https://auth.expo.io/@richardsobreiro/patients-records
+```
+
+## Start Android Emulator and Run Locally (Windows)
 
 1. Start the emulator
 
@@ -219,4 +216,37 @@ eas build -p all --profile preview
 
 ```
 eas build -p android --profile production
+```
+
+## Create a Build Locally and Install it on Android Emulator (Windows 11)
+
+1. [Install the Windows Subsystem for Linux (WSL2) and latest Ubuntu distribution](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)
+
+2. Start the Ubuntu distribution and from the Ubuntu's linux bash shell cd to project directory
+
+```
+cd /mnt/c/github/patients-records-mobileapp-react-native/patients-records
+```
+
+3. [Install Expo CLI and EAS CLI in WSL](https://docs.expo.dev/archive/classic-updates/building-standalone-apps/?redirected)
+
+```
+npm install -g eas-cli
+npm install -g expo-cli
+```
+
+4. Follow the instructions in following link:
+
+- (Building a react native app in WSL2)[https://gist.github.com/bergmannjg/461958db03c6ae41a66d264ae6504ade]
+
+- Execute only the following steps:
+  - Install tools in Windows
+  - Install tools in WSL2
+
+5.  Create the local android build
+
+```
+npx expo run:android
+npx expo run:android --variant release
+npx expo run:android --variant debug
 ```
