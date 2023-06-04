@@ -2,14 +2,15 @@
 import { Colors } from '../../constants/styles';
 import { facebookCallbackParams } from '../../util/auth';
 import { AntDesign } from '@expo/vector-icons';
+import { makeRedirectUri } from 'expo-auth-session';
 import * as Facebook from 'expo-auth-session/providers/facebook';
-import * as WebBrowser from 'expo-web-browser';
+//import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-WebBrowser.maybeCompleteAuthSession();
-
 const app_id: string = '592502122839259';
+
+//WebBrowser.maybeCompleteAuthSession();
 
 interface Props {
   isLogin: boolean;
@@ -17,7 +18,20 @@ interface Props {
 }
 
 const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
-  const [, response, promptAsync] = Facebook.useAuthRequest({
+  // exp://192.168.0.24:19000
+
+  // const redirectUrl = getRedirectUrl();
+
+  // console.log(`REDIRECT URL: ${redirectUrl}`);
+
+  // console.log(`DEFAULT REDIRECT URL: ${getDefaultReturnUrl()}`);
+
+  console.log(`MAKE REDIRECT URI:
+    ${makeRedirectUri({
+      //scheme: 'com.sobreirostechnologies.patientsrecords://',
+      native: 'com.sobreirostechnologies.patientsrecords://'
+    })}`);
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: app_id
   });
 
@@ -54,11 +68,12 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
 
   return (
     <Pressable
+      disabled={!request}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       onPress={handlePressAsync}
     >
       <View style={styles.container}>
-        <Text style={styles.buttonText}>Entrar com o Facebook</Text>
+        <Text style={styles.buttonText}>Entrar</Text>
         <AntDesign name="facebook-square" size={36} color="#FFFFFF" />
       </View>
     </Pressable>

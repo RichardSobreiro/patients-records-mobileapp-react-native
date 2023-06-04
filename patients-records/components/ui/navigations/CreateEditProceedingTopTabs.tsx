@@ -17,10 +17,6 @@ const ProceedingTopTabs = createMaterialTopTabNavigator<TopBarCreateEditProceedi
 const CreateEditProceedingTopTabs = ({ route, navigation }) => {
   const { patient, proceeding } = route.params;
 
-  // Reinitialize INPUTS when proceeding === null
-
-  // Validate just the input touched
-
   // Fix the empty photos array when saving proceeding without modification
 
   return (
@@ -28,32 +24,44 @@ const CreateEditProceedingTopTabs = ({ route, navigation }) => {
       <ProceedingTopTabs.Navigator>
         <ProceedingTopTabs.Screen
           name="ProceedingInfoScreen"
-          component={ProceedingsInfoScreen}
           options={{
             tabBarLabel: 'Dados'
           }}
-        />
+        >
+          {({ route, navigation }) => (
+            <ProceedingsInfoScreen route={route} navigation={navigation} proceeding={proceeding} />
+          )}
+        </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
           name="BeforePhotosScreen"
-          component={BeforePhotosScreen}
           options={{
             tabBarLabel: 'Fotos do Antes'
           }}
-        />
+        >
+          {({ route, navigation }) => (
+            <BeforePhotosScreen route={route} navigation={navigation} proceeding={proceeding} />
+          )}
+        </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
           name="AfterPhotosScreen"
-          component={AfterPhotosScreen}
           options={{
             tabBarLabel: 'Fotos do Depois'
           }}
-        />
+        >
+          {({ route, navigation }) => (
+            <AfterPhotosScreen route={route} navigation={navigation} proceeding={proceeding} />
+          )}
+        </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
           name="SaveProceedingScreen"
-          component={SaveProceedingScreen}
           options={{
             tabBarLabel: 'Salvar'
           }}
-        />
+        >
+          {({ route, navigation }) => (
+            <SaveProceedingScreen route={route} navigation={navigation} proceeding={proceeding} />
+          )}
+        </ProceedingTopTabs.Screen>
       </ProceedingTopTabs.Navigator>
     </CreateEditProceedingProvider>
   );

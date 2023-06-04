@@ -1,5 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../../constants/styles';
+import { createNewProceeding, updateProceeding } from '../../../../http/ProceedingsApi';
+import { AuthContext } from '../../../../store/auth-context';
 import { CreateEditProceedingContext } from '../../../../store/create-edit-proceedings-context';
 import Button, { ButtonTypes } from '../../../ui/Button';
 import DatePicker from '../../../ui/custom-form/DatePicker';
@@ -10,8 +12,8 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { EditPatientStackParamList } from 'App';
-import { useContext, useEffect, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useContext, useMemo } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SaveProceeding: React.FC = () => {
@@ -19,10 +21,60 @@ const SaveProceeding: React.FC = () => {
   const navigationCreateEditProceeding =
     useNavigation<MaterialTopTabNavigationProp<TopBarCreateEditProceedingParamList>>();
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
+  const authCtx = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log('CONTEXT UPDATED');
-  }, [createEditProceedingCtx]);
+  const submit = () => {
+    const createUpdateProceedingRequest = {
+      proceedingId: createEditProceedingCtx.inputs!.proceedingId,
+      date: createEditProceedingCtx.inputs!.date.value,
+      proceedingTypeDescription: createEditProceedingCtx.inputs!.type.value!,
+      notes: createEditProceedingCtx.inputs!.notes.value,
+      beforePhotos: createEditProceedingCtx.inputs!.beforePhotos.value,
+      beforePhotosCreateNew: createEditProceedingCtx.inputs!.beforePhotos.createNew,
+      afterPhotos: createEditProceedingCtx.inputs!.afterPhotos.value,
+      afterPhotosCreateNew: createEditProceedingCtx.inputs!.afterPhotos.createNew
+    };
+
+    const callApi = async () => {
+      let response: any;
+      if (createEditProceedingCtx.isEditing) {
+        response = await updateProceeding(
+          createEditProceedingCtx.patient!.patientId,
+          createEditProceedingCtx.proceeding!.proceedingId!,
+          createUpdateProceedingRequest,
+          authCtx.token?.access_token!
+        );
+      } else {
+        response = await createNewProceeding(
+          createEditProceedingCtx.patient!.patientId,
+          createUpdateProceedingRequest,
+          authCtx.token?.access_token!
+        );
+      }
+      if (response) {
+        Alert.alert(
+          'Sucesso',
+          `Procedimento ${createEditProceedingCtx.isEditing ? 'salvo' : 'criado'}!`
+        );
+        createEditProceedingCtx.clearState();
+        navigationEditPatient.navigate('ProceedingsList', {
+          patient: createEditProceedingCtx.patient!,
+          refresh: true
+        });
+      } else {
+        Alert.alert(
+          'Erro',
+          'Ocorreu um erro ao salvar as informações do procedimento! Tente novamenete.'
+        );
+      }
+    };
+
+    if (createEditProceedingCtx.validate(createEditProceedingCtx, true)) {
+      callApi();
+    } else {
+      navigationCreateEditProceeding?.navigate('ProceedingInfoScreen');
+    }
+  };
 
   const DatePickerMemo = useMemo(() => {
     return (
@@ -37,12 +89,7 @@ const SaveProceeding: React.FC = () => {
         }}
       />
     );
-  }, [
-    createEditProceedingCtx.errors,
-    createEditProceedingCtx.inputs,
-    createEditProceedingCtx.touched,
-    navigationCreateEditProceeding
-  ]);
+  }, [createEditProceedingCtx, navigationCreateEditProceeding]);
 
   const TypeMemo = useMemo(() => {
     return (
@@ -61,6 +108,38 @@ const SaveProceeding: React.FC = () => {
       </TouchableOpacity>
     );
   }, [createEditProceedingCtx, navigationCreateEditProceeding]);
+
+  const BeforePhotosMemo = useMemo(() => {
+    return (
+      <PatientPhotos
+        field="beforePhotos"
+        title="Fotos do Antes"
+        values={createEditProceedingCtx.inputs}
+      />
+    );
+  }, [
+    createEditProceedingCtx,
+    createEditProceedingCtx.inputs!['beforePhotos']!.value,
+    navigationCreateEditProceeding
+  ]);
+
+  const AfterPhotosMemo = useMemo(() => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigationCreateEditProceeding.navigate('AfterPhotosScreen');
+        }}
+      >
+        <PatientPhotos
+          field="afterPhotos"
+          title="Fotos do Depois"
+          values={createEditProceedingCtx.inputs}
+        />
+      </TouchableOpacity>
+    );
+  }, [createEditProceedingCtx, navigationCreateEditProceeding]);
+
+  //console.log(`BEFORE PHOTOS: ${createEditProceedingCtx.inputs!['beforePhotos'].value![0].url}`);
 
   return (
     <KeyboardAwareScrollView
@@ -83,14 +162,7 @@ const SaveProceeding: React.FC = () => {
           </Button>
         </View>
         <View style={{ flex: 1, marginLeft: 5 }}>
-          <Button
-            type={ButtonTypes.Primary}
-            onPress={createEditProceedingCtx.submitHandler.bind(
-              null,
-              navigationCreateEditProceeding
-            )}
-            text={{ fontSize: 18 }}
-          >
+          <Button type={ButtonTypes.Primary} onPress={submit} text={{ fontSize: 18 }}>
             Salvar
           </Button>
         </View>
@@ -112,16 +184,8 @@ const SaveProceeding: React.FC = () => {
         />
       </TouchableOpacity>
       <View style={{ marginBottom: 40 }}>
-        <PatientPhotos
-          field="beforePhotos"
-          title="Fotos do Antes"
-          values={createEditProceedingCtx.inputs}
-        />
-        <PatientPhotos
-          field="afterPhotos"
-          title="Fotos do Depois"
-          values={createEditProceedingCtx.inputs}
-        />
+        {BeforePhotosMemo}
+        {AfterPhotosMemo}
       </View>
     </KeyboardAwareScrollView>
   );

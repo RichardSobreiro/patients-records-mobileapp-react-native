@@ -13,6 +13,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import { GetPatient } from 'models/GetPatientsResponse';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect, useState } from 'react';
@@ -20,9 +21,11 @@ import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-nativ
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
+WebBrowser.maybeCompleteAuthSession();
+
 export type EditPatientStackParamList = {
   PatientInfo: { patientId: string };
-  ProceedingsList: { patient: GetPatient };
+  ProceedingsList: { patient: GetPatient; refresh?: boolean };
   CreateProceeding: { patient: GetPatient };
   EditProceeding: { patient: GetPatient; proceeding: GetProceedingResponse };
 };
@@ -38,7 +41,7 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 
 const EditPatientBottomTabs = ({ route, navigation }) => {
-  const { patientId, patient } = route.params;
+  const { patientId, patient, refresh } = route.params;
 
   useEffect(() => {
     navigation.setOptions({
@@ -62,7 +65,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
       <Tab.Screen
         name="ProceedingsList"
         component={ProceedingsListScreen}
-        initialParams={{ patient }}
+        initialParams={{ patient, refresh }}
         options={{
           tabBarLabel: 'Procedimentos',
           tabBarIcon: ({ color, size }) => (

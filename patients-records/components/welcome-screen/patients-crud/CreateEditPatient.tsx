@@ -46,7 +46,6 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   const [headerSubtitle, setHeaderSubtitle] = useState<string | undefined>('Informações Básicas');
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
 
   const handleCancel = useCallback(() => {
     navigation.navigate('Welcome');
@@ -133,12 +132,14 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       isValid: true
     }
   });
+
   const [touched, setTouched] = useState({
     patientName: false,
     email: false,
     phoneNumber: false,
     birthDate: false
   });
+
   const [errors, setErrors] = useState<ErrorType>({
     patientName: null,
     email: null,
@@ -257,6 +258,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
         if (response?.patientId) {
           setIsEditing(true);
           setPatient(response);
+          navigation.navigate('EditPatient', { patientId: response.patientId, patient: response });
           Alert.alert(
             'Informações Salvas!',
             `Paciente ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
@@ -272,7 +274,6 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       callCreateUpdatePatientApi();
     }
   };
-  //----------------------------------------------------------------------------------------
 
   if (isLoading) {
     return <LoadingOverlay message={isLoadingMessage} />;
@@ -330,7 +331,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
             onChangeHandler={handleChange}
           />
 
-          {isEditing && (
+          {/* {isEditing && (
             <View style={styles.buttons}>
               <Button
                 onPress={() => {
@@ -345,7 +346,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
                 Procedimentos
               </Button>
             </View>
-          )}
+          )} */}
           <View style={styles.buttons}>
             <Button
               onPress={handleCancel}

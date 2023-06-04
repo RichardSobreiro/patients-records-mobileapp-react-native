@@ -26,7 +26,7 @@ const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) 
       });
     }
     setImages(imagesArray);
-  }, [values, field]);
+  }, [field, values, values[field]]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,44 +49,40 @@ const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) 
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
-        <SliderBox
-          images={images}
-          sliderBoxHeight={400}
-          dotColor="#FFEE58"
-          inactiveDotColor="#90A4AE"
-          onCurrentImagePressed={(index) => console.log(`image ${index} pressed`)}
-          paginationBoxVerticalPadding={40}
-          autoplay
-          circleLoop
-        />
-        {images && images.length === 0 && (
-          <View
-            style={{
-              padding: 10,
-              justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>
-              Nenhuma imagem selecionada
-            </Text>
-          </View>
-        )}
-        {handleChange && (
-          <FlatButton
-            onPress={pickImage}
-            text={styles.selectButtonText}
-            pressable={styles.selectButton}
-          >
-            Selecionar imagens da galeria
-          </FlatButton>
-        )}
-      </View>
-    </>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      <SliderBox
+        images={images}
+        sliderBoxHeight={400}
+        dotColor="#FFEE58"
+        inactiveDotColor="#90A4AE"
+        onCurrentImagePressed={(index) => console.log(`image ${index} pressed`)}
+        paginationBoxVerticalPadding={40}
+        autoplay
+        circleLoop
+      />
+      {images && images.length === 0 && (
+        <View
+          style={{
+            padding: 10,
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>Nenhuma imagem selecionada</Text>
+        </View>
+      )}
+      {handleChange && (
+        <FlatButton
+          onPress={pickImage}
+          text={styles.selectButtonText}
+          pressable={styles.selectButton}
+        >
+          Selecionar imagens da galeria
+        </FlatButton>
+      )}
+    </View>
   );
 };
 

@@ -1,9 +1,5 @@
-import { TopBarCreateEditProceedingParamList } from '../components//ui/navigations/CreateEditProceedingTopTabs';
 import Header from '../components/welcome-screen/Header';
 import ProceedingsList from '../components/welcome-screen/patients-crud/ProceedingsList';
-import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
-import { useNavigation } from '@react-navigation/native';
-import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 type Props = {
@@ -12,7 +8,7 @@ type Props = {
 };
 
 const ProceedingsListScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { patient } = route.params;
+  const { patient, refresh } = route.params;
 
   return (
     <>
@@ -23,7 +19,7 @@ const ProceedingsListScreen: React.FC<Props> = ({ route, navigation }) => {
           subtitle="Procedimentos"
         />
       </View>
-      <ProceedingsList patient={patient} />
+      <ProceedingsList patient={patient} refresh={refresh} />
     </>
   );
 };

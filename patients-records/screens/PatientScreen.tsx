@@ -8,7 +8,7 @@ type Props = {
 const PatientScreen: React.FC<Props> = ({ route, navigation }) => {
   const { patientId } = route.params;
 
-  return <CreateEditPatient patientId={patientId} />;
+  return <CreateEditPatient patientId={patientId} navigation={navigation} />;
 };
 
 export default PatientScreen;

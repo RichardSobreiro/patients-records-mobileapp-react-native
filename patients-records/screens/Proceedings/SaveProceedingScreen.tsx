@@ -1,16 +1,31 @@
 import Header from '../../components/welcome-screen/Header';
 import SaveProceeding from '../../components/welcome-screen/patients-crud/proceedings-crud/SaveProceeding';
+import { GetProceedingResponse } from '../../models/proceedings/GetProceedingResponse';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 type Props = {
   route: any;
   navigation: any;
+  proceeding?: GetProceedingResponse;
 };
 
-const SaveProceedingScreen: React.FC<Props> = ({ route, navigation }) => {
+const SaveProceedingScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (
+        proceeding &&
+        createEditProceedingCtx!.proceeding?.proceedingId !== proceeding!.proceedingId
+      ) {
+        createEditProceedingCtx.updateState(proceeding!);
+      }
+    });
+    return unsubscribe;
+  }, [createEditProceedingCtx, navigation, proceeding]);
+
   return (
     <>
       <View style={styles.header}>

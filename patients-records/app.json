@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "com.sobreirostechnologies.patientsrecords",
+    "scheme": ["com.sobreirostechnologies.patientsrecords", "fb592502122839259"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

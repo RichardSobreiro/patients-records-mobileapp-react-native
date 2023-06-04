@@ -18,9 +18,10 @@ const PAGE_SIZE = 10;
 
 type Props = {
   patient: GetPatient;
+  refresh?: boolean;
 };
 
-const ProceedingsList: React.FC<Props> = ({ patient }) => {
+const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
   const [currentPatient] = useState<GetPatient>(patient);
   const [proceedings, setProceedings] = useState<GetProceedingsResponse | undefined | null>(
     undefined
@@ -28,42 +29,48 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   const hasMoreData = useRef(true);
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(!!refresh);
   const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
 
-  const getProceedingsPage = async (pageNumber: number, limit: number, forceListing?: boolean) => {
-    if (!hasMoreData.current && !forceListing) return;
-
-    const response = await getProceedings(currentPatient.patientId, pageNumber, limit);
-    if (response) {
-      setProceedings((prevState) => {
-        const newState = {
-          ...response,
-          proceedings:
-            prevState?.proceedings && !refreshing
-              ? prevState?.proceedings?.concat(response.proceedings!)
-              : response.proceedings
-        };
-        hasMoreData.current = !!(
-          newState.proceedings && newState.proceedings?.length < newState.proceedingsCount
-        );
-        if (newState.proceedings?.length! < PAGE_SIZE) {
-          hasMoreData.current = false;
-        }
-        return newState;
-      });
-    }
-    setLoading(false);
-    setRefreshing(false);
-  };
-
   useEffect(() => {
+    const getProceedingsPage = async (
+      pageNumber: number,
+      limit: number,
+      forceListing?: boolean
+    ) => {
+      if (!hasMoreData.current && !forceListing) return;
+      setLoading(true);
+
+      const response = await getProceedings(currentPatient.patientId, pageNumber, limit);
+      if (response) {
+        setProceedings((prevState) => {
+          const newState = {
+            ...response,
+            proceedings:
+              prevState?.proceedings && !refreshing
+                ? prevState?.proceedings?.concat(response.proceedings!)
+                : response.proceedings
+          };
+          hasMoreData.current = !!(
+            newState.proceedings && newState.proceedings?.length < newState.proceedingsCount
+          );
+          if (newState.proceedings?.length! < PAGE_SIZE) {
+            hasMoreData.current = false;
+          }
+          return newState;
+        });
+      }
+      setLoading(false);
+      setRefreshing(false);
+    };
     const pageNumber: number = proceedings ? proceedings.next?.pageNumber! : 0;
     getProceedingsPage(pageNumber, PAGE_SIZE);
-  }, [page, currentPatient]);
+
+    navigationEditPatient.addListener('focus', refreshData);
+  }, [page, currentPatient, proceedings, refreshing, navigationEditPatient]);
 
   const refreshData = () => {
     setPage(1);
@@ -79,7 +86,7 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   const renderArticle = ({ item }) => (
     <ProceedingsListItem
       proceeding={item}
-      navigateToUpdateProceeding={navigateToCreateEditingProceeding}
+      navigateToUpdateProceeding={navigateToCreateEditingProceeding.bind(null, item)}
     />
   );
 
@@ -102,50 +109,44 @@ const ProceedingsList: React.FC<Props> = ({ patient }) => {
   return (
     <>
       <View style={styles.container}>
-        {isLoading ? (
-          <View style={styles.loading}>
-            <ActivityIndicator size="large" color={Colors.error500} />
-          </View>
-        ) : (
-          <View style={styles.content}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <View>
-                <ProceedingsListSearchBar
-                  clicked={clicked}
-                  setClicked={setClicked}
-                  searchPhrase={searchPhrase}
-                  setSearchPhrase={setSearchPhrase}
-                />
-              </View>
+        <View style={styles.content}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <View>
+              <ProceedingsListSearchBar
+                clicked={clicked}
+                setClicked={setClicked}
+                searchPhrase={searchPhrase}
+                setSearchPhrase={setSearchPhrase}
+              />
             </View>
-            <FlatList
-              data={proceedings?.proceedings}
-              renderItem={renderArticle}
-              keyExtractor={keyExtractor}
-              showsVerticalScrollIndicator={true}
-              ItemSeparatorComponent={renderDivider}
-              ListFooterComponent={renderFooter}
-              initialNumToRender={PAGE_SIZE}
-              onEndReached={() => setPage((page) => page + 1)}
-              onEndReachedThreshold={1}
-              onRefresh={refreshData}
-              refreshing={refreshing}
-              ListEmptyComponent={() => {
-                return (
-                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
-                    Nenhum procedimento encontrado!
-                  </Text>
-                );
-              }}
-            />
           </View>
-        )}
+          <FlatList
+            data={proceedings?.proceedings}
+            renderItem={renderArticle}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={true}
+            ItemSeparatorComponent={renderDivider}
+            ListFooterComponent={renderFooter}
+            initialNumToRender={PAGE_SIZE}
+            onEndReached={() => setPage((page) => page + 1)}
+            onEndReachedThreshold={1}
+            onRefresh={refreshData}
+            refreshing={refreshing}
+            ListEmptyComponent={() => {
+              return (
+                <Text style={{ fontSize: 18, textAlign: 'center' }}>
+                  {isLoading ? '' : 'Nenhum procedimento encontrado!'}
+                </Text>
+              );
+            }}
+          />
+        </View>
       </View>
     </>
   );
