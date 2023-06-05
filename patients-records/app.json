@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Meu Negócio",
+    "description": "Um app que vai fazer você economizar tempo enquato gerencia o seu próprio negócio.",
     "slug": "patients-records",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0b0ec3"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {

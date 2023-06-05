@@ -23,11 +23,11 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
 
   // console.log(`DEFAULT REDIRECT URL: ${getDefaultReturnUrl()}`);
 
-  console.log(`MAKE REDIRECT URI:
-    ${makeRedirectUri({
-      //scheme: 'com.sobreirostechnologies.patientsrecords://',
-      native: 'com.sobreirostechnologies.patientsrecords://'
-    })}`);
+  // console.log(`MAKE REDIRECT URI:
+  //   ${makeRedirectUri({
+  //     scheme: 'com.sobreirostechnologies.patientsrecords://'
+  //   })}`);
+
   const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: app_id
   });

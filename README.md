@@ -1,5 +1,21 @@
 <!-- @format -->
 
+# Bugs
+
+## User2 visualizing patients from Richard User
+
+- **Possibly related to token storage mismatch**
+
+# Improvements
+
+## 1 - Patient after photo should be visualized at the patients list
+
+## 2 - List patients ordered by most recent updated proceeding
+
+## 3 - Add patients photos using device camera
+
+## 4 - Add Social Login with Google Credentials
+
 # Patients Records Mobile App with React Native and Typescript
 
 A mobile app to help healthcare professionals manage their patient's records.
@@ -198,12 +214,6 @@ eas build:configure
 
 4. Execute the build
 
-- **preview** Profile for Android Local
-
-```
-eas build -p android --profile preview --local
-```
-
 - **preview** Profile for All platforms Remote
 
 ```
@@ -242,6 +252,13 @@ npm install -g expo-cli
   - Install tools in WSL2
 
 5.  Create the local android build
+
+```
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+eas build -p android --profile preview --local
+```
+
+6. TODO: Debug from WSL2 using the Emulator
 
 ```
 npx expo run:android
