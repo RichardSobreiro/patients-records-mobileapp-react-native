@@ -4,13 +4,10 @@ import { facebookCallbackParams } from '../../util/auth';
 import { AntDesign } from '@expo/vector-icons';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Facebook from 'expo-auth-session/providers/facebook';
-//import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const app_id: string = '592502122839259';
-
-//WebBrowser.maybeCompleteAuthSession();
 
 interface Props {
   isLogin: boolean;
@@ -73,7 +70,7 @@ const FacebookAuthentication: React.FC<Props> = ({ isLogin, callback }) => {
       onPress={handlePressAsync}
     >
       <View style={styles.container}>
-        <Text style={styles.buttonText}>Entrar</Text>
+        <Text style={styles.buttonText}>Entrar com o Facebook</Text>
         <AntDesign name="facebook-square" size={36} color="#FFFFFF" />
       </View>
     </Pressable>

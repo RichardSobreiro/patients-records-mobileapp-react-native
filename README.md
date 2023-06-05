@@ -174,8 +174,6 @@ emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan -no-cache
 npm start
 ```
 
-UPDATE ADB FILE
-
 ## Create the Production Build
 
 ### **[Check the EAS Build documentation before going into the following steps. EAS Build is a rapidly evolving service and those step may change in a weekly basis.](https://docs.expo.dev/build/setup/#install-the-latest-eas-cli)**
