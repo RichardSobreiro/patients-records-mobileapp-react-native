@@ -25,15 +25,16 @@ export const AuthContext = createContext(initialState);
 const AuthContextProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState<Token | undefined>(undefined);
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
-  const authenticate = (token: Token, userInfo: UserInfo): void => {
+  const authenticate = async (token: Token, userInfo: UserInfo): Promise<void> => {
     setAuthToken(token);
     setUserInfo(userInfo);
-    AsyncStorage.setItem('ACCESS_TOKEN', JSON.stringify(token));
-    AsyncStorage.setItem('USER_INFO', JSON.stringify(userInfo));
+    await AsyncStorage.setItem('ACCESS_TOKEN', JSON.stringify(token));
+    await AsyncStorage.setItem('USER_INFO', JSON.stringify(userInfo));
   };
 
   const logout = (): void => {
     setAuthToken(undefined);
+    setUserInfo(undefined);
     AsyncStorage.removeItem('ACCESS_TOKEN');
     AsyncStorage.removeItem('USER_INFO');
   };

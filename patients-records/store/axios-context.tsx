@@ -8,15 +8,11 @@ export const AxiosContext = createContext(null);
 const AxiosContextProvider = ({ children }) => {
   const authCtx = useContext(AuthContext);
   if (authCtx.token) {
-    axios.interceptors.request.use(
-      (config) => {
-        config.headers['Authorization'] = 'Bearer ' + authCtx.token?.access_token;
-        config.headers['Content-Type'] = 'application/json';
-        return config;
-      },
-      null,
-      { synchronous: true }
-    );
+    axios.defaults.headers['Authorization'] = 'Bearer ' + authCtx.token?.access_token;
+    axios.defaults.headers['Content-Type'] = 'application/json';
+  } else {
+    axios.defaults.headers['Authorization'] = null;
+    axios.defaults.headers['Content-Type'] = null;
   }
 
   return <AxiosContext.Provider value={null}>{children}</AxiosContext.Provider>;

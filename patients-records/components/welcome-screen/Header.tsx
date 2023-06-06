@@ -28,6 +28,13 @@ const Header: React.FC<Props> = ({
             <Feather name="user-plus" size={40} color={'#ffffff'} />
           </TouchableOpacity>
 
+          {title && (
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{title}</Text>
+              {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+            </View>
+          )}
+
           <TouchableOpacity>
             <Feather name="settings" size={40} color={'#ffffff'} />
           </TouchableOpacity>
@@ -35,10 +42,6 @@ const Header: React.FC<Props> = ({
       )}
       {isAddingPatientScreen && (
         <View style={styles.container}>
-          {/* <TouchableOpacity onPress={onSkipBackPressed} style={styles.skipBackIcon}>
-            <Feather name="skip-back" size={40} />
-          </TouchableOpacity> */}
-
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.subtitle}>{subtitle}</Text>

@@ -43,7 +43,10 @@ const LoginScreen: React.FC = () => {
       try {
         const accessToken = await loginFacebook(params);
         if (accessToken) {
-          authCtx.authenticate(accessToken, { username: params.username, email: params.email });
+          await authCtx.authenticate(accessToken, {
+            username: params.username,
+            email: params.email
+          });
         } else {
           throw new Error('The user was not authenticated.');
         }

@@ -1,10 +1,7 @@
 <!-- @format -->
+<!-- ----------------------------------------------------------------------------- -->
 
 # Bugs
-
-## User2 visualizing patients from Richard User
-
-- **Possibly related to token storage mismatch**
 
 # Improvements
 
@@ -12,9 +9,13 @@
 
 ## 2 - List patients ordered by most recent updated proceeding
 
-## 3 - Add patients photos using device camera
+## 3 - List patients should use pagination
 
 ## 4 - Add Social Login with Google Credentials
+
+## 1000 - Add patients photos using device camera
+
+<!-- ----------------------------------------------------------------------------- -->
 
 # Patients Records Mobile App with React Native and Typescript
 

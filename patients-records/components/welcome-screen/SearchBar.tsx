@@ -99,7 +99,7 @@ export default SearchBar;
 // styles
 const styles = StyleSheet.create({
   centeredModalView: {
-    flex: 1,
+    //flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22

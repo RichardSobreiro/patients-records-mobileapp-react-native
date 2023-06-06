@@ -9,7 +9,6 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
-import { uniqBy } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -45,6 +44,8 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   }, [authCtx.userInfo?.username, navigation]);
 
   const fetchData = async (patientName?: string, advancedFilters?: any) => {
+    setLoading(true);
+    hasMoreData.current = true;
     const newPatients = await getPatients(patientName, advancedFilters);
 
     setPatients((currentPatients) => {
@@ -52,7 +53,7 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
         return currentPatients;
       } else if (currentPatients) {
         const allPatients = newPatients.patients!;
-        return uniqBy(allPatients, 'patientId');
+        return allPatients;
       } else {
         return currentPatients;
       }
@@ -64,17 +65,20 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
       fetchData(searchPhrase, advancedFilters);
     }, 600);
     return () => {
       clearTimeout(timer);
     };
-  }, [searchPhrase, advancedFilters]);
+  }, [searchPhrase, advancedFilters, page]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation, refreshing]);
 
   const handleEditPatient = (patientId: string, patient?: GetPatient) => {
     navigation.navigate('EditPatient', { patientId, patient });
@@ -82,6 +86,12 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
 
   const handleCreatePatient = () => {
     navigation.navigate('CreatePatient', { patientId: undefined });
+  };
+
+  const onEndReached = () => {
+    setPage((previousPage) => {
+      return previousPage + 1;
+    });
   };
 
   const refreshData = () => {
@@ -104,10 +114,11 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     <>
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Header isWelcomeScreen={true} onCreateEditPatient={handleCreatePatient} />
-        </View>
-        <View>
-          <Text style={styles.headlines}>Seus Pacientes</Text>
+          <Header
+            isWelcomeScreen={true}
+            onCreateEditPatient={handleCreatePatient}
+            title="Seus Pacientes"
+          />
         </View>
         {isLoading ? (
           <View style={styles.center}>
@@ -115,7 +126,7 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
             <ActivityIndicator size="large" color={Colors.error500} />
           </View>
         ) : (
-          <View>
+          <View style={{ flex: 1 }}>
             <SearchBar
               searchPhrase={searchPhrase}
               setSearchPhrase={setSearchPhrase}
@@ -131,12 +142,12 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
               keyExtractor={keyExtractor}
               showsVerticalScrollIndicator={false}
               ItemSeparatorComponent={renderDivider}
-              ListFooterComponent={renderFooter}
-              initialNumToRender={6}
-              onEndReached={() => setPage((page) => page + 1)}
-              onEndReachedThreshold={1}
-              onRefresh={refreshData}
-              refreshing={refreshing}
+              //ListFooterComponent={renderFooter}
+              //initialNumToRender={10}
+              //onEndReached={onEndReached}
+              //onEndReachedThreshold={1}
+              //onRefresh={refreshData}
+              //refreshing={refreshing}
               ListEmptyComponent={() => {
                 return (
                   <Text style={{ fontSize: 18, textAlign: 'center' }}>
