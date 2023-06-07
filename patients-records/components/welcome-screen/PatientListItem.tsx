@@ -1,27 +1,30 @@
 //import { formatDistanceToNow } from 'date-fns';
 import { Colors } from '../../constants/styles';
 import { GetPatient } from '../../models/GetPatientsResponse';
+import { DateParser } from '../../util/dateParser';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 
 type Props = {
   item: GetPatient;
   editPatient: (patientId: string) => void;
 };
 
-const Article: React.FC<Props> = ({ item, editPatient }) => {
+const PatientListItem: React.FC<Props> = ({ item, editPatient }) => {
   return (
     <TouchableOpacity onPress={editPatient.bind(null, item.patientId, item)}>
       <View style={styles.article}>
         {/* Caching image for better performance: https://github.com/DylanVann/react-native-fast-image */}
-        {/* <Image
-        alt="Nenhuma imagem do último procedimento"
-        //source={{ uri: item.urlToImage }}
-        style={styles.articleImage}
-      /> */}
-        <View style={styles.articleNoImage}>
-          <Text style={{ color: '#ffffff' }}>Nenhuma imagem do último procedimento</Text>
-        </View>
+        {item.mostRecentProceedingAfterPhotoUrl ? (
+          <Image
+            source={{ uri: item.mostRecentProceedingAfterPhotoUrl }}
+            style={styles.patientImage}
+          />
+        ) : (
+          <View style={styles.articleNoImage}>
+            <Text style={{ color: '#ffffff' }}>Nenhuma imagem do último procedimento</Text>
+          </View>
+        )}
 
         <View style={{ flex: 1 }}>
           <Text style={styles.articleTitle} numberOfLines={3}>
@@ -29,13 +32,21 @@ const Article: React.FC<Props> = ({ item, editPatient }) => {
           </Text>
 
           <Text style={styles.articlePublishedAt}>{item.phoneNumber}</Text>
+
+          {item.mostRecentProceedingDate && (
+            <View style={{ paddingVertical: 5 }}>
+              <Text style={styles.articlePublishedAt}>
+                {DateParser(new Date(item.mostRecentProceedingDate))}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default Article;
+export default PatientListItem;
 
 const styles = StyleSheet.create({
   article: {
@@ -67,5 +78,11 @@ const styles = StyleSheet.create({
   },
   articlePublishedAt: {
     fontSize: 14
+  },
+  patientImage: {
+    width: 150,
+    height: 85,
+    resizeMode: 'contain',
+    marginRight: 15
   }
 });

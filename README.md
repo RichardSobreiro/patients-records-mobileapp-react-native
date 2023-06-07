@@ -3,15 +3,15 @@
 
 # Bugs
 
+## 1 - Proceedings filters
+
 # Improvements
 
-## 1 - Patient after photo should be visualized at the patients list
+## 1 - List patients should use pagination
 
-## 2 - List patients ordered by most recent updated proceeding
+## 2 - Filter by proceedings types
 
-## 3 - List patients should use pagination
-
-## 4 - Add Social Login with Google Credentials
+## 999 - Add Social Login with Google Credentials
 
 ## 1000 - Add patients photos using device camera
 

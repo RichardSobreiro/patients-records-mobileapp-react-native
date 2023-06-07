@@ -47,12 +47,19 @@ const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
       const response = await getProceedings(currentPatient.patientId, pageNumber, limit);
       if (response) {
         setProceedings((prevState) => {
+          const uniqueProceedings: GetProceedingResponse[] = prevState?.proceedings
+            ? [...prevState?.proceedings!]
+            : [];
+          response!.proceedings?.forEach((item) => {
+            if (
+              uniqueProceedings!.findIndex((item2) => item2.proceedingId === item.proceedingId) < 0
+            ) {
+              uniqueProceedings.push(item);
+            }
+          });
           const newState = {
             ...response,
-            proceedings:
-              prevState?.proceedings && !refreshing
-                ? prevState?.proceedings?.concat(response.proceedings!)
-                : response.proceedings
+            proceedings: uniqueProceedings
           };
           hasMoreData.current = !!(
             newState.proceedings && newState.proceedings?.length < newState.proceedingsCount

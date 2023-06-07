@@ -6,7 +6,7 @@ import { UpdatePatientRequest } from 'models/UpdatePatientRequest';
 import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 
 export const createNewPatient = async (request: CreatePatientRequest) => {
-  const url = `${process.env.API_URL}/patients`;
+  const url = `http://10.0.2.2:3006/patients`;
 
   const response: CreatePatientResponse | undefined = await axios
     .post(url, request)
@@ -22,7 +22,7 @@ export const createNewPatient = async (request: CreatePatientRequest) => {
 };
 
 export const updatePatient = async (request: UpdatePatientRequest) => {
-  const url = `${process.env.API_URL}/patients/${request.patientId}`;
+  const url = `http://10.0.2.2:3006/patients/${request.patientId}`;
 
   const response: UpdatePatientResponse | undefined = await axios
     .put(url, request)
@@ -38,7 +38,7 @@ export const updatePatient = async (request: UpdatePatientRequest) => {
 };
 
 export const getPatientById = async (patientId: string) => {
-  const url = `${process.env.API_URL}/patients/${patientId}`;
+  const url = `http://10.0.2.2:3006/patients/${patientId}`;
 
   const response: GetPatient | undefined = await axios
     .get(url)
@@ -53,8 +53,15 @@ export const getPatientById = async (patientId: string) => {
   return response;
 };
 
-export const getPatients = async (patientName?: string, advancedFilters?: any) => {
-  let url = `${process.env.API_URL}/patients${patientName ? '?patientName=' + patientName : ''}`;
+export const getPatients = async (
+  pageNumber: number,
+  limit: number,
+  patientName?: string,
+  advancedFilters?: any
+) => {
+  let url = `http://10.0.2.2:3006/patients?pageNumber=${pageNumber}&limit=${limit}${
+    patientName ? '&patientName=' + patientName : ''
+  }`;
 
   url += `${
     advancedFilters?.startDate

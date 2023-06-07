@@ -1,5 +1,6 @@
 //import { styles } from './styles';
 import { Colors } from '../../../constants/styles';
+import { DateParser } from '../../../util/dateParser';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
@@ -57,7 +58,7 @@ const DatePicker: React.FC<Props> = ({
       <Pressable style={({ pressed }) => [pressed && styles.pressed]} onPress={showDatepicker}>
         <View style={styles.inputTextContainer}>
           <Text style={[styles.input, text]}>
-            {values[field].value ? values[field].value.toDateString() : null}
+            {values[field].value ? DateParser(values[field].value) : null}
           </Text>
         </View>
       </Pressable>

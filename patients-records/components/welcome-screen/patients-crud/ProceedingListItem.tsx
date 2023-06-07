@@ -1,4 +1,5 @@
 import { Colors } from '../../../constants/styles';
+import { DateParser } from '../../../util/dateParser';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
@@ -21,10 +22,10 @@ const ProceedingsListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProc
         )}
         <View style={{ flex: 1 }}>
           <Text style={styles.proceedingTitle} numberOfLines={3}>
-            {proceeding.date ? new Date(proceeding.date).toDateString() : 'Nenhuma data cadastrada'}
+            {proceeding.date ? DateParser(new Date(proceeding.date)) : 'Nenhuma data cadastrada'}
           </Text>
 
-          <Text style={styles.proceedingNotes}>{proceeding.notes}</Text>
+          <Text style={styles.proceedingNotes}>{proceeding.proceedingTypeDescription}</Text>
         </View>
       </View>
     </TouchableOpacity>

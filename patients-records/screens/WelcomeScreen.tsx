@@ -1,5 +1,5 @@
-import Article from '../components/welcome-screen/Article';
 import Header from '../components/welcome-screen/Header';
+import PatientListItem from '../components/welcome-screen/PatientListItem';
 import SearchBar from '../components/welcome-screen/SearchBar';
 import { Colors } from '../constants/styles';
 import { getPatients } from '../http/PatientsApi';
@@ -9,7 +9,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -19,6 +19,8 @@ import {
   FlatList,
   Keyboard
 } from 'react-native';
+
+const PAGE_SIZE = 10;
 
 type HomeScreenNavigationProp = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList, 'Welcome'>,
@@ -43,26 +45,43 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
   }, [authCtx.userInfo?.username, navigation]);
 
-  const fetchData = async (patientName?: string, advancedFilters?: any) => {
-    setLoading(true);
-    hasMoreData.current = true;
-    const newPatients = await getPatients(patientName, advancedFilters);
+  const fetchData = useCallback(
+    async (patientName?: string, advancedFilters?: any) => {
+      setLoading(true);
+      hasMoreData.current = true;
+      console.log(`NEW PATIENTS: page=${page} - patientsCount=${patients?.length}`);
+      const response = await getPatients(page, PAGE_SIZE, patientName, advancedFilters);
 
-    setPatients((currentPatients) => {
-      if (!newPatients) {
-        return currentPatients;
-      } else if (currentPatients) {
-        const allPatients = newPatients.patients!;
-        return allPatients;
-      } else {
-        return currentPatients;
-      }
-    });
-    Keyboard.dismiss();
-    setLoading(false);
-    setRefreshing(false);
-    hasMoreData.current = false;
-  };
+      setPatients((currentPatients) => {
+        if (!response) {
+          hasMoreData.current = false;
+          return currentPatients;
+        } else if (currentPatients) {
+          const newUniquePatients: GetPatient[] = currentPatients ? [...currentPatients] : [];
+          response!.patients?.forEach((item) => {
+            if (newUniquePatients!.findIndex((item2) => item2.patientId === item.patientId) < 0) {
+              newUniquePatients.push(item);
+            }
+          });
+
+          hasMoreData.current = !!(
+            newUniquePatients && newUniquePatients?.length < response.patientsCount
+          );
+          if (newUniquePatients?.length! < PAGE_SIZE) {
+            hasMoreData.current = false;
+          }
+          return newUniquePatients;
+        } else {
+          hasMoreData.current = false;
+          return currentPatients;
+        }
+      });
+      Keyboard.dismiss();
+      setLoading(false);
+      setRefreshing(false);
+    },
+    [page]
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,14 +90,14 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [searchPhrase, advancedFilters, page]);
+  }, [searchPhrase, advancedFilters, page, fetchData]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchData();
     });
     return unsubscribe;
-  }, [navigation, refreshing]);
+  }, [fetchData, navigation, refreshing]);
 
   const handleEditPatient = (patientId: string, patient?: GetPatient) => {
     navigation.navigate('EditPatient', { patientId, patient });
@@ -89,6 +108,7 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   };
 
   const onEndReached = () => {
+    //console.log(`PAGE = ${page}`);
     setPage((previousPage) => {
       return previousPage + 1;
     });
@@ -99,41 +119,48 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     setRefreshing(true);
     setPatients([]);
     hasMoreData.current = true;
+    console.log(`refreshData: page=${page} - patientsCount=${patients?.length}`);
   };
 
-  const renderArticle = ({ item }) => <Article item={item} editPatient={handleEditPatient} />;
-  const renderDivider = () => <View style={styles.articleSeparator}></View>;
-  const renderFooter = () => (
-    <View style={styles.center}>
-      {hasMoreData.current && <ActivityIndicator color={Colors.error500} size={40} />}
-    </View>
+  const renderArticle = ({ item }) => (
+    <PatientListItem item={item} editPatient={handleEditPatient} />
   );
+  const renderDivider = () => <View style={styles.articleSeparator}></View>;
+  const renderFooter = () => {
+    //console.log(`hasMoreData.current = ${hasMoreData.current}`);
+    return (
+      <View style={styles.center}>
+        {hasMoreData.current && <ActivityIndicator color={Colors.error500} size={40} />}
+      </View>
+    );
+  };
   const keyExtractor = (item) => item.patientId;
 
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Header
             isWelcomeScreen={true}
             onCreateEditPatient={handleCreatePatient}
             title="Seus Pacientes"
           />
-        </View>
-        {isLoading ? (
-          <View style={styles.center}>
-            {/* https://reactnative.dev/docs/activityindicator */}
-            <ActivityIndicator size="large" color={Colors.error500} />
-          </View>
-        ) : (
+        </View> */}
+        {
+          //isLoading ? (
+          // <View style={styles.center}>
+          //   {/* https://reactnative.dev/docs/activityindicator */}
+          //   <ActivityIndicator size="large" color={Colors.error500} />
+          // </View>
+          //) : (
           <View style={{ flex: 1 }}>
-            <SearchBar
+            {/* <SearchBar
               searchPhrase={searchPhrase}
               setSearchPhrase={setSearchPhrase}
               clicked={clicked}
               setClicked={setClicked}
               setAdvancedFilters={setAdvancedFilters}
-            />
+            /> */}
             {/* Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration */}
             <FlatList
               style={{ paddingHorizontal: 25 }}
@@ -142,12 +169,12 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
               keyExtractor={keyExtractor}
               showsVerticalScrollIndicator={false}
               ItemSeparatorComponent={renderDivider}
-              //ListFooterComponent={renderFooter}
+              ListFooterComponent={renderFooter}
               //initialNumToRender={10}
-              //onEndReached={onEndReached}
-              //onEndReachedThreshold={1}
-              //onRefresh={refreshData}
-              //refreshing={refreshing}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={1}
+              onRefresh={refreshData}
+              refreshing={refreshing}
               ListEmptyComponent={() => {
                 return (
                   <Text style={{ fontSize: 18, textAlign: 'center' }}>
@@ -157,7 +184,8 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
               }}
             />
           </View>
-        )}
+          //)
+        }
       </SafeAreaView>
     </>
   );
