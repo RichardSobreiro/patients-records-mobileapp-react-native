@@ -3,13 +3,9 @@
 
 # Bugs
 
-## 1 - Proceedings filters
+## 999 - Proceedings filters
 
 # Improvements
-
-## 1 - List patients should use pagination
-
-## 2 - Filter by proceedings types
 
 ## 999 - Add Social Login with Google Credentials
 
@@ -255,6 +251,7 @@ npm install -g expo-cli
 5.  Create the local android build
 
 ```
+eas login
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 eas build -p android --profile preview --local
 ```
