@@ -64,24 +64,14 @@ export const getPatients = async (
   }`;
 
   url += `${
-    advancedFilters?.startDate
-      ? (patientName ? '&' : '?') + 'startDate=' + advancedFilters.startDate.toString()
-      : ''
+    advancedFilters?.startDate ? '&startDate=' + advancedFilters.startDate.toISOString() : ''
   }`;
 
-  url += `${
-    advancedFilters?.endDate
-      ? (patientName || advancedFilters?.startDate ? '&' : '?') +
-        'endDate=' +
-        advancedFilters.endDate.toString()
-      : ''
-  }`;
+  url += `${advancedFilters?.endDate ? '&endDate=' + advancedFilters.endDate.toISOString() : ''}`;
 
   url += `${
     advancedFilters?.proceedingTypeId
-      ? (patientName || advancedFilters?.startDate || advancedFilters?.endDate ? '&' : '?') +
-        'proceedingTypeId=' +
-        advancedFilters?.proceedingTypeId
+      ? '&proceedingTypeId=' + advancedFilters?.proceedingTypeId
       : ''
   }`;
 

@@ -33,15 +33,15 @@ export type EditPatientStackParamList = {
 export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
-  Welcome: undefined;
+  Welcome: { shouldUpdatePatientsList?: boolean };
   CreatePatient: { patientId?: string };
-  EditPatient: { patientId: string; patient?: GetPatient };
+  EditPatient: { patientId: string; patient?: GetPatient; shouldUpdatePatientsList?: boolean };
 };
 
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 
 const EditPatientBottomTabs = ({ route, navigation }) => {
-  const { patientId, patient, refresh } = route.params;
+  const { patientId, patient, refresh, shouldUpdatePatientsList } = route.params;
 
   useEffect(() => {
     navigation.setOptions({

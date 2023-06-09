@@ -48,7 +48,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleCancel = useCallback(() => {
-    navigation.navigate('Welcome');
+    navigation.navigate('Welcome', { shouldUpdatePatientsList: false });
   }, [navigation]);
 
   useEffect(() => {
@@ -258,7 +258,11 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
         if (response?.patientId) {
           setIsEditing(true);
           setPatient(response);
-          navigation.navigate('EditPatient', { patientId: response.patientId, patient: response });
+          navigation.navigate('EditPatient', {
+            patientId: response.patientId,
+            patient: response,
+            shouldUpdatePatientsList: true
+          });
           Alert.alert(
             'Informações Salvas!',
             `Paciente ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
@@ -330,23 +334,6 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
             errors={errors}
             onChangeHandler={handleChange}
           />
-
-          {/* {isEditing && (
-            <View style={styles.buttons}>
-              <Button
-                onPress={() => {
-                  navigationEditPatient.navigate('ProceedingsList', {
-                    patient: patient!
-                  });
-                }}
-                type={ButtonTypes.Primary}
-                text={styles.buttonTextStyles}
-                pressable={[styles.buttonPressable]}
-              >
-                Procedimentos
-              </Button>
-            </View>
-          )} */}
           <View style={styles.buttons}>
             <Button
               onPress={handleCancel}

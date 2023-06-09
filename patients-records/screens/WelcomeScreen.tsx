@@ -30,46 +30,78 @@ type HomeScreenNavigationProp = CompositeScreenProps<
 const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   const authCtx = useContext(AuthContext);
 
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [advancedFilters, setAdvancedFilters] = useState<any | undefined>(undefined);
+  const [hasFilterChanged, setHasFilterChanged] = useState<boolean>(false);
 
   const [patients, setPatients] = useState<GetPatient[]>([]);
-  const [page, setPage] = useState<number>(1);
+  const currentPage = useRef<number>(0);
+  const [page, setPage] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const hasMoreData = useRef(true);
+  const resetList = useRef(false);
 
   useEffect(() => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
   }, [authCtx.userInfo?.username, navigation]);
 
+  const refreshData = useCallback(() => {
+    currentPage.current = 0;
+    setRefreshing(true);
+    hasMoreData.current = true;
+    console.log(`refreshData: page= ${currentPage.current} - patientsCount=${patients?.length}`);
+  }, [currentPage, patients?.length]);
+
   const fetchData = useCallback(
     async (patientName?: string, advancedFilters?: any) => {
       setLoading(true);
       hasMoreData.current = true;
-      console.log(`NEW PATIENTS: page=${page} - patientsCount=${patients?.length}`);
-      const response = await getPatients(page, PAGE_SIZE, patientName, advancedFilters);
+      if (resetList.current) {
+        refreshData();
+      }
+
+      console.log(
+        `NEW PATIENTS: page = ${currentPage.current} - patientsCount=${patients?.length} - patientName = ${patientName}`
+      );
+
+      const response = await getPatients(
+        currentPage.current,
+        PAGE_SIZE,
+        patientName,
+        advancedFilters
+      );
 
       setPatients((currentPatients) => {
+        setLoading(false);
+        setRefreshing(false);
+        setHasFilterChanged(false);
+
         if (!response) {
           hasMoreData.current = false;
           return currentPatients;
         } else if (currentPatients) {
-          const newUniquePatients: GetPatient[] = currentPatients ? [...currentPatients] : [];
-          response!.patients?.forEach((item) => {
-            if (newUniquePatients!.findIndex((item2) => item2.patientId === item.patientId) < 0) {
-              newUniquePatients.push(item);
-            }
-          });
+          let newUniquePatients: GetPatient[] = [];
+          if (resetList.current) {
+            newUniquePatients = response!.patients!;
+          } else {
+            newUniquePatients = currentPatients ? [...currentPatients] : [];
+            response!.patients?.forEach((item) => {
+              if (newUniquePatients!.findIndex((item2) => item2.patientId === item.patientId) < 0) {
+                newUniquePatients.push(item);
+              }
+            });
 
-          hasMoreData.current = !!(
-            newUniquePatients && newUniquePatients?.length < response.patientsCount
-          );
-          if (newUniquePatients?.length! < PAGE_SIZE) {
-            hasMoreData.current = false;
+            hasMoreData.current = !!(
+              newUniquePatients && newUniquePatients?.length < response.patientsCount
+            );
+            if (newUniquePatients?.length! < PAGE_SIZE) {
+              hasMoreData.current = false;
+            }
           }
+          resetList.current = false;
           return newUniquePatients;
         } else {
           hasMoreData.current = false;
@@ -77,27 +109,42 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
         }
       });
       Keyboard.dismiss();
-      setLoading(false);
-      setRefreshing(false);
     },
-    [page]
+    [currentPage, patients?.length, refreshData]
   );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchData(searchPhrase, advancedFilters);
-    }, 600);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [searchPhrase, advancedFilters, page, fetchData]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchData();
     });
-    return unsubscribe;
-  }, [fetchData, navigation, refreshing]);
+
+    const timer = setTimeout(() => {
+      console.log(`setTimeout`);
+      fetchData(searchPhrase, advancedFilters);
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [
+    searchPhrase,
+    advancedFilters,
+    hasFilterChanged,
+    fetchData,
+    navigation,
+    refreshing,
+    refreshData,
+    page,
+    resetList.current
+  ]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     console.log(`focus`);
+  //     fetchData();
+  //   });
+  //   return unsubscribe;
+  // }, [fetchData, navigation, refreshing]);
 
   const handleEditPatient = (patientId: string, patient?: GetPatient) => {
     navigation.navigate('EditPatient', { patientId, patient });
@@ -108,18 +155,14 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   };
 
   const onEndReached = () => {
-    //console.log(`PAGE = ${page}`);
-    setPage((previousPage) => {
-      return previousPage + 1;
-    });
-  };
-
-  const refreshData = () => {
-    setPage(1);
-    setRefreshing(true);
-    setPatients([]);
-    hasMoreData.current = true;
-    console.log(`refreshData: page=${page} - patientsCount=${patients?.length}`);
+    console.log(`PREVIOUS PAGE = ${currentPage.current}`);
+    if (!refreshing) {
+      currentPage.current += 1;
+      setPage((prevPage) => {
+        return (prevPage += 1);
+      });
+    }
+    console.log(`CURRENT PAGE = ${currentPage.current}`);
   };
 
   const renderArticle = ({ item }) => (
@@ -139,28 +182,26 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   return (
     <>
       <SafeAreaView style={styles.container}>
-        {/* <View style={styles.header}>
+        <View style={styles.header}>
           <Header
             isWelcomeScreen={true}
             onCreateEditPatient={handleCreatePatient}
             title="Seus Pacientes"
           />
-        </View> */}
+        </View>
         {
-          //isLoading ? (
-          // <View style={styles.center}>
-          //   {/* https://reactnative.dev/docs/activityindicator */}
-          //   <ActivityIndicator size="large" color={Colors.error500} />
-          // </View>
-          //) : (
           <View style={{ flex: 1 }}>
-            {/* <SearchBar
+            <SearchBar
               searchPhrase={searchPhrase}
               setSearchPhrase={setSearchPhrase}
               clicked={clicked}
               setClicked={setClicked}
               setAdvancedFilters={setAdvancedFilters}
-            /> */}
+              setMustResetList={resetList}
+            />
+            {patients?.length === 0 && !hasMoreData.current && (
+              <Text style={{ fontSize: 18, textAlign: 'center' }}>Nenhum paciente encontrado!</Text>
+            )}
             {/* Optimizing FlatList: https://reactnative.dev/docs/optimizing-flatlist-configuration */}
             <FlatList
               style={{ paddingHorizontal: 25 }}
@@ -170,18 +211,11 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
               showsVerticalScrollIndicator={false}
               ItemSeparatorComponent={renderDivider}
               ListFooterComponent={renderFooter}
-              //initialNumToRender={10}
               onEndReached={onEndReached}
-              onEndReachedThreshold={1}
+              onEndReachedThreshold={0.1}
+              //ListHeaderComponent={}
               onRefresh={refreshData}
               refreshing={refreshing}
-              ListEmptyComponent={() => {
-                return (
-                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
-                    Nenhum paciente encontrado!
-                  </Text>
-                );
-              }}
             />
           </View>
           //)
@@ -212,7 +246,9 @@ const styles = StyleSheet.create({
   center: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    alignContent: 'center',
+    verticalAlign: 'middle'
   },
   headlines: {
     fontSize: 32,

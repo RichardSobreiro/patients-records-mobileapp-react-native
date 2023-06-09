@@ -12,6 +12,7 @@ const windowDimensions = Dimensions.get('window');
 type Props = {
   setModalVisible;
   setAdvancedFilters;
+  setMustResetList;
 };
 
 type ErrorType = {
@@ -20,11 +21,10 @@ type ErrorType = {
   proceedingType: null | string;
 };
 
-const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters }) => {
+const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters, setMustResetList }) => {
   const authCtx = useContext(AuthContext);
   const [proceedingTypes, setProceedingTypes] = useState<DropdownData[] | undefined>(undefined);
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
-  const [selected, setSelected] = useState<DropdownData | undefined>(undefined);
 
   const getProceedingTypes = async () => {
     const email = authCtx.userInfo?.email;
@@ -81,6 +81,7 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters }) => {
         ...curInputs,
         [field]: { value: enteredValue, isValid: true }
       };
+      setMustResetList.current = true;
       //validateForm(newInputs, false);
       return newInputs;
     });
@@ -114,19 +115,19 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters }) => {
     }
 
     setErrors((curErrors) => {
-      if (!startDateIsValid) {
-        curErrors['startDate'] = 'A data início é inválida';
-        setIsFormValid(false);
-      } else {
-        curErrors['startDate'] = null;
-      }
+      // if (!startDateIsValid) {
+      //   curErrors['startDate'] = 'A data início é inválida';
+      //   setIsFormValid(false);
+      // } else {
+      //   curErrors['startDate'] = null;
+      // }
 
-      if (!endDateIsValid) {
-        curErrors['endDate'] = 'A data fim é inválida';
-        setIsFormValid(false);
-      } else {
-        curErrors['endDate'] = null;
-      }
+      // if (!endDateIsValid) {
+      //   curErrors['endDate'] = 'A data fim é inválida';
+      //   setIsFormValid(false);
+      // } else {
+      //   curErrors['endDate'] = null;
+      // }
 
       if (touched['startDate'] && !touched['endDate']) {
         curErrors['endDate'] = 'A data fim deve ser preenchida';
@@ -156,7 +157,7 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters }) => {
       return curErrors;
     });
 
-    if (startDateIsValid && endDateIsValid && proceedingTypeIsValid) {
+    if (proceedingTypeIsValid) {
       setIsFormValid(true);
       return true;
     } else {

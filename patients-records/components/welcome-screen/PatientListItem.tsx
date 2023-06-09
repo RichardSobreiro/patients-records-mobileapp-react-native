@@ -46,7 +46,7 @@ const PatientListItem: React.FC<Props> = ({ item, editPatient }) => {
   );
 };
 
-export default PatientListItem;
+export default React.memo(PatientListItem);
 
 const styles = StyleSheet.create({
   article: {

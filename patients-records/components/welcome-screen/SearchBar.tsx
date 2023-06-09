@@ -12,6 +12,7 @@ type Props = {
   setSearchPhrase;
   setClicked;
   setAdvancedFilters;
+  setMustResetList;
 };
 
 const SearchBar: React.FC<Props> = ({
@@ -19,7 +20,8 @@ const SearchBar: React.FC<Props> = ({
   searchPhrase,
   setSearchPhrase,
   setClicked,
-  setAdvancedFilters
+  setAdvancedFilters,
+  setMustResetList
 }) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -35,7 +37,11 @@ const SearchBar: React.FC<Props> = ({
             setModalVisible(false);
           }}
         >
-          <Filters setModalVisible={setModalVisible} setAdvancedFilters={setAdvancedFilters} />
+          <Filters
+            setModalVisible={setModalVisible}
+            setAdvancedFilters={setAdvancedFilters}
+            setMustResetList={setMustResetList}
+          />
         </Modal>
       </View>
       <View style={styles.container}>
@@ -47,7 +53,10 @@ const SearchBar: React.FC<Props> = ({
             style={styles.input}
             placeholder="Search"
             value={searchPhrase}
-            onChangeText={setSearchPhrase}
+            onChangeText={(text) => {
+              setSearchPhrase(text);
+              setMustResetList.current = true;
+            }}
             onFocus={() => {
               setClicked(true);
             }}
@@ -60,6 +69,7 @@ const SearchBar: React.FC<Props> = ({
               color="#000000"
               style={{ padding: 1 }}
               onPress={() => {
+                setMustResetList.current = true;
                 setSearchPhrase('');
               }}
             />
@@ -83,6 +93,9 @@ const SearchBar: React.FC<Props> = ({
               color={Colors.primary800}
               size={30}
               onPress={() => {
+                setSearchPhrase('');
+                setAdvancedFilters(undefined);
+                setMustResetList.current = true;
                 Keyboard.dismiss();
                 setClicked(false);
               }}
