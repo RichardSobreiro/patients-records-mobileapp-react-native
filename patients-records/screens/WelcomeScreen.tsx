@@ -38,9 +38,8 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   const [hasFilterChanged, setHasFilterChanged] = useState<boolean>(false);
 
   const [patients, setPatients] = useState<GetPatient[]>([]);
-  const currentPage = useRef<number>(0);
-  const [page, setPage] = useState<number>(0);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const nextPage = useRef<number>(1);
+  const [updateList, setUpdateList] = useState<boolean>(true);
   const hasMoreData = useRef(true);
   const resetList = useRef(false);
 
@@ -48,78 +47,88 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     navigation.setOptions({ title: authCtx.userInfo?.username });
   }, [authCtx.userInfo?.username, navigation]);
 
-  const refreshData = useCallback(() => {
-    currentPage.current = 0;
-    setRefreshing(true);
-    hasMoreData.current = true;
-    console.log(`refreshData: page= ${currentPage.current} - patientsCount=${patients?.length}`);
-  }, [currentPage, patients?.length]);
+  const onEndReached = () => {
+    if (hasMoreData.current) {
+      setUpdateList(true);
+    }
+  };
 
-  const fetchData = useCallback(
-    async (patientName?: string, advancedFilters?: any) => {
+  useEffect(() => {
+    const refreshData = () => {
+      nextPage.current = 1;
+      setUpdateList(true);
+      hasMoreData.current = true;
+    };
+
+    const fetchData = async (patientName?: string, advancedFilters?: any) => {
       setLoading(true);
       hasMoreData.current = true;
       if (resetList.current) {
         refreshData();
       }
 
-      console.log(
-        `NEW PATIENTS: page = ${currentPage.current} - patientsCount=${patients?.length} - patientName = ${patientName}`
-      );
-
-      const response = await getPatients(
-        currentPage.current,
-        PAGE_SIZE,
-        patientName,
-        advancedFilters
-      );
+      const response = await getPatients(nextPage.current, PAGE_SIZE, patientName, advancedFilters);
 
       setPatients((currentPatients) => {
         setLoading(false);
-        setRefreshing(false);
         setHasFilterChanged(false);
+        setUpdateList(false);
 
         if (!response) {
           hasMoreData.current = false;
           return currentPatients;
-        } else if (currentPatients) {
+        } else {
           let newUniquePatients: GetPatient[] = [];
           if (resetList.current) {
             newUniquePatients = response!.patients!;
           } else {
-            newUniquePatients = currentPatients ? [...currentPatients] : [];
-            response!.patients?.forEach((item) => {
-              if (newUniquePatients!.findIndex((item2) => item2.patientId === item.patientId) < 0) {
-                newUniquePatients.push(item);
+            newUniquePatients = [...response!.patients!];
+            currentPatients?.forEach((existingPatient) => {
+              if (
+                newUniquePatients!.findIndex(
+                  (receivedPatient) => receivedPatient.patientId === existingPatient.patientId
+                ) === -1
+              ) {
+                newUniquePatients.push(existingPatient);
               }
             });
 
-            hasMoreData.current = !!(
-              newUniquePatients && newUniquePatients?.length < response.patientsCount
-            );
-            if (newUniquePatients?.length! < PAGE_SIZE) {
-              hasMoreData.current = false;
-            }
+            hasMoreData.current = !!response.next;
+            nextPage.current = response.next ? response.next?.pageNumber! + 1 : nextPage.current;
           }
           resetList.current = false;
+
+          newUniquePatients.sort((p1, p2) => {
+            if (p1.mostRecentProceedingDate && p2.mostRecentProceedingDate) {
+              if (p1.mostRecentProceedingDate > p2.mostRecentProceedingDate) {
+                return -1;
+              } else {
+                return 1;
+              }
+            } else if (p1.mostRecentProceedingDate && !p2.mostRecentProceedingDate) {
+              return -1;
+            } else if (!p1.mostRecentProceedingDate && p2.mostRecentProceedingDate) {
+              return 1;
+            } else {
+              if (p1.creationDate > p2.creationDate) {
+                return -1;
+              } else {
+                return 1;
+              }
+            }
+          });
           return newUniquePatients;
-        } else {
-          hasMoreData.current = false;
-          return currentPatients;
         }
       });
-      Keyboard.dismiss();
-    },
-    [currentPage, patients?.length, refreshData]
-  );
+      //Keyboard.dismiss();
+    };
 
-  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
+      refreshData();
       fetchData();
     });
 
     const timer = setTimeout(() => {
-      console.log(`setTimeout`);
       fetchData(searchPhrase, advancedFilters);
     }, 600);
     return () => {
@@ -130,21 +139,11 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     searchPhrase,
     advancedFilters,
     hasFilterChanged,
-    fetchData,
-    navigation,
-    refreshing,
-    refreshData,
-    page,
-    resetList.current
+    updateList,
+    navigation
+    //fetchData,
+    //refreshData
   ]);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     console.log(`focus`);
-  //     fetchData();
-  //   });
-  //   return unsubscribe;
-  // }, [fetchData, navigation, refreshing]);
 
   const handleEditPatient = (patientId: string, patient?: GetPatient) => {
     navigation.navigate('EditPatient', { patientId, patient });
@@ -154,26 +153,16 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
     navigation.navigate('CreatePatient', { patientId: undefined });
   };
 
-  const onEndReached = () => {
-    console.log(`PREVIOUS PAGE = ${currentPage.current}`);
-    if (!refreshing) {
-      currentPage.current += 1;
-      setPage((prevPage) => {
-        return (prevPage += 1);
-      });
-    }
-    console.log(`CURRENT PAGE = ${currentPage.current}`);
-  };
-
   const renderArticle = ({ item }) => (
     <PatientListItem item={item} editPatient={handleEditPatient} />
   );
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
   const renderFooter = () => {
-    //console.log(`hasMoreData.current = ${hasMoreData.current}`);
     return (
       <View style={styles.center}>
-        {hasMoreData.current && <ActivityIndicator color={Colors.error500} size={40} />}
+        {(hasMoreData.current || isLoading) && (
+          <ActivityIndicator color={Colors.error500} size={40} />
+        )}
       </View>
     );
   };
@@ -214,8 +203,8 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
               onEndReached={onEndReached}
               onEndReachedThreshold={0.1}
               //ListHeaderComponent={}
-              onRefresh={refreshData}
-              refreshing={refreshing}
+              // onRefresh={refreshData}
+              // refreshing={refreshing}
             />
           </View>
           //)

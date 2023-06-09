@@ -11,7 +11,7 @@ export const createNewProceeding = async (
   proceeding: CreateProceedingRequest,
   access_token: string
 ) => {
-  const url = `http://10.0.2.2:3006/patients/${patientId}/proceedings`;
+  const url = `${process.env.API_URL}/patients/${patientId}/proceedings`;
 
   const axiosMultiPartFormData = axios.create();
 
@@ -73,7 +73,7 @@ export const updateProceeding = async (
   proceeding: UpdateProceedingRequest,
   access_token: string
 ) => {
-  const url = `http://10.0.2.2:3006/patients/${patientId}/proceedings/${proceedingId}`;
+  const url = `${process.env.API_URL}/patients/${patientId}/proceedings/${proceedingId}`;
 
   const axiosMultiPartFormData = axios.create();
 
@@ -138,7 +138,7 @@ export const updateProceeding = async (
 export const getProceedingById = async (patientId: string) => {};
 
 export const getProceedings = async (patientId: string, pageNumber: number, limit: number) => {
-  const url = `http://10.0.2.2:3006/patients/${patientId}/proceedings?pageNumber=${pageNumber}&limit=${limit}`;
+  const url = `${process.env.API_URL}/patients/${patientId}/proceedings?pageNumber=${pageNumber}&limit=${limit}`;
 
   const response: GetProceedingsResponse | undefined = await axios
     .get(url)
@@ -154,7 +154,7 @@ export const getProceedings = async (patientId: string, pageNumber: number, limi
 };
 
 export const getProceedingTypesByUserEmail = async (username: string) => {
-  const url = `http://10.0.2.2:3006/professionals/${username}/proceedings/types`;
+  const url = `${process.env.API_URL}/professionals/${username}/proceedings/types`;
 
   const response: GetProceedingTypesResponse | undefined = await axios
     .get(url)

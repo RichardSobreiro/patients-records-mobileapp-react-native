@@ -32,7 +32,7 @@ const ProceedingsInfoScreen: React.FC<Props> = ({ route, navigation, proceeding 
         <Header
           isAddingPatientScreen={true}
           title={`${createEditProceedingCtx.patient?.patientName!}`}
-          subtitle="Novo Procedimento"
+          subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
       <ProceedingsInfo />

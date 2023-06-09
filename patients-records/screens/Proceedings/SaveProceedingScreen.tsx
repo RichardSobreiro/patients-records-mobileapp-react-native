@@ -32,7 +32,7 @@ const SaveProceedingScreen: React.FC<Props> = ({ route, navigation, proceeding }
         <Header
           isAddingPatientScreen={true}
           title={`${createEditProceedingCtx.patient?.patientName!}`}
-          subtitle="Novo Procedimentos"
+          subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
       <SaveProceeding />

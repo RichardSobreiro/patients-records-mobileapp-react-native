@@ -82,18 +82,15 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters, setMust
         [field]: { value: enteredValue, isValid: true }
       };
       setMustResetList.current = true;
-      //validateForm(newInputs, false);
       return newInputs;
     });
   };
 
   const validateForm = (advancedFitlers: any, validateAll?: boolean): boolean => {
     let startDateIsValid =
-      //validateAll &&
       touched['startDate'] && advancedFitlers.startDate.toString() !== 'Invalid Date';
 
     let endDateIsValid =
-      //validateAll &&
       touched['endDate'] && advancedFitlers.endDate.toString() !== 'Invalid Date';
 
     const proceedingTypeIsValid = true;
@@ -115,20 +112,6 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters, setMust
     }
 
     setErrors((curErrors) => {
-      // if (!startDateIsValid) {
-      //   curErrors['startDate'] = 'A data início é inválida';
-      //   setIsFormValid(false);
-      // } else {
-      //   curErrors['startDate'] = null;
-      // }
-
-      // if (!endDateIsValid) {
-      //   curErrors['endDate'] = 'A data fim é inválida';
-      //   setIsFormValid(false);
-      // } else {
-      //   curErrors['endDate'] = null;
-      // }
-
       if (touched['startDate'] && !touched['endDate']) {
         curErrors['endDate'] = 'A data fim deve ser preenchida';
         setIsFormValid(false);
