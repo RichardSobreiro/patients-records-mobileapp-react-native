@@ -209,7 +209,13 @@ eas login
 eas build:configure
 ```
 
-4. Execute the build
+4. Register any iOS device you'd like to develop onto your ad hoc provisioning profile:
+
+```
+eas device:create
+```
+
+5. Execute the build
 
 - **preview** Profile for All platforms Remote
 
