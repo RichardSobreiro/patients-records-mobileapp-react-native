@@ -1,23 +1,27 @@
 {
   "expo": {
-    "name": "patients-records",
+    "name": "Meu Negócio",
+    "description": "Um app que vai fazer você economizar tempo enquato gerencia o seu próprio negócio.",
     "slug": "patients-records",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": ["com.sobreirostechnologies.patientsrecords", "fb592502122839259"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0b0ec3"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sobreirostechnologies.patientsrecords"
     },
     "android": {
+      "package": "com.sobreirostechnologies.patientsrecords",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -25,6 +29,20 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "29bd022f-4e58-4283-8160-3a2bdbbdc380"
+      }
+    },
+    "plugins": [
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O applicativo acessa sua galeria para gerenciar as fotos do antes e depois de seus pacientes."
+        }
+      ]
+    ]
   }
 }

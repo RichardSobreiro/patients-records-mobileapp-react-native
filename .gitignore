@@ -1,0 +1,5 @@
+node_modules
+android
+ios
+patients-records/package-lock.json
+patients-records/*.apk

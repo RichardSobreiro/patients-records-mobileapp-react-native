@@ -4,7 +4,7 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx', '*.d.ts'],
       parserOptions: {
-        project: './tsconfig.json'
+        project: './patients-records/tsconfig.json'
       }
     }
   ],
@@ -16,5 +16,14 @@ module.exports = {
   /* for lint-staged */
   globals: {
     __dirname: true
+  },
+  rules: {
+    'prettier/prettier': ['off', { singleQuote: true }],
+    'import/order': [
+      'error',
+      {
+        groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin', 'object', 'type']
+      }
+    ]
   }
-}
+};
