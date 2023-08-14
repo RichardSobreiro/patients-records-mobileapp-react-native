@@ -1,45 +1,31 @@
 //import { formatDistanceToNow } from 'date-fns';
 import { Colors } from '../../constants/styles';
-import { GetPatient } from '../../models/GetPatientsResponse';
+import { GetCustomer } from '../../models/GetCustomersResponse';
+import { getAgePTBR } from '../../util/date-helpers';
 import { DateParser } from '../../util/dateParser';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
-  item: GetPatient;
+  item: GetCustomer;
   editPatient: (patientId: string) => void;
 };
 
 const PatientListItem: React.FC<Props> = ({ item, editPatient }) => {
   return (
-    <TouchableOpacity onPress={editPatient.bind(null, item.patientId, item)}>
+    <TouchableOpacity onPress={editPatient.bind(null, item.customerName, item)}>
       <View style={styles.article}>
-        {/* Caching image for better performance: https://github.com/DylanVann/react-native-fast-image */}
-        {item.mostRecentProceedingAfterPhotoUrl ? (
-          <Image
-            source={{ uri: item.mostRecentProceedingAfterPhotoUrl }}
-            style={styles.patientImage}
-          />
-        ) : (
-          <View style={styles.articleNoImage}>
-            <Text style={{ color: '#ffffff' }}>Nenhuma imagem do último procedimento</Text>
-          </View>
-        )}
-
         <View style={{ flex: 1 }}>
           <Text style={styles.articleTitle} numberOfLines={3}>
-            {item.patientName}
+            {item.customerName}
           </Text>
 
           <Text style={styles.articlePublishedAt}>{item.phoneNumber}</Text>
-
-          {item.mostRecentProceedingDate && (
-            <View style={{ paddingVertical: 5 }}>
-              <Text style={styles.articlePublishedAt}>
-                {DateParser(new Date(item.mostRecentProceedingDate))}
-              </Text>
-            </View>
-          )}
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.articleTitle} numberOfLines={3}>
+            {getAgePTBR(item.birthDate)}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

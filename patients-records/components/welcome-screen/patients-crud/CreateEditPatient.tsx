@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
-import { createNewPatient, getPatientById, updatePatient } from '../../../http/PatientsApi';
-import { GetPatient } from '../../../models/GetPatientsResponse';
+import { createNewPatient, GetCustomerById, updatePatient } from '../../../http/CustomersApi';
+import { GetCustomer } from '../../../models/GetCustomersResponse';
 import { AuthContext } from '../../../store/auth-context';
 import Button, { ButtonTypes } from '../../ui/Button';
 import LoadingOverlay from '../../ui/LoadingOverlay';
@@ -20,7 +20,7 @@ import { View, StyleSheet, Alert, BackHandler } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type ErrorType = {
-  patientName: null | string;
+  customerName: null | string;
   email: null | string;
   phoneNumber: null | string;
   birthDate: null | string;
@@ -42,7 +42,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   const [isLoadingMessage, setIsLoadingMessage] = useState<string | undefined>(undefined);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isAtProceedingsList, setIsAtProceedingsList] = useState<boolean>(false);
-  const [patient, setPatient] = useState<GetPatient | undefined>(undefined);
+  const [patient, setPatient] = useState<GetCustomer | undefined>(undefined);
   const [headerSubtitle, setHeaderSubtitle] = useState<string | undefined>('Informações Básicas');
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -55,13 +55,13 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
     if (patientId) {
       setIsEditing(true);
       setIsLoading(true);
-      const getPatient = async () => {
-        const response = await getPatientById(patientId);
+      const GetCustomer = async () => {
+        const response = await GetCustomerById(patientId);
         if (response) {
           setPatient(() => {
             setInputs({
-              patientName: {
-                value: response.patientName,
+              customerName: {
+                value: response.customerName,
                 isValid: true
               },
               email: {
@@ -89,7 +89,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
           handleCancel();
         }
       };
-      getPatient();
+      GetCustomer();
     }
   }, [handleCancel, patientId]);
 
@@ -115,8 +115,8 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
 
   //----------------------------------------------------------------------------------------
   const [inputs, setInputs] = useState({
-    patientName: {
-      value: patient ? patient.patientName : '',
+    customerName: {
+      value: patient ? patient.customerName : '',
       isValid: true
     },
     email: {
@@ -134,14 +134,14 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   });
 
   const [touched, setTouched] = useState({
-    patientName: false,
+    customerName: false,
     email: false,
     phoneNumber: false,
     birthDate: false
   });
 
   const [errors, setErrors] = useState<ErrorType>({
-    patientName: null,
+    customerName: null,
     email: null,
     phoneNumber: null,
     birthDate: null
@@ -170,12 +170,12 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   };
 
   const validateForm = (createPatientRequest: any, validateAll?: boolean): boolean => {
-    let patientNameIsValid = true;
+    let customerNameIsValid = true;
     let phoneNumberIsValid = true;
     let birthDateIsValid = true;
 
-    if (validateAll || touched['patientName']) {
-      patientNameIsValid = createPatientRequest.patientName.value.trim().length > 0;
+    if (validateAll || touched['customerName']) {
+      customerNameIsValid = createPatientRequest.customerName.value.trim().length > 0;
     }
     const emailIsValid = true;
     if (validateAll || touched['phoneNumber']) {
@@ -186,11 +186,11 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
     }
 
     setErrors((curErrors) => {
-      if (!patientNameIsValid) {
-        curErrors['patientName'] = 'O nome do paciente é inválido';
+      if (!customerNameIsValid) {
+        curErrors['customerName'] = 'O nome do paciente é inválido';
         setIsFormValid(false);
       } else {
-        curErrors['patientName'] = null;
+        curErrors['customerName'] = null;
       }
       if (!emailIsValid) {
         curErrors['email'] = 'O email do paciente é inválido';
@@ -213,7 +213,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       return curErrors;
     });
 
-    if (patientNameIsValid && emailIsValid && phoneNumberIsValid && birthDateIsValid) {
+    if (customerNameIsValid && emailIsValid && phoneNumberIsValid && birthDateIsValid) {
       setIsFormValid(true);
       return true;
     } else {
@@ -227,7 +227,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       setIsLoading(true);
       setIsLoadingMessage('Salvando...');
       const createPatientRequest = {
-        patientName: inputs.patientName.value,
+        customerName: inputs.customerName.value,
         email: inputs.email.value,
         phoneNumber: inputs.phoneNumber.value,
         birthDate: inputs.birthDate.value
@@ -236,43 +236,43 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       const callCreateUpdatePatientApi = async () => {
         let response: CreatePatientResponse | UpdatePatientResponse | undefined;
         if (isEditing) {
-          response = await updatePatient({
-            userId: authCtx.userInfo?.email!,
-            patientId: patientId!,
-            patientName: createPatientRequest.patientName,
-            phoneNumber: createPatientRequest.phoneNumber,
-            email: createPatientRequest.email,
-            birthDate: createPatientRequest.birthDate
-          });
+          // response = await updatePatient({
+          //   userId: authCtx.userInfo?.email!,
+          //   patientId: patientId!,
+          //   customerName: createPatientRequest.customerName,
+          //   phoneNumber: createPatientRequest.phoneNumber,
+          //   email: createPatientRequest.email,
+          //   birthDate: createPatientRequest.birthDate
+          // });
         } else {
-          response = await createNewPatient({
-            userId: authCtx.userInfo?.email!,
-            patientName: createPatientRequest.patientName,
-            phoneNumber: createPatientRequest.phoneNumber,
-            email: createPatientRequest.email,
-            birthDate: createPatientRequest.birthDate
-          });
+          // response = await createNewPatient({
+          //   userId: authCtx.userInfo?.email!,
+          //   customerName: createPatientRequest.customerName,
+          //   phoneNumber: createPatientRequest.phoneNumber,
+          //   email: createPatientRequest.email,
+          //   birthDate: createPatientRequest.birthDate
+          // });
         }
         setIsLoading(false);
         setIsLoadingMessage(undefined);
-        if (response?.patientId) {
-          setIsEditing(true);
-          setPatient(response);
-          navigation.navigate('EditPatient', {
-            patientId: response.patientId,
-            patient: response,
-            shouldUpdatePatientsList: true
-          });
-          Alert.alert(
-            'Informações Salvas!',
-            `Paciente ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
-          );
-        } else {
-          Alert.alert(
-            'Erro',
-            'Ocorreu um erro ao salvar as informações do paciente! Tente novamente.'
-          );
-        }
+        // if (response?.patientId) {
+        //   setIsEditing(true);
+        //   setPatient(response);
+        //   navigation.navigate('EditPatient', {
+        //     patientId: response.patientId,
+        //     patient: response,
+        //     shouldUpdatePatientsList: true
+        //   });
+        //   Alert.alert(
+        //     'Informações Salvas!',
+        //     `Paciente ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
+        //   );
+        // } else {
+        //   Alert.alert(
+        //     'Erro',
+        //     'Ocorreu um erro ao salvar as informações do paciente! Tente novamente.'
+        //   );
+        // }
       };
 
       callCreateUpdatePatientApi();
@@ -289,7 +289,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
         <Header
           isAddingPatientScreen={true}
           onSkipBackPressed={handleCancel}
-          title={isEditing ? `${patient?.patientName!}` : 'Novo Paciente'}
+          title={isEditing ? `${patient?.customerName!}` : 'Novo Paciente'}
           subtitle={headerSubtitle}
         />
       </View>
@@ -298,7 +298,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
       ) : (
         <KeyboardAwareScrollView style={styles.content}>
           <Input
-            field="patientName"
+            field="customerName"
             label="Nome"
             values={inputs}
             touched={touched}

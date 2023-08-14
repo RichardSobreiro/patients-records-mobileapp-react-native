@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
 import { getProceedings } from '../../../http/ProceedingsApi';
-import { GetPatient } from '../../../models/GetPatientsResponse';
+import { GetCustomer } from '../../../models/GetCustomersResponse';
 import {
   GetProceedingResponse,
   GetProceedingsResponse
@@ -17,12 +17,12 @@ import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-nativ
 const PAGE_SIZE = 10;
 
 type Props = {
-  patient: GetPatient;
+  patient: GetCustomer;
   refresh?: boolean;
 };
 
 const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
-  const [currentPatient] = useState<GetPatient>(patient);
+  const [currentPatient] = useState<GetCustomer>(patient);
   const [proceedings, setProceedings] = useState<GetProceedingsResponse | undefined | null>(
     undefined
   );

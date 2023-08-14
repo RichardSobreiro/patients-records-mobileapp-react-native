@@ -3,6 +3,7 @@ import { getProceedingTypesByUserEmail } from '../../http/ProceedingsApi';
 import { AuthContext } from '../../store/auth-context';
 import Button, { ButtonTypes } from '../ui/Button';
 import Dropdown, { DropdownData } from '../ui/Dropdown';
+//import DateRangePicker from '../ui/custom-form/DateRangePicker';
 import Title from '../ui/custom-form/Title';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, Pressable, View, Dimensions } from 'react-native';
@@ -172,6 +173,7 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters, setMust
         <View style={{ minWidth: 250 }}>
           <View style={styles.filterSeparator}></View>
           <Title text="...data do último procedimento"></Title>
+          {/* <DateRangePicker />
           <DatePicker
             field="startDate"
             label="Início"
@@ -189,7 +191,7 @@ const Filters: React.FC<Props> = ({ setModalVisible, setAdvancedFilters, setMust
             errors={errors}
             onChangeHandler={handleChange}
             text={{ paddingHorizontal: 45 }}
-          />
+          /> */}
           <View style={styles.filterSeparator}></View>
         </View>
         <View style={{ minWidth: 250 }}>

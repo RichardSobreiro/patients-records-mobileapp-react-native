@@ -14,10 +14,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
-import { GetPatient } from 'models/GetPatientsResponse';
+import { GetCustomer } from 'models/GetCustomersResponse';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
+import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { pt, registerTranslation } from 'react-native-paper-dates';
+
+registerTranslation('pt', pt);
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
@@ -25,9 +29,9 @@ WebBrowser.maybeCompleteAuthSession();
 
 export type EditPatientStackParamList = {
   PatientInfo: { patientId: string };
-  ProceedingsList: { patient: GetPatient; refresh?: boolean };
-  CreateProceeding: { patient: GetPatient };
-  EditProceeding: { patient: GetPatient; proceeding: GetProceedingResponse };
+  ProceedingsList: { patient: GetCustomer; refresh?: boolean };
+  CreateProceeding: { patient: GetCustomer };
+  EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
 };
 
 export type RootStackParamList = {
@@ -35,7 +39,7 @@ export type RootStackParamList = {
   Signup: undefined;
   Welcome: { shouldUpdatePatientsList?: boolean };
   CreatePatient: { patientId?: string };
-  EditPatient: { patientId: string; patient?: GetPatient; shouldUpdatePatientsList?: boolean };
+  EditPatient: { patientId: string; patient?: GetCustomer; shouldUpdatePatientsList?: boolean };
 };
 
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
@@ -197,6 +201,17 @@ const Root = () => {
   return <Navigation />;
 };
 
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: Colors.primary500,
+    secondary: Colors.secondary500,
+    surface: Colors.primary100,
+    onSurfaceVariant: Colors.primary500
+  }
+};
+
 const App: React.FC = () => {
   return (
     <>
@@ -204,7 +219,9 @@ const App: React.FC = () => {
         <StatusBar style="light" />
         <AuthContextProvider>
           <AxiosContextProvider>
-            <Root />
+            <PaperProvider theme={theme}>
+              <Root />
+            </PaperProvider>
           </AxiosContextProvider>
         </AuthContextProvider>
       </SafeAreaView>

@@ -1,12 +1,12 @@
 import { CreatePatientRequest } from '../models/CreatePatientRequest';
 import { CreatePatientResponse } from '../models/CreatePatientResponse';
-import { GetPatient, GetPatientsResponse } from '../models/GetPatientsResponse';
+import { GetCustomer, GetCustomersResponse } from '../models/GetCustomersResponse';
 import axios from 'axios';
 import { UpdatePatientRequest } from 'models/UpdatePatientRequest';
 import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 
 export const createNewPatient = async (request: CreatePatientRequest) => {
-  const url = `${process.env.API_URL}/patients`;
+  const url = `${process.env.API_URL}/customers`;
 
   const response: CreatePatientResponse | undefined = await axios
     .post(url, request)
@@ -22,7 +22,7 @@ export const createNewPatient = async (request: CreatePatientRequest) => {
 };
 
 export const updatePatient = async (request: UpdatePatientRequest) => {
-  const url = `${process.env.API_URL}/patients/${request.patientId}`;
+  const url = `${process.env.API_URL}/customers/${request.patientId}`;
 
   const response: UpdatePatientResponse | undefined = await axios
     .put(url, request)
@@ -37,37 +37,44 @@ export const updatePatient = async (request: UpdatePatientRequest) => {
   return response;
 };
 
-export const getPatientById = async (patientId: string) => {
-  const url = `${process.env.API_URL}/patients/${patientId}`;
+export const GetCustomerById = async (patientId: string) => {
+  const url = `${process.env.API_URL}/customers/${patientId}`;
 
-  const response: GetPatient | undefined = await axios
+  const response: GetCustomer | undefined = await axios
     .get(url)
     .then((response) => {
-      return response.data as GetPatient;
+      return response.data as GetCustomer;
     })
     .catch((err) => {
-      console.log(`getPatientById method Error:${err}`);
+      console.log(`GetCustomerById method Error:${err}`);
       return undefined;
     });
 
   return response;
 };
 
-export const getPatients = async (
+export const GetCustomers = async (
+  accessToken: string | undefined,
   pageNumber: number,
   limit: number,
-  patientName?: string,
+  customerName?: string,
   advancedFilters?: any
 ) => {
-  let url = `${process.env.API_URL}/patients?pageNumber=${pageNumber}&limit=${limit}${
-    patientName ? '&patientName=' + patientName : ''
+  let url = `${process.env.API_URL}/customers?pageNumber=${pageNumber}&limit=${limit}${
+    customerName ? '&customerName=' + customerName : ''
   }`;
 
   url += `${
-    advancedFilters?.startDate ? '&startDate=' + advancedFilters.startDate.toISOString() : ''
+    advancedFilters?.startDate
+      ? '&lastServiceStartDate=' + advancedFilters.startDate.toLocaleString()
+      : ''
   }`;
 
-  url += `${advancedFilters?.endDate ? '&endDate=' + advancedFilters.endDate.toISOString() : ''}`;
+  url += `${
+    advancedFilters?.endDate
+      ? '&lastServiceEndDate=' + advancedFilters.endDate.toLocaleString()
+      : ''
+  }`;
 
   url += `${
     advancedFilters?.proceedingTypeId
@@ -75,15 +82,20 @@ export const getPatients = async (
       : ''
   }`;
 
-  const response: GetPatientsResponse | undefined = await axios
-    .get(url)
-    .then((response) => {
-      return response.data as GetPatientsResponse;
-    })
-    .catch((err) => {
-      console.log(`getPatients method Error:${err}`);
-      return undefined;
-    });
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  });
 
-  return response;
+  if (response.ok) {
+    const customers = await response.json();
+    return customers as GetCustomersResponse;
+  } else {
+    console.log(`GetCustomers method Error:${response.statusText}`);
+    return undefined;
+  }
 };

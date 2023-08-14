@@ -1,10 +1,10 @@
 /** @format */
 
-export class GetPatient {
+export class GetCustomer {
   constructor(
     public userId: string,
-    public patientId: string,
-    public patientName: string,
+    public customerId: string,
+    public customerName: string,
     public phoneNumber: string,
     public birthDate: Date,
     public creationDate: Date,
@@ -19,12 +19,12 @@ class ListPage {
   constructor(public pageNumber: number, public limit: number) {}
 }
 
-export class GetPatientsResponse {
+export class GetCustomersResponse {
   constructor(
     public userId: string,
-    public patientsCount: number,
+    public customersCount: number,
     public previous?: ListPage,
     public next?: ListPage,
-    public patients?: GetPatient[]
+    public customers?: GetCustomer[]
   ) {}
 }

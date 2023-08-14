@@ -141,14 +141,14 @@ export const login = async (email, password) => {
     .post(
       url,
       {
-        client_id: 'social_facebook',
-        client_secret: 'social_facebook',
+        client_id: 'web_professionals',
+        client_secret: 'web_professionals',
         grant_type: 'password',
         scope: 'openid',
         prompt: 'consent',
-        email,
+        usernameEmail: email,
         password,
-        resource: 'http://localhost:3006'
+        resource: 'https://api.portal-atender.com'
       },
       options
     )

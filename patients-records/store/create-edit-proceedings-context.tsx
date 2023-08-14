@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 
 /* eslint-disable import/order */
-import { GetPatient } from '../models/GetPatientsResponse';
+import { GetCustomer } from '../models/GetCustomersResponse';
 import {
   GetProceedingPhotosResponse,
   GetProceedingResponse
@@ -54,7 +54,7 @@ export type Touched = {
 
 type ProceedingState = {
   isValid: boolean;
-  patient: GetPatient | undefined;
+  patient: GetCustomer | undefined;
   proceeding: GetProceedingResponse | undefined;
   isEditing: boolean;
   inputs: Inputs | undefined;
