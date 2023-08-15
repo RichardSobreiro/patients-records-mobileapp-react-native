@@ -1,5 +1,5 @@
 import Header from '../components/welcome-screen/Header';
-import ProceedingsList from '../components/welcome-screen/patients-crud/ProceedingsList';
+import ServicesList from '../components/welcome-screen/patients-crud/ServicesList';
 import { View, StyleSheet } from 'react-native';
 
 type Props = {
@@ -7,24 +7,24 @@ type Props = {
   navigation: any;
 };
 
-const ProceedingsListScreen: React.FC<Props> = ({ route, navigation }) => {
+const ServicesListScreen: React.FC<Props> = ({ route, navigation }) => {
   const { patient, refresh } = route.params;
 
   return (
     <>
       <View style={styles.header}>
         <Header
-          isAddingPatientScreen={true}
+          isAddingCustomerScreen={true}
           title={`${patient?.patientName!}`}
           subtitle="Procedimentos"
         />
       </View>
-      <ProceedingsList patient={patient} refresh={refresh} />
+      <ServicesList patient={patient} refresh={refresh} />
     </>
   );
 };
 
-export default ProceedingsListScreen;
+export default ServicesListScreen;
 
 const styles = StyleSheet.create({
   header: {

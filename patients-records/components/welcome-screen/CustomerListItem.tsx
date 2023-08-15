@@ -8,12 +8,12 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
   item: GetCustomer;
-  editPatient: (patientId: string) => void;
+  onNavigateToEditCustomer: (patientId: string) => void;
 };
 
-const PatientListItem: React.FC<Props> = ({ item, editPatient }) => {
+const CustomerListItem: React.FC<Props> = ({ item, onNavigateToEditCustomer }) => {
   return (
-    <TouchableOpacity onPress={editPatient.bind(null, item.customerName, item)}>
+    <TouchableOpacity onPress={onNavigateToEditCustomer.bind(null, item.customerId)}>
       <View style={styles.article}>
         <View style={{ flex: 1 }}>
           <Text style={styles.articleTitle} numberOfLines={3}>
@@ -32,7 +32,7 @@ const PatientListItem: React.FC<Props> = ({ item, editPatient }) => {
   );
 };
 
-export default React.memo(PatientListItem);
+export default React.memo(CustomerListItem);
 
 const styles = StyleSheet.create({
   article: {

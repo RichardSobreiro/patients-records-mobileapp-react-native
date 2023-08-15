@@ -1,22 +1,21 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
-import { createNewPatient, GetCustomerById, updatePatient } from '../../../http/CustomersApi';
+import { getCustomerById } from '../../../http/CustomersApi';
 import { GetCustomer } from '../../../models/GetCustomersResponse';
 import { AuthContext } from '../../../store/auth-context';
+import { NotificationContext } from '../../../store/notification-context';
 import Button, { ButtonTypes } from '../../ui/Button';
 import LoadingOverlay from '../../ui/LoadingOverlay';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import Header from '../Header';
-import ProceedingsList from './ProceedingsList';
+import ServicesList from './ServicesList';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
-import { CreatePatientResponse } from 'models/CreatePatientResponse';
-import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, BackHandler } from 'react-native';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type ErrorType = {
@@ -28,7 +27,7 @@ type ErrorType = {
 
 type Props = {
   navigation: HomeScreenNavigationProp;
-  patientId?: string;
+  customerId: string;
 };
 
 type HomeScreenNavigationProp = CompositeScreenProps<
@@ -36,13 +35,14 @@ type HomeScreenNavigationProp = CompositeScreenProps<
   BottomTabScreenProps<EditPatientStackParamList>
 >;
 
-const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
+const EditCustomer: React.FC<Props> = ({ customerId }) => {
   const authCtx = useContext(AuthContext);
+  const notificationCtx = useContext(NotificationContext);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingMessage, setIsLoadingMessage] = useState<string | undefined>(undefined);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isAtProceedingsList, setIsAtProceedingsList] = useState<boolean>(false);
-  const [patient, setPatient] = useState<GetCustomer | undefined>(undefined);
+  const [isAtServicesList, setIsAtServicesList] = useState<boolean>(false);
+  const [customer, setCustomer] = useState<GetCustomer | undefined>(undefined);
   const [headerSubtitle, setHeaderSubtitle] = useState<string | undefined>('Informações Básicas');
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -52,56 +52,68 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   }, [navigation]);
 
   useEffect(() => {
-    if (patientId) {
-      setIsEditing(true);
+    console.log(customerId);
+    if (customerId) {
       setIsLoading(true);
-      const GetCustomer = async () => {
-        const response = await GetCustomerById(patientId);
-        if (response) {
-          setPatient(() => {
-            setInputs({
-              customerName: {
-                value: response.customerName,
-                isValid: true
-              },
-              email: {
-                value: response.email,
-                isValid: true
-              },
-              birthDate: {
-                value: new Date(response.birthDate),
-                isValid: true
-              },
-              phoneNumber: {
-                value: response.phoneNumber,
-                isValid: true
-              }
+      const getCustomerByIdAsync = async () => {
+        if (authCtx.token?.access_token) {
+          try {
+            const response = await getCustomerById(authCtx.token?.access_token, customerId);
+            if (response.ok) {
+              setCustomer(() => {
+                setInputs({
+                  customerName: {
+                    value: response.body.customerName,
+                    isValid: true
+                  },
+                  email: {
+                    value: response.body.email,
+                    isValid: true
+                  },
+                  birthDate: {
+                    value: new Date(response.body.birthDate),
+                    isValid: true
+                  },
+                  phoneNumber: {
+                    value: response.body.phoneNumber,
+                    isValid: true
+                  }
+                });
+                setIsLoading(false);
+                return response.body;
+              });
+            } else {
+              notificationCtx.showNotification({
+                title: 'Ops...',
+                message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+              });
+              setIsLoading(false);
+              handleCancel();
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (error: any) {
+            notificationCtx.showNotification({
+              title: 'Ops...',
+              message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
             });
             setIsLoading(false);
-            return response;
-          });
-        } else {
-          Alert.alert(
-            'Erro',
-            'Ocorreu um erro ao buscar as informações do paciente! Tente novamenete.'
-          );
-          setIsLoading(false);
-          handleCancel();
+            handleCancel();
+          }
         }
       };
-      GetCustomer();
+      getCustomerByIdAsync();
     }
-  }, [handleCancel, patientId]);
+  }, [handleCancel, customerId, notificationCtx, authCtx.token?.access_token]);
 
-  const handleBackFromProceedingsList = () => {
+  const handleBackFromServicesList = () => {
     setHeaderSubtitle('Informações Básicas');
-    setIsAtProceedingsList(false);
+    setIsAtServicesList(false);
   };
 
   useEffect(() => {
     const backAction = () => {
-      if (isAtProceedingsList) {
-        handleBackFromProceedingsList();
+      if (isAtServicesList) {
+        handleBackFromServicesList();
       } else {
         handleCancel();
       }
@@ -111,24 +123,24 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [handleCancel, isAtProceedingsList]);
+  }, [handleCancel, isAtServicesList]);
 
   //----------------------------------------------------------------------------------------
   const [inputs, setInputs] = useState({
     customerName: {
-      value: patient ? patient.customerName : '',
+      value: customer ? customer.customerName : '',
       isValid: true
     },
     email: {
-      value: patient ? patient.email : '',
+      value: customer ? customer.email : '',
       isValid: true
     },
     birthDate: {
-      value: patient ? new Date(patient.birthDate) : new Date(),
+      value: customer ? new Date(customer.birthDate) : new Date(),
       isValid: true
     },
     phoneNumber: {
-      value: patient ? patient.phoneNumber : '',
+      value: customer ? customer.phoneNumber : '',
       isValid: true
     }
   });
@@ -226,56 +238,10 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
     if (validateForm(inputs, true)) {
       setIsLoading(true);
       setIsLoadingMessage('Salvando...');
-      const createPatientRequest = {
-        customerName: inputs.customerName.value,
-        email: inputs.email.value,
-        phoneNumber: inputs.phoneNumber.value,
-        birthDate: inputs.birthDate.value
-      };
 
-      const callCreateUpdatePatientApi = async () => {
-        let response: CreatePatientResponse | UpdatePatientResponse | undefined;
-        if (isEditing) {
-          // response = await updatePatient({
-          //   userId: authCtx.userInfo?.email!,
-          //   patientId: patientId!,
-          //   customerName: createPatientRequest.customerName,
-          //   phoneNumber: createPatientRequest.phoneNumber,
-          //   email: createPatientRequest.email,
-          //   birthDate: createPatientRequest.birthDate
-          // });
-        } else {
-          // response = await createNewPatient({
-          //   userId: authCtx.userInfo?.email!,
-          //   customerName: createPatientRequest.customerName,
-          //   phoneNumber: createPatientRequest.phoneNumber,
-          //   email: createPatientRequest.email,
-          //   birthDate: createPatientRequest.birthDate
-          // });
-        }
-        setIsLoading(false);
-        setIsLoadingMessage(undefined);
-        // if (response?.patientId) {
-        //   setIsEditing(true);
-        //   setPatient(response);
-        //   navigation.navigate('EditPatient', {
-        //     patientId: response.patientId,
-        //     patient: response,
-        //     shouldUpdatePatientsList: true
-        //   });
-        //   Alert.alert(
-        //     'Informações Salvas!',
-        //     `Paciente ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
-        //   );
-        // } else {
-        //   Alert.alert(
-        //     'Erro',
-        //     'Ocorreu um erro ao salvar as informações do paciente! Tente novamente.'
-        //   );
-        // }
-      };
+      const callUpdateCustomerApi = async () => {};
 
-      callCreateUpdatePatientApi();
+      callUpdateCustomerApi();
     }
   };
 
@@ -287,14 +253,14 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
     <>
       <View style={styles.header}>
         <Header
-          isAddingPatientScreen={true}
+          isAddingCustomerScreen={true}
           onSkipBackPressed={handleCancel}
-          title={isEditing ? `${patient?.customerName!}` : 'Novo Paciente'}
+          title={`${customer?.customerName!}`}
           subtitle={headerSubtitle}
         />
       </View>
-      {isEditing && isAtProceedingsList ? (
-        <ProceedingsList patient={patient!} />
+      {isAtServicesList ? (
+        <ServicesList patient={customer!} />
       ) : (
         <KeyboardAwareScrollView style={styles.content}>
           <Input
@@ -344,6 +310,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
               Cancelar
             </Button>
             <Button
+              type={ButtonTypes.Primary}
               onPress={submitHandler}
               text={styles.buttonTextStyles}
               pressable={[
@@ -362,7 +329,7 @@ const CreateEditPatient: React.FC<Props> = ({ patientId }) => {
   );
 };
 
-export default CreateEditPatient;
+export default EditCustomer;
 
 const styles = StyleSheet.create({
   buttons: {
@@ -375,27 +342,18 @@ const styles = StyleSheet.create({
   },
   buttonTextStyles: { fontSize: 20 },
   header: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#dbdbdb',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   content: {
-    backgroundColor: Colors.primary800,
     marginTop: 20,
     marginBottom: 15,
     marginHorizontal: 32,
     padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000000',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4
+    backgroundColor: Colors.primary100
   },
   button: {
-    backgroundColor: '#2980b9',
     borderRadius: 15
   },
   buttonText: {

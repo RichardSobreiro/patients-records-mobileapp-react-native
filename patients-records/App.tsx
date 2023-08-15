@@ -1,13 +1,15 @@
 import IconButton from './components/ui/IconButton';
 import CreateEditProceedingTopTabs from './components/ui/navigations/CreateEditProceedingTopTabs';
 import { Colors } from './constants/styles';
+import CreateCustomerScreen from './screens/CreateCustomerScreen';
+import CustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
-import PatientScreen from './screens/PatientScreen';
-import ProceedingsListScreen from './screens/ProceedingsListScreen';
+import ServicesListScreen from './screens/ServicesListScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
+import NotificationProvider from './store/notification-context';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -28,8 +30,8 @@ LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']
 WebBrowser.maybeCompleteAuthSession();
 
 export type EditPatientStackParamList = {
-  PatientInfo: { patientId: string };
-  ProceedingsList: { patient: GetCustomer; refresh?: boolean };
+  PatientInfo: { customerId: string };
+  ServicesList: { patient: GetCustomer; refresh?: boolean };
   CreateProceeding: { patient: GetCustomer };
   EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
 };
@@ -38,14 +40,15 @@ export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Welcome: { shouldUpdatePatientsList?: boolean };
-  CreatePatient: { patientId?: string };
-  EditPatient: { patientId: string; patient?: GetCustomer; shouldUpdatePatientsList?: boolean };
+  CreateCustomer: undefined;
+  EditPatient: { customerId: string; shouldUpdatePatientsList?: boolean };
 };
 
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 
 const EditPatientBottomTabs = ({ route, navigation }) => {
-  const { patientId, patient, refresh, shouldUpdatePatientsList } = route.params;
+  const { customerId, refresh, shouldUpdatePatientsList } = route.params;
+  console.log(`EditPatientBottomTabs: ${customerId}`);
 
   useEffect(() => {
     navigation.setOptions({
@@ -54,11 +57,14 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
   });
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+      sceneContainerStyle={{ backgroundColor: Colors.primary100 }}
+    >
       <Tab.Screen
         name="PatientInfo"
-        component={PatientScreen}
-        initialParams={{ patientId }}
+        component={CustomerScreen}
+        initialParams={{ customerId }}
         options={{
           tabBarLabel: 'Informações Básicas',
           tabBarIcon: ({ color, size }) => (
@@ -67,9 +73,9 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         }}
       />
       <Tab.Screen
-        name="ProceedingsList"
-        component={ProceedingsListScreen}
-        initialParams={{ patient, refresh }}
+        name="ServicesList"
+        component={ServicesListScreen}
+        initialParams={{ refresh }}
         options={{
           tabBarLabel: 'Procedimentos',
           tabBarIcon: ({ color, size }) => (
@@ -80,7 +86,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
       <Tab.Screen
         name="CreateProceeding"
         component={CreateEditProceedingTopTabs}
-        initialParams={{ patient }}
+        //initialParams={ }}
         options={{
           tabBarLabel: 'Novo Procedimento',
           tabBarIcon: ({ color, size }) => (
@@ -91,7 +97,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
       <Tab.Screen
         name="EditProceeding"
         component={CreateEditProceedingTopTabs}
-        initialParams={{ patient }}
+        //initialParams={{ patient }}
         options={{
           tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null
@@ -124,8 +130,8 @@ const AuthenticatedStack = () => {
         }}
       />
       <Stack.Screen
-        name="CreatePatient"
-        component={PatientScreen}
+        name="CreateCustomer"
+        component={CreateCustomerScreen}
         options={{
           headerTitle: authCtx.userInfo?.username ?? 'Inicio',
           headerRight: ({ tintColor }) => (
@@ -220,7 +226,9 @@ const App: React.FC = () => {
         <AuthContextProvider>
           <AxiosContextProvider>
             <PaperProvider theme={theme}>
-              <Root />
+              <NotificationProvider>
+                <Root />
+              </NotificationProvider>
             </PaperProvider>
           </AxiosContextProvider>
         </AuthContextProvider>

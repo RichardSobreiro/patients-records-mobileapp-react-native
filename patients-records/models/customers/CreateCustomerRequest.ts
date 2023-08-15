@@ -1,7 +1,8 @@
-export class CreatePatientRequest {
+/** @format */
+
+export class CreateCustomerRequest {
   constructor(
-    public userId: string,
-    public patientName: string,
+    public customerName: string,
     public phoneNumber: string,
     public birthDate: Date,
     public email?: string

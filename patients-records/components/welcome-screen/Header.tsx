@@ -5,8 +5,8 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 type Props = {
   isWelcomeScreen?: boolean;
-  isAddingPatientScreen?: boolean;
-  onCreateEditPatient?: () => void;
+  isAddingCustomerScreen?: boolean;
+  onNavigateToCreateCustomer?: () => void;
   onSkipBackPressed?: () => void;
   title?: string;
   subtitle?: string;
@@ -14,8 +14,8 @@ type Props = {
 
 const Header: React.FC<Props> = ({
   isWelcomeScreen,
-  isAddingPatientScreen,
-  onCreateEditPatient,
+  isAddingCustomerScreen,
+  onNavigateToCreateCustomer,
   onSkipBackPressed,
   title,
   subtitle
@@ -24,7 +24,7 @@ const Header: React.FC<Props> = ({
     <>
       {isWelcomeScreen && (
         <>
-          <TouchableOpacity onPress={onCreateEditPatient}>
+          <TouchableOpacity onPress={onNavigateToCreateCustomer}>
             <Feather name="user-plus" size={40} color={'#ffffff'} />
           </TouchableOpacity>
 
@@ -40,7 +40,7 @@ const Header: React.FC<Props> = ({
           </TouchableOpacity>
         </>
       )}
-      {isAddingPatientScreen && (
+      {isAddingCustomerScreen && (
         <View style={styles.container}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>

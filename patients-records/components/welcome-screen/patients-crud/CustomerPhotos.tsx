@@ -15,7 +15,7 @@ type Props = {
   touched?;
 };
 
-const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) => {
+const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values }) => {
   const [images, setImages] = useState<any>([]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const PatientPhotos: React.FC<Props> = ({ title, field, handleChange, values }) 
   );
 };
 
-export default PatientPhotos;
+export default CustomerPhotos;
 
 const styles = StyleSheet.create({
   container: { flex: 1, marginHorizontal: 4 },

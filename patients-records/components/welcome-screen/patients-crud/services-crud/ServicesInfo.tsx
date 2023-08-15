@@ -7,7 +7,7 @@ import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const ProceedingsInfo: React.FC = () => {
+const ServicesInfo: React.FC = () => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   return (
@@ -47,7 +47,7 @@ const ProceedingsInfo: React.FC = () => {
   );
 };
 
-export default ProceedingsInfo;
+export default ServicesInfo;
 
 const styles = StyleSheet.create({
   patientInfoContainer: {

@@ -6,8 +6,8 @@ import {
   GetProceedingResponse,
   GetProceedingsResponse
 } from '../../../models/proceedings/GetProceedingResponse';
-import ProceedingsListItem from './ProceedingListItem';
-import ProceedingsListSearchBar from './ProceedingsListSearchBar';
+import ServicesListItem from './ServicesListItem';
+import ServicesListSearchBar from './ServicesListSearchBar';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { EditPatientStackParamList } from 'App';
@@ -21,7 +21,7 @@ type Props = {
   refresh?: boolean;
 };
 
-const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
+const ServicesList: React.FC<Props> = ({ patient, refresh }) => {
   const [currentPatient] = useState<GetCustomer>(patient);
   const [proceedings, setProceedings] = useState<GetProceedingsResponse | undefined | null>(
     undefined
@@ -44,7 +44,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
       if (!hasMoreData.current && !forceListing) return;
       setLoading(true);
 
-      const response = await getProceedings(currentPatient.patientId, pageNumber, limit);
+      const response = await getProceedings(currentPatient.customerId, pageNumber, limit);
       if (response) {
         setProceedings((prevState) => {
           const uniqueProceedings: GetProceedingResponse[] = prevState?.proceedings
@@ -91,7 +91,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
   };
 
   const renderArticle = ({ item }) => (
-    <ProceedingsListItem
+    <ServicesListItem
       proceeding={item}
       navigateToUpdateProceeding={navigateToCreateEditingProceeding.bind(null, item)}
     />
@@ -125,7 +125,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
             }}
           >
             <View>
-              <ProceedingsListSearchBar
+              <ServicesListSearchBar
                 clicked={clicked}
                 setClicked={setClicked}
                 searchPhrase={searchPhrase}
@@ -159,7 +159,7 @@ const ProceedingsList: React.FC<Props> = ({ patient, refresh }) => {
   );
 };
 
-export default ProceedingsList;
+export default ServicesList;
 
 const styles = StyleSheet.create({
   container: {

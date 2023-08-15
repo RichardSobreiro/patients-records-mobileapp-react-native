@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import ProceedingsInfo from '../../components/welcome-screen/patients-crud/proceedings-crud/ProceedingsInfo';
+import ServicesInfo from '../../components/welcome-screen/patients-crud/services-crud/ServicesInfo';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect } from 'react';
@@ -11,7 +11,7 @@ type Props = {
   proceeding?: GetProceedingResponse;
 };
 
-const ProceedingsInfoScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
+const ServicesInfoScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   useEffect(() => {
@@ -30,17 +30,17 @@ const ProceedingsInfoScreen: React.FC<Props> = ({ route, navigation, proceeding 
     <>
       <View style={styles.header}>
         <Header
-          isAddingPatientScreen={true}
-          title={`${createEditProceedingCtx.patient?.patientName!}`}
+          isAddingCustomerScreen={true}
+          title={`${createEditProceedingCtx.patient?.customerName!}`}
           subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
-      <ProceedingsInfo />
+      <ServicesInfo />
     </>
   );
 };
 
-export default ProceedingsInfoScreen;
+export default ServicesInfoScreen;
 
 const styles = StyleSheet.create({
   header: {

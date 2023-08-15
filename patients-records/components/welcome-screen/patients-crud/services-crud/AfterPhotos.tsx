@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../../constants/styles';
 import { CreateEditProceedingContext } from '../../../../store/create-edit-proceedings-context';
-import PatientPhotos from '../PatientPhotos';
+import CustomerPhotos from '../CustomerPhotos';
 import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -14,7 +14,7 @@ const AfterPhotos: React.FC = () => {
       showsVerticalScrollIndicator={true}
       keyboardShouldPersistTaps="handled"
     >
-      <PatientPhotos
+      <CustomerPhotos
         field="afterPhotos"
         title="Fotos do Depois"
         handleChange={createEditProceedingCtx.handleChange}

@@ -6,7 +6,7 @@ import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
 
 type Props = { clicked; searchPhrase; setSearchPhrase; setClicked };
 
-const ProceedingsListSearchBar: React.FC<Props> = ({
+const ServicesListSearchBar: React.FC<Props> = ({
   clicked,
   searchPhrase,
   setSearchPhrase,
@@ -62,7 +62,7 @@ const ProceedingsListSearchBar: React.FC<Props> = ({
     </View>
   );
 };
-export default ProceedingsListSearchBar;
+export default ServicesListSearchBar;
 
 // styles
 const styles = StyleSheet.create({

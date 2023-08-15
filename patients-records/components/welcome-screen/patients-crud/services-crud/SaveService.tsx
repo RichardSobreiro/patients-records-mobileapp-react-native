@@ -7,7 +7,7 @@ import Button, { ButtonTypes } from '../../../ui/Button';
 import DatePicker from '../../../ui/custom-form/DatePicker';
 import Input from '../../../ui/custom-form/Input';
 import { TopBarCreateEditProceedingParamList } from '../../../ui/navigations/CreateEditProceedingTopTabs';
-import PatientPhotos from '../PatientPhotos';
+import CustomerPhotos from '../CustomerPhotos';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +16,7 @@ import { useContext, useMemo } from 'react';
 import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const SaveProceeding: React.FC = () => {
+const SaveService: React.FC = () => {
   const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
   const navigationCreateEditProceeding =
     useNavigation<MaterialTopTabNavigationProp<TopBarCreateEditProceedingParamList>>();
@@ -39,14 +39,14 @@ const SaveProceeding: React.FC = () => {
       let response: any;
       if (createEditProceedingCtx.isEditing) {
         response = await updateProceeding(
-          createEditProceedingCtx.patient!.patientId,
+          createEditProceedingCtx.patient!.customerId,
           createEditProceedingCtx.proceeding!.proceedingId!,
           createUpdateProceedingRequest,
           authCtx.token?.access_token!
         );
       } else {
         response = await createNewProceeding(
-          createEditProceedingCtx.patient!.patientId,
+          createEditProceedingCtx.patient!.customerId,
           createUpdateProceedingRequest,
           authCtx.token?.access_token!
         );
@@ -57,7 +57,7 @@ const SaveProceeding: React.FC = () => {
           `Procedimento ${createEditProceedingCtx.isEditing ? 'salvo' : 'criado'}!`
         );
         createEditProceedingCtx.clearState();
-        navigationEditPatient.navigate('ProceedingsList', {
+        navigationEditPatient.navigate('ServicesList', {
           patient: createEditProceedingCtx.patient!,
           refresh: true
         });
@@ -111,7 +111,7 @@ const SaveProceeding: React.FC = () => {
 
   const BeforePhotosMemo = useMemo(() => {
     return (
-      <PatientPhotos
+      <CustomerPhotos
         field="beforePhotos"
         title="Fotos do Antes"
         values={createEditProceedingCtx.inputs}
@@ -130,7 +130,7 @@ const SaveProceeding: React.FC = () => {
           navigationCreateEditProceeding.navigate('AfterPhotosScreen');
         }}
       >
-        <PatientPhotos
+        <CustomerPhotos
           field="afterPhotos"
           title="Fotos do Depois"
           values={createEditProceedingCtx.inputs}
@@ -152,7 +152,7 @@ const SaveProceeding: React.FC = () => {
           <Button
             type={ButtonTypes.Cancel}
             onPress={() => {
-              navigationEditPatient.navigate('ProceedingsList', {
+              navigationEditPatient.navigate('ServicesList', {
                 patient: createEditProceedingCtx.patient!
               });
             }}
@@ -191,7 +191,7 @@ const SaveProceeding: React.FC = () => {
   );
 };
 
-export default SaveProceeding;
+export default SaveService;
 
 const styles = StyleSheet.create({
   patientInfoContainer: {

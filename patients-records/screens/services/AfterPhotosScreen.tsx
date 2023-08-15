@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import AfterPhotos from '../../components/welcome-screen/patients-crud/proceedings-crud/AfterPhotos';
+import AfterPhotos from '../../components/welcome-screen/patients-crud/services-crud/AfterPhotos';
 import { GetProceedingResponse } from '../../models/proceedings/GetProceedingResponse';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { useContext, useEffect } from 'react';
@@ -30,7 +30,7 @@ const AfterPhotosScreen: React.FC<Props> = ({ route, navigation, proceeding }) =
     <>
       <View style={styles.header}>
         <Header
-          isAddingPatientScreen={true}
+          isAddingCustomerScreen={true}
           title={`${createEditProceedingCtx.patient?.patientName!}`}
           subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />

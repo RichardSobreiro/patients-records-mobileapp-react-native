@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#ffffff',
+    color: Colors.primary500,
     marginBottom: 4
   },
   pressed: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#e3e3e3',
+    borderColor: Colors.primary500,
     backgroundColor: Colors.primary100,
     color: Colors.primary800
   },

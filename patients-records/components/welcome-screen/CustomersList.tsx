@@ -3,11 +3,11 @@ import { Colors } from '../../constants/styles';
 import { GetCustomers } from '../../http/CustomersApi';
 import { GetCustomer } from '../../models/GetCustomersResponse';
 import { AuthContext } from '../../store/auth-context';
-import PatientListItem from './CustomerListItem';
+import CustomerListItem from './CustomerListItem';
 import Header from './Header';
 import SearchBar from './SearchBar';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, SafeAreaView, Text, ActivityIndicator, FlatList } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, FlatList } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const PAGE_SIZE = 10;
@@ -111,16 +111,16 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
     };
   }, [searchPhrase, advancedFilters]);
 
-  const handleEditPatient = (patientId: string, patient?: GetCustomer) => {
-    navigation?.navigate('EditPatient', { patientId, patient });
+  const navigateToEditPatient = (customerId: string) => {
+    navigation?.navigate('EditPatient', { customerId });
   };
 
-  const handleCreatePatient = () => {
-    navigation?.navigate('CreatePatient', { patientId: undefined });
+  const navigateToCreateCustomer = () => {
+    navigation?.navigate('CreateCustomer');
   };
 
   const renderArticle = ({ item }) => (
-    <PatientListItem item={item} editPatient={handleEditPatient} />
+    <CustomerListItem item={item} onNavigateToEditCustomer={navigateToEditPatient} />
   );
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
   const renderFooter = () => {
@@ -137,7 +137,7 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
       <View style={styles.header}>
         <Header
           isWelcomeScreen={true}
-          onCreateEditPatient={handleCreatePatient}
+          onNavigateToCreateCustomer={navigateToCreateCustomer}
           title="Seus Clientes"
         />
       </View>

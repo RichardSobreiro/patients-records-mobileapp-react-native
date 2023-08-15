@@ -1,7 +1,7 @@
-import AfterPhotosScreen from '../../../screens/Proceedings/AfterPhotosScreen';
-import BeforePhotosScreen from '../../../screens/Proceedings/BeforePhotosScreen';
-import ProceedingsInfoScreen from '../../../screens/Proceedings/ProceedingsInfoScreen';
-import SaveProceedingScreen from '../../../screens/Proceedings/SaveProceedingScreen';
+import AfterPhotosScreen from '../../../screens/services/AfterPhotosScreen';
+import BeforePhotosScreen from '../../../screens/services/BeforePhotosScreen';
+import SaveServiceScreen from '../../../screens/services/SaveServiceScreen';
+import ServicesInfoScreen from '../../../screens/services/ServicesInfoScreen';
 import CreateEditProceedingProvider from '../../../store/create-edit-proceedings-context';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
@@ -9,7 +9,7 @@ export type TopBarCreateEditProceedingParamList = {
   ProceedingInfoScreen;
   BeforePhotosScreen;
   AfterPhotosScreen;
-  SaveProceedingScreen;
+  SaveServiceScreen;
 };
 
 const ProceedingTopTabs = createMaterialTopTabNavigator<TopBarCreateEditProceedingParamList>();
@@ -29,7 +29,7 @@ const CreateEditProceedingTopTabs = ({ route, navigation }) => {
           }}
         >
           {({ route, navigation }) => (
-            <ProceedingsInfoScreen route={route} navigation={navigation} proceeding={proceeding} />
+            <ServicesInfoScreen route={route} navigation={navigation} proceeding={proceeding} />
           )}
         </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
@@ -53,13 +53,13 @@ const CreateEditProceedingTopTabs = ({ route, navigation }) => {
           )}
         </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
-          name="SaveProceedingScreen"
+          name="SaveServiceScreen"
           options={{
             tabBarLabel: 'Salvar'
           }}
         >
           {({ route, navigation }) => (
-            <SaveProceedingScreen route={route} navigation={navigation} proceeding={proceeding} />
+            <SaveServiceScreen route={route} navigation={navigation} proceeding={proceeding} />
           )}
         </ProceedingTopTabs.Screen>
       </ProceedingTopTabs.Navigator>

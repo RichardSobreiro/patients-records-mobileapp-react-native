@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import SaveProceeding from '../../components/welcome-screen/patients-crud/proceedings-crud/SaveProceeding';
+import SaveService from '../../components/welcome-screen/patients-crud/services-crud/SaveService';
 import { GetProceedingResponse } from '../../models/proceedings/GetProceedingResponse';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { useContext, useEffect } from 'react';
@@ -11,7 +11,7 @@ type Props = {
   proceeding?: GetProceedingResponse;
 };
 
-const SaveProceedingScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
+const SaveServiceScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   useEffect(() => {
@@ -30,17 +30,17 @@ const SaveProceedingScreen: React.FC<Props> = ({ route, navigation, proceeding }
     <>
       <View style={styles.header}>
         <Header
-          isAddingPatientScreen={true}
-          title={`${createEditProceedingCtx.patient?.patientName!}`}
+          isAddingCustomerScreen={true}
+          title={`${createEditProceedingCtx.patient?.customerName!}`}
           subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
-      <SaveProceeding />
+      <SaveService />
     </>
   );
 };
 
-export default SaveProceedingScreen;
+export default SaveServiceScreen;
 
 const styles = StyleSheet.create({
   header: {

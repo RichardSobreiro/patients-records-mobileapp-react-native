@@ -8,7 +8,7 @@ type Props = {
   navigateToUpdateProceeding: (proceeding: GetProceedingResponse) => void;
 };
 
-const ProceedingsListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProceeding }) => {
+const ServicesListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProceeding }) => {
   return (
     <TouchableOpacity onPress={navigateToUpdateProceeding.bind(null, proceeding)}>
       <View style={styles.proceedingContainer}>
@@ -32,7 +32,7 @@ const ProceedingsListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProc
   );
 };
 
-export default ProceedingsListItem;
+export default ServicesListItem;
 
 const styles = StyleSheet.create({
   proceedingContainer: {

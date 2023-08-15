@@ -1,56 +1,99 @@
-import { CreatePatientRequest } from '../models/CreatePatientRequest';
-import { CreatePatientResponse } from '../models/CreatePatientResponse';
+import { ApiResponse } from '../models/Api/ApiResponse';
+import { ErrorDetails } from '../models/Api/ErrorDetails';
 import { GetCustomer, GetCustomersResponse } from '../models/GetCustomersResponse';
+import { CreateCustomerRequest } from '../models/customers/CreateCustomerRequest';
+import { CreateCustomerResponse } from '../models/customers/CreateCustomerResponse';
+import { UpdateCustomerRequest } from '../models/customers/UpdateCustomerRequest';
+import { UpdateCustomerResponse } from '../models/customers/UpdateCustomerResponse';
 import axios from 'axios';
-import { UpdatePatientRequest } from 'models/UpdatePatientRequest';
-import { UpdatePatientResponse } from 'models/UpdatePatientResponse';
 
-export const createNewPatient = async (request: CreatePatientRequest) => {
-  const url = `${process.env.API_URL}/customers`;
+export const createCustomer = async (
+  accessToken: string,
+  request: CreateCustomerRequest
+): Promise<ApiResponse> => {
+  const URL = `${process.env.API_URL}/customers`;
 
-  const response: CreatePatientResponse | undefined = await axios
-    .post(url, request)
-    .then((response) => {
-      return response.data as CreatePatientResponse;
-    })
-    .catch((err) => {
-      console.log(`createNewPatient method Error:${err}`);
-      return undefined;
+  try {
+    const response = await fetch(URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(request)
     });
 
-  return response;
+    if (response.ok) {
+      const createCustomerResponse: CreateCustomerResponse = await response.json();
+      return new ApiResponse(true, response.status, createCustomerResponse);
+    } else {
+      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
+    }
+  } catch (error: any) {
+    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  }
 };
 
-export const updatePatient = async (request: UpdatePatientRequest) => {
-  const url = `${process.env.API_URL}/customers/${request.patientId}`;
+export const updateCustomer = async (
+  accessToken: string,
+  request: UpdateCustomerRequest
+): Promise<ApiResponse> => {
+  const URL = `${process.env.API_URL}/customers/${request.customerId}`;
 
-  const response: UpdatePatientResponse | undefined = await axios
-    .put(url, request)
-    .then((response) => {
-      return response.data as UpdatePatientResponse;
-    })
-    .catch((err) => {
-      console.log(`updatePatient method Error:${err}`);
-      return undefined;
+  try {
+    const response = await fetch(URL, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(request)
     });
 
-  return response;
+    if (response.ok) {
+      const createCustomerResponse: UpdateCustomerResponse = await response.json();
+      return new ApiResponse(true, response.status, createCustomerResponse);
+    } else {
+      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
+    }
+  } catch (error: any) {
+    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  }
 };
 
-export const GetCustomerById = async (patientId: string) => {
-  const url = `${process.env.API_URL}/customers/${patientId}`;
+export const getCustomerById = async (
+  accessToken: string,
+  customerId: string
+): Promise<ApiResponse> => {
+  const URL = `${process.env.API_URL}/customers/${customerId}`;
 
-  const response: GetCustomer | undefined = await axios
-    .get(url)
-    .then((response) => {
-      return response.data as GetCustomer;
-    })
-    .catch((err) => {
-      console.log(`GetCustomerById method Error:${err}`);
-      return undefined;
+  try {
+    const response = await fetch(URL, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
 
-  return response;
+    if (response.ok) {
+      const getCustomerResponse: GetCustomersResponse = await response.json();
+      return new ApiResponse(true, response.status, getCustomerResponse);
+    } else {
+      const error = await response.json();
+      return new ApiResponse(
+        false,
+        response.status,
+        error.message,
+        new ErrorDetails(error.message, response.status)
+      );
+    }
+  } catch (error: any) {
+    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  }
 };
 
 export const GetCustomers = async (
@@ -76,7 +119,7 @@ export const GetCustomers = async (
       : ''
   }`;
 
-  if (advancedFilters.serviceTypeIds && advancedFilters.serviceTypeIds.length > 0) {
+  if (advancedFilters?.serviceTypeIds && advancedFilters.serviceTypeIds.length > 0) {
     for (const serviceTypeId of advancedFilters.serviceTypeIds) {
       url += `&serviceTypeIds=${serviceTypeId}`;
     }
