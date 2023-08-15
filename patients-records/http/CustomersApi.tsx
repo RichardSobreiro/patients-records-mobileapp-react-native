@@ -76,11 +76,11 @@ export const GetCustomers = async (
       : ''
   }`;
 
-  url += `${
-    advancedFilters?.proceedingTypeId
-      ? '&proceedingTypeId=' + advancedFilters?.proceedingTypeId
-      : ''
-  }`;
+  if (advancedFilters.serviceTypeIds && advancedFilters.serviceTypeIds.length > 0) {
+    for (const serviceTypeId of advancedFilters.serviceTypeIds) {
+      url += `&serviceTypeIds=${serviceTypeId}`;
+    }
+  }
 
   const response = await fetch(url, {
     method: 'GET',

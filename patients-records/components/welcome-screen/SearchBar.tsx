@@ -35,9 +35,10 @@ const SearchBar: React.FC<Props> = ({
       startDate,
       startDateIsValid: true,
       endDate,
-      endDateIsValid: true
+      endDateIsValid: true,
+      serviceTypeIds: selectedServiceTypes.map((s) => s.serviceTypeId)
     });
-  }, [startDate, endDate, setAdvancedFilters]);
+  }, [startDate, endDate, selectedServiceTypes, setAdvancedFilters]);
 
   return (
     <>

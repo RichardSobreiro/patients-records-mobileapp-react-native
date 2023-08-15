@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#ffffff',
+    //color: '#ffffff',
+    color: Colors.primary500,
     marginBottom: 4
   },
   input: {
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#e3e3e3'
+    borderColor: Colors.primary500
   },
   inputMultiline: {
     minHeight: 100,

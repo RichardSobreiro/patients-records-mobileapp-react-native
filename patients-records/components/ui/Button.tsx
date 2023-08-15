@@ -17,13 +17,15 @@ interface Props {
 
 const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, type }) => {
   let BUTTON_COLOR = { backgroundColor: Colors.primary500 };
+  let TEXT_COLOR = { color: '#ffffff' };
   if (type) {
     switch (type) {
       case ButtonTypes.Primary:
         BUTTON_COLOR = { backgroundColor: Colors.secondary500 };
         break;
       case ButtonTypes.Cancel:
-        BUTTON_COLOR = { backgroundColor: Colors.tertiary500 };
+        BUTTON_COLOR = { backgroundColor: Colors.tertiary300 };
+        TEXT_COLOR = { color: Colors.tertiary800 };
         break;
       default:
         BUTTON_COLOR = { backgroundColor: Colors.primary500 };
@@ -35,8 +37,8 @@ const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, typ
       style={({ pressed }) => [styles.button, BUTTON_COLOR, pressed && styles.pressed, pressable]}
       onPress={onPress}
     >
-      <View style={view}>
-        <Text style={[styles.buttonText, text]}>{children}</Text>
+      <View style={[view, { flex: 1 }]}>
+        <Text style={[styles.buttonText, text, TEXT_COLOR]}>{children}</Text>
       </View>
     </Pressable>
   );
@@ -54,7 +56,8 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.25,
-    shadowRadius: 4
+    shadowRadius: 4,
+    flex: 1
   },
   pressed: {
     opacity: 0.7

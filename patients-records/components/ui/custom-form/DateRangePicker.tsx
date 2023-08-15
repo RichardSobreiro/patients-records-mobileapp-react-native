@@ -1,3 +1,4 @@
+import { Colors } from '../../../constants/styles';
 import React, { useCallback } from 'react';
 import { View, Text } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -40,7 +41,7 @@ const DateRangePicker: React.FC<Props> = ({
   return (
     <SafeAreaProvider>
       <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
-        <Text>{text}</Text>
+        <Text style={{ color: Colors.primary500 }}>{text}</Text>
         <DatePickerModal
           locale="pt"
           mode="range"

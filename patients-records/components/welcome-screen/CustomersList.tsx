@@ -21,6 +21,7 @@ export type AdvancedFilters = {
   startDateIsValid: boolean;
   endDate?: Date;
   endDateIsValid: boolean;
+  serviceTypeIds?: string[];
 };
 
 const CustomersList: React.FC<Props> = ({ navigation }) => {
@@ -149,7 +150,11 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
             setMustResetList={resetList}
           />
           {customers?.length === 0 && !hasMoreData ? (
-            <Text style={{ fontSize: 18, textAlign: 'center' }}>Nenhum paciente encontrado!</Text>
+            <Text
+              style={{ fontSize: 18, textAlign: 'center', marginTop: 40, color: Colors.primary500 }}
+            >
+              Nenhum paciente encontrado!
+            </Text>
           ) : (
             <FlatList
               data={customers}

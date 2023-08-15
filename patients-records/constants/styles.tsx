@@ -6,6 +6,7 @@ export const Colors = {
   secondary500: '#3c8040',
   secondary800: '#284b2b',
   tertiary100: '#e0e0e0',
+  tertiary300: '#d0d0d0',
   tertiary500: '#919191',
   tertiary800: '#535353',
   error100: '#fcbfbf',
