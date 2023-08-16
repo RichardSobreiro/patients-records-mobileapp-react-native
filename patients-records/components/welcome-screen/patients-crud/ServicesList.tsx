@@ -1,120 +1,182 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
-import { getProceedings } from '../../../http/ProceedingsApi';
-import { GetCustomer } from '../../../models/GetCustomersResponse';
-import {
-  GetProceedingResponse,
-  GetProceedingsResponse
-} from '../../../models/proceedings/GetProceedingResponse';
+import { getServices } from '../../../http/ServicesApi';
+import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
+import { AuthContext } from '../../../store/auth-context';
+import { NotificationContext } from '../../../store/notification-context';
+import Header from '../Header';
 import ServicesListItem from './ServicesListItem';
 import ServicesListSearchBar from './ServicesListSearchBar';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import { EditPatientStackParamList } from 'App';
-import { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
+// import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+// import { useNavigation } from '@react-navigation/native';
+// import { EditPatientStackParamList } from 'App';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator, FlatList, Platform } from 'react-native';
+import { FAB, Portal } from 'react-native-paper';
 
 const PAGE_SIZE = 10;
 
 type Props = {
-  patient: GetCustomer;
-  refresh?: boolean;
+  customerId: string;
 };
 
-const ServicesList: React.FC<Props> = ({ patient, refresh }) => {
-  const [currentPatient] = useState<GetCustomer>(patient);
-  const [proceedings, setProceedings] = useState<GetProceedingsResponse | undefined | null>(
-    undefined
-  );
-  const hasMoreData = useRef(true);
+const ServicesList: React.FC<Props> = ({ customerId }) => {
+  const authCtx = useContext(AuthContext);
+  const notificationCtx = useContext(NotificationContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [servicesList, setServicesList] = useState<GetServiceResponse[]>([]);
   const [page, setPage] = useState(1);
-  const [isLoading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(!!refresh);
-  const navigationEditPatient = useNavigation<BottomTabNavigationProp<EditPatientStackParamList>>();
+  const [hasMoreData, setHasMoreData] = useState(true);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
 
-  useEffect(() => {
-    const getProceedingsPage = async (
-      pageNumber: number,
-      limit: number,
-      forceListing?: boolean
-    ) => {
-      if (!hasMoreData.current && !forceListing) return;
-      setLoading(true);
+  const [isExtended, setIsExtended] = useState(false);
+  const isIOS = Platform.OS === 'ios';
+  const onScroll = ({ nativeEvent }) => {
+    const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
 
-      const response = await getProceedings(currentPatient.customerId, pageNumber, limit);
-      if (response) {
-        setProceedings((prevState) => {
-          const uniqueProceedings: GetProceedingResponse[] = prevState?.proceedings
-            ? [...prevState?.proceedings!]
-            : [];
-          response!.proceedings?.forEach((item) => {
-            if (
-              uniqueProceedings!.findIndex((item2) => item2.proceedingId === item.proceedingId) < 0
-            ) {
-              uniqueProceedings.push(item);
-            }
-          });
-          const newState = {
-            ...response,
-            proceedings: uniqueProceedings
-          };
-          hasMoreData.current = !!(
-            newState.proceedings && newState.proceedings?.length < newState.proceedingsCount
+    setIsExtended(currentScrollPosition <= 0);
+  };
+
+  const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
+
+  const getServiceListAsync = useCallback(
+    async (nextPage: number) => {
+      if (authCtx.token?.access_token) {
+        setIsLoading(true);
+        console.log('CUSTOMERS LIST - Page = ', page);
+        // const startDateObject = isDate(startDate)
+        //   ? new Date(startDate)
+        //   : undefined;
+        // const endDateObject = isDate(endDate) ? new Date(endDate) : undefined;
+
+        // const selectedTypesIds = (selectedTypes as Item[])
+        //   ?.filter((type) => type.selected)
+        //   ?.map((selectedType) => selectedType.id);
+
+        const response = await getServices(
+          authCtx.token.access_token,
+          page as unknown as string,
+          PAGE_SIZE as unknown as string,
+          customerId as string
+        );
+
+        if (response.ok) {
+          console.log(
+            `SERVICES LIST - SUCCESS - PAGE: ${nextPage} - PAGE SIZE: ${response.body.servicesList?.length}`
           );
-          if (newState.proceedings?.length! < PAGE_SIZE) {
-            hasMoreData.current = false;
+          if (servicesList.length > 0 && page > 1) {
+            setServicesList((prevValue) => [...prevValue, ...response.body.servicesList]);
+          } else {
+            setServicesList([...response.body.servicesList]);
           }
-          return newState;
-        });
+        } else {
+          console.log(`SERVICES LIST - ERROR - PAGE: ${nextPage}`);
+          const notification = {
+            status: 'error',
+            title: 'Opsss...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          };
+          notificationCtx.showNotification(notification);
+        }
+
+        if (response.body.next) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
       }
-      setLoading(false);
-      setRefreshing(false);
-    };
-    const pageNumber: number = proceedings ? proceedings.next?.pageNumber! : 0;
-    getProceedingsPage(pageNumber, PAGE_SIZE);
+    },
+    [authCtx.token?.access_token, customerId, notificationCtx, page, servicesList.length]
+  );
 
-    navigationEditPatient.addListener('focus', refreshData);
-  }, [page, currentPatient, proceedings, refreshing, navigationEditPatient]);
+  useEffect(() => {
+    getServiceListAsync(1);
+  }, []);
 
-  const refreshData = () => {
-    setPage(1);
-    setRefreshing(true);
-    setProceedings(undefined);
-    hasMoreData.current = true;
+  const fetchMoreData = () => {
+    if (hasMoreData && !isLoading) {
+      setPage((prevState) => {
+        const nextPage = prevState + 1;
+        getServiceListAsync(nextPage);
+        return nextPage;
+      });
+    }
   };
 
-  const navigateToCreateEditingProceeding = (proceeding: GetProceedingResponse) => {
-    navigationEditPatient.navigate('EditProceeding', { patient, proceeding });
+  const onSubmitFilter = async () => {
+    // if (!startDateIsValid || !endDateIsValid) {
+    //   return;
+    // }
+    // await getServiceListAsync();
   };
+
+  useEffect(() => {
+    onSubmitFilter();
+  }, [page]);
 
   const renderArticle = ({ item }) => (
-    <ServicesListItem
-      proceeding={item}
-      navigateToUpdateProceeding={navigateToCreateEditingProceeding.bind(null, item)}
-    />
+    <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
   );
 
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
 
-  const renderFooter = () => (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      {hasMoreData.current && <ActivityIndicator color={Colors.error500} />}
-    </View>
-  );
+  const renderFooter = () => {
+    return (
+      <>
+        <View style={styles.center}>
+          {hasMoreData && isLoading && <ActivityIndicator color={Colors.error500} size={40} />}
+        </View>
+      </>
+    );
+  };
 
-  const keyExtractor = (item: GetProceedingResponse) => item.proceedingId;
+  const keyExtractor = (item: GetServiceResponse) => item.serviceId;
 
   return (
     <>
+      <Portal>
+        <FAB.Group
+          open={isOpenFabGroup}
+          visible
+          icon={isOpenFabGroup ? 'minus' : 'plus'}
+          actions={[
+            { icon: 'plus', onPress: () => console.log('Pressed add') },
+            {
+              icon: 'calendar-today',
+              label: 'Atendimentos Agendados',
+              onPress: () => console.log('Pressed email')
+            },
+            {
+              icon: 'email',
+              label: 'Enviar uma Mensagem',
+              onPress: () => console.log('Pressed email')
+            },
+            {
+              icon: 'plus',
+              label: 'Novo Atendimento',
+              onPress: () => console.log('Pressed notifications')
+            }
+          ]}
+          onStateChange={({ open }) => setIsOpenFabGroup(open)}
+          onPress={() => {
+            if (isOpenFabGroup) {
+              // do something if the speed dial is open
+            }
+          }}
+          backdropColor={'transparent'}
+          rippleColor={Colors.primary100}
+          style={styles.fabGroupStyle}
+          fabStyle={styles.fabStyle}
+          color={Colors.primary100}
+        />
+      </Portal>
+      <View style={styles.header}>
+        <Header isAddingCustomerScreen={true} title="Atendimentos" />
+      </View>
       <View style={styles.container}>
         <View style={styles.content}>
           <View
@@ -133,26 +195,39 @@ const ServicesList: React.FC<Props> = ({ patient, refresh }) => {
               />
             </View>
           </View>
-          <FlatList
-            data={proceedings?.proceedings}
-            renderItem={renderArticle}
-            keyExtractor={keyExtractor}
-            showsVerticalScrollIndicator={true}
-            ItemSeparatorComponent={renderDivider}
-            ListFooterComponent={renderFooter}
-            initialNumToRender={PAGE_SIZE}
-            onEndReached={() => setPage((page) => page + 1)}
-            onEndReachedThreshold={1}
-            onRefresh={refreshData}
-            refreshing={refreshing}
-            ListEmptyComponent={() => {
-              return (
-                <Text style={{ fontSize: 18, textAlign: 'center' }}>
-                  {isLoading ? '' : 'Nenhum procedimento encontrado!'}
-                </Text>
-              );
-            }}
-          />
+          {servicesList?.length === 0 && !hasMoreData ? (
+            <Text
+              style={{ fontSize: 18, textAlign: 'center', marginTop: 40, color: Colors.primary500 }}
+            >
+              Nenhum atendimento encontrado!
+            </Text>
+          ) : (
+            <FlatList
+              data={servicesList}
+              renderItem={renderArticle}
+              ListFooterComponent={renderFooter}
+              ListEmptyComponent={() => {
+                return (
+                  <Text style={{ fontSize: 18, textAlign: 'center' }}>
+                    {isLoading ? '' : 'Nenhum procedimento encontrado!'}
+                  </Text>
+                );
+              }}
+              style={{ paddingHorizontal: 25 }}
+              onEndReachedThreshold={0.2}
+              keyExtractor={keyExtractor}
+              onEndReached={fetchMoreData}
+              showsVerticalScrollIndicator={true}
+              ItemSeparatorComponent={renderDivider}
+              ListHeaderComponent={
+                <>
+                  <Text style={styles.listHeaderText}>Data e Hora</Text>
+                  <Text style={styles.listHeaderText}>Tipo(s)</Text>
+                </>
+              }
+              ListHeaderComponentStyle={styles.listHeaderStyle}
+            />
+          )}
         </View>
       </View>
     </>
@@ -162,6 +237,28 @@ const ServicesList: React.FC<Props> = ({ patient, refresh }) => {
 export default ServicesList;
 
 const styles = StyleSheet.create({
+  fabGroupStyle: {
+    bottom: 45,
+    right: 0
+  },
+  fabStyle: {
+    backgroundColor: Colors.primary800,
+    color: Colors.primary100
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    verticalAlign: 'middle'
+  },
+  header: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#dbdbdb',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   container: {
     flex: 1
   },
@@ -183,5 +280,17 @@ const styles = StyleSheet.create({
   articleSeparator: {
     borderBottomWidth: 1,
     borderBottomColor: '#ed7669'
+  },
+  listHeaderStyle: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ed7669',
+    paddingBottom: 10
+  },
+  listHeaderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.primary500,
+    flex: 1
   }
 });

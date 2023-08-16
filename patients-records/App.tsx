@@ -2,7 +2,7 @@ import IconButton from './components/ui/IconButton';
 import CreateEditProceedingTopTabs from './components/ui/navigations/CreateEditProceedingTopTabs';
 import { Colors } from './constants/styles';
 import CreateCustomerScreen from './screens/CreateCustomerScreen';
-import CustomerScreen from './screens/EditCustomerScreen';
+import EditCustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
 import ServicesListScreen from './screens/ServicesListScreen';
 import SignupScreen from './screens/SignupScreen';
@@ -31,7 +31,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export type EditPatientStackParamList = {
   PatientInfo: { customerId: string };
-  ServicesList: { patient: GetCustomer; refresh?: boolean };
+  ServicesList: { customerId: string };
   CreateProceeding: { patient: GetCustomer };
   EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
 };
@@ -63,7 +63,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
     >
       <Tab.Screen
         name="PatientInfo"
-        component={CustomerScreen}
+        component={EditCustomerScreen}
         initialParams={{ customerId }}
         options={{
           tabBarLabel: 'Informações Básicas',
@@ -75,20 +75,20 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
       <Tab.Screen
         name="ServicesList"
         component={ServicesListScreen}
-        initialParams={{ refresh }}
+        initialParams={{ customerId }}
         options={{
-          tabBarLabel: 'Procedimentos',
+          tabBarLabel: 'Atendimentos',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="book-medical" size={size} color={color} />
           )
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="CreateProceeding"
         component={CreateEditProceedingTopTabs}
         //initialParams={ }}
         options={{
-          tabBarLabel: 'Novo Procedimento',
+          tabBarLabel: 'Novo Atendimento',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="plus-square" size={size} color={color} />
           )
@@ -102,7 +102,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
           tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null
         }}
-      />
+      />*/}
     </Tab.Navigator>
   );
 };

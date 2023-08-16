@@ -1,31 +1,35 @@
-import { Colors } from '../../../constants/styles';
-import { DateParser } from '../../../util/dateParser';
-import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
-import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
+import { formatDatePTBR, formatTimePTBR } from '../../../util/date-helpers';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
-  proceeding: GetProceedingResponse;
-  navigateToUpdateProceeding: (proceeding: GetProceedingResponse) => void;
+  service: GetServiceResponse;
+  navigateToUpdateProceeding: (customerId: string, serviceId: string) => void;
 };
 
-const ServicesListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProceeding }) => {
+const ServicesListItem: React.FC<Props> = ({ service, navigateToUpdateProceeding }) => {
   return (
-    <TouchableOpacity onPress={navigateToUpdateProceeding.bind(null, proceeding)}>
-      <View style={styles.proceedingContainer}>
-        {/* Caching image for better performance: https://github.com/DylanVann/react-native-fast-image */}
-        {proceeding.afterPhotos && proceeding.afterPhotos.length > 0 ? (
-          <Image source={{ uri: proceeding.afterPhotos[0].url }} style={styles.proceedingImage} />
-        ) : (
-          <View style={styles.proceedingNoImage}>
-            <Text style={{ color: '#ffffff' }}>Nenhuma imagem do último procedimento</Text>
-          </View>
-        )}
+    <TouchableOpacity
+      onPress={navigateToUpdateProceeding.bind(null, service.customerId, service.serviceId)}
+    >
+      <View style={styles.serviceContainer}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.proceedingTitle} numberOfLines={3}>
-            {proceeding.date ? DateParser(new Date(proceeding.date)) : 'Nenhuma data cadastrada'}
+          <Text style={styles.serviceText} numberOfLines={3}>
+            {service.date ? formatDatePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
           </Text>
+          <Text style={styles.serviceText} numberOfLines={3}>
+            {service.date ? formatTimePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
+          </Text>
+        </View>
 
-          <Text style={styles.proceedingNotes}>{proceeding.proceedingTypeDescription}</Text>
+        <View style={{ flex: 1 }}>
+          {service.serviceTypes.map((item) => {
+            return (
+              <Text style={styles.serviceText} numberOfLines={3}>
+                {item.serviceTypeDescription}
+              </Text>
+            );
+          })}
         </View>
       </View>
     </TouchableOpacity>
@@ -35,30 +39,15 @@ const ServicesListItem: React.FC<Props> = ({ proceeding, navigateToUpdateProceed
 export default ServicesListItem;
 
 const styles = StyleSheet.create({
-  proceedingContainer: {
+  serviceContainer: {
     flexDirection: 'row',
     paddingVertical: 15
   },
-  proceedingImage: {
-    width: 150,
-    height: 85,
-    resizeMode: 'contain',
-    marginRight: 15
-  },
-  proceedingNoImage: {
-    width: 150,
-    height: 85,
-    marginRight: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.primary500
-  },
-  proceedingTitle: {
+  serviceText: {
     fontSize: 18,
-    fontWeight: 'bold',
     marginBottom: 10
   },
-  proceedingNotes: {
+  serviceNotes: {
     fontSize: 14
   }
 });

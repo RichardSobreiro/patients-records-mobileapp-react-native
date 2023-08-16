@@ -9,7 +9,6 @@ import LoadingOverlay from '../../ui/LoadingOverlay';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import Header from '../Header';
-import ServicesList from './ServicesList';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -259,72 +258,72 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
           subtitle={headerSubtitle}
         />
       </View>
-      {isAtServicesList ? (
+      {/* {isAtServicesList ? (
         <ServicesList patient={customer!} />
-      ) : (
-        <KeyboardAwareScrollView style={styles.content}>
-          <Input
-            field="customerName"
-            label="Nome"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-            onBlurHandler={handleBlur}
-          />
-          <Input
-            field="email"
-            label="E-mail (Opcional)"
-            keyboardType="email-address"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-            onBlurHandler={handleBlur}
-          />
-          <Input
-            field="phoneNumber"
-            label="Número de Telefone"
-            keyboardType="phone-pad"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-            onBlurHandler={handleBlur}
-          />
-          <DatePicker
-            field="birthDate"
-            label="Data de Nascimento"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-          />
-          <View style={styles.buttons}>
-            <Button
-              onPress={handleCancel}
-              text={styles.buttonTextStyles}
-              pressable={[styles.buttonPressable]}
-              type={ButtonTypes.Cancel}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type={ButtonTypes.Primary}
-              onPress={submitHandler}
-              text={styles.buttonTextStyles}
-              pressable={[
-                {
-                  opacity: isFormValid ? 1 : 0.5
-                },
-                styles.buttonPressable
-              ]}
-            >
-              Salvar
-            </Button>
-          </View>
-        </KeyboardAwareScrollView>
-      )}
+      ) : ( */}
+      <KeyboardAwareScrollView style={styles.content}>
+        <Input
+          field="customerName"
+          label="Nome"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+        />
+        <Input
+          field="email"
+          label="E-mail (Opcional)"
+          keyboardType="email-address"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+        />
+        <Input
+          field="phoneNumber"
+          label="Número de Telefone"
+          keyboardType="phone-pad"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+        />
+        <DatePicker
+          field="birthDate"
+          label="Data de Nascimento"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+        />
+        <View style={styles.buttons}>
+          <Button
+            onPress={handleCancel}
+            text={styles.buttonTextStyles}
+            pressable={[styles.buttonPressable]}
+            type={ButtonTypes.Cancel}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type={ButtonTypes.Primary}
+            onPress={submitHandler}
+            text={styles.buttonTextStyles}
+            pressable={[
+              {
+                opacity: isFormValid ? 1 : 0.5
+              },
+              styles.buttonPressable
+            ]}
+          >
+            Salvar
+          </Button>
+        </View>
+      </KeyboardAwareScrollView>
+      {/* )} */}
     </>
   );
 };

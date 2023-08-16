@@ -2,7 +2,6 @@
 import { Colors } from '../../constants/styles';
 import { GetCustomer } from '../../models/GetCustomersResponse';
 import { getAgePTBR } from '../../util/date-helpers';
-import { DateParser } from '../../util/dateParser';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
