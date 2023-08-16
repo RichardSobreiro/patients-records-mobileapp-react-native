@@ -1,6 +1,7 @@
 import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
 import { formatDatePTBR, formatTimePTBR } from '../../../util/date-helpers';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Surface } from 'react-native-paper';
 
 type Props = {
   service: GetServiceResponse;
@@ -12,26 +13,28 @@ const ServicesListItem: React.FC<Props> = ({ service, navigateToUpdateProceeding
     <TouchableOpacity
       onPress={navigateToUpdateProceeding.bind(null, service.customerId, service.serviceId)}
     >
-      <View style={styles.serviceContainer}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.serviceText} numberOfLines={3}>
-            {service.date ? formatDatePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
-          </Text>
-          <Text style={styles.serviceText} numberOfLines={3}>
-            {service.date ? formatTimePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
-          </Text>
-        </View>
+      <Surface style={styles.surface} elevation={1}>
+        <View style={styles.serviceContainer}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.serviceText} numberOfLines={3}>
+              {service.date ? formatDatePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
+            </Text>
+            <Text style={styles.serviceText} numberOfLines={3}>
+              {service.date ? formatTimePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
+            </Text>
+          </View>
 
-        <View style={{ flex: 1 }}>
-          {service.serviceTypes.map((item) => {
-            return (
-              <Text style={styles.serviceText} numberOfLines={3}>
-                {item.serviceTypeDescription}
-              </Text>
-            );
-          })}
+          <View style={{ flex: 1 }}>
+            {service.serviceTypes.map((item) => {
+              return (
+                <Text style={styles.serviceText} numberOfLines={3}>
+                  {item.serviceTypeDescription}
+                </Text>
+              );
+            })}
+          </View>
         </View>
-      </View>
+      </Surface>
     </TouchableOpacity>
   );
 };
@@ -39,9 +42,14 @@ const ServicesListItem: React.FC<Props> = ({ service, navigateToUpdateProceeding
 export default ServicesListItem;
 
 const styles = StyleSheet.create({
+  surface: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    padding: 8
+  },
   serviceContainer: {
-    flexDirection: 'row',
-    paddingVertical: 15
+    flexDirection: 'row'
   },
   serviceText: {
     fontSize: 18,

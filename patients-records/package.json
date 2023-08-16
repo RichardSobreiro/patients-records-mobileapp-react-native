@@ -45,6 +45,7 @@
     "react-native-image-slider-box": "^2.0.7",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-mask-input": "^1.2.3",
+    "react-native-multi-steps": "^0.1.8",
     "react-native-pager-view": "6.1.2",
     "react-native-paper": "^5.10.1",
     "react-native-paper-dates": "^0.18.13",

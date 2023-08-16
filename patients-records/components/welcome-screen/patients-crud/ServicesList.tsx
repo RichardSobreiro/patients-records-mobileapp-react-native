@@ -7,6 +7,7 @@ import { NotificationContext } from '../../../store/notification-context';
 import Header from '../Header';
 import ServicesListItem from './ServicesListItem';
 import ServicesListSearchBar from './ServicesListSearchBar';
+import CreateService from './services-crud/CreateService';
 // import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 // import { useNavigation } from '@react-navigation/native';
 // import { EditPatientStackParamList } from 'App';
@@ -30,18 +31,12 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [page, setPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
 
+  const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
+
+  const [isVisibleCreateService, setVisibleCreateService] = useState<boolean>(false);
+
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
-
-  const [isExtended, setIsExtended] = useState(false);
-  const isIOS = Platform.OS === 'ios';
-  const onScroll = ({ nativeEvent }) => {
-    const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
-
-    setIsExtended(currentScrollPosition <= 0);
-  };
-
-  const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
 
   const getServiceListAsync = useCallback(
     async (nextPage: number) => {
@@ -118,9 +113,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
     onSubmitFilter();
   }, [page]);
 
-  const renderArticle = ({ item }) => (
-    <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
-  );
+  const renderArticle = ({ item }) => {
+    return (
+      <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
+    );
+  };
 
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
 
@@ -138,6 +135,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   return (
     <>
+      <CreateService
+        customerId={customerId}
+        visible={isVisibleCreateService}
+        setVisible={setVisibleCreateService}
+      />
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}
@@ -148,17 +150,17 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
             {
               icon: 'calendar-today',
               label: 'Atendimentos Agendados',
-              onPress: () => console.log('Pressed email')
+              onPress: () => console.log('Pressed calendar')
             },
             {
               icon: 'email',
               label: 'Enviar uma Mensagem',
-              onPress: () => console.log('Pressed email')
+              onPress: () => console.log('Pressed send message')
             },
             {
               icon: 'plus',
               label: 'Novo Atendimento',
-              onPress: () => console.log('Pressed notifications')
+              onPress: () => setVisibleCreateService(true)
             }
           ]}
           onStateChange={({ open }) => setIsOpenFabGroup(open)}

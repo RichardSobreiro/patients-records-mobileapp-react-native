@@ -1,47 +1,57 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../../constants/styles';
-import { CreateEditProceedingContext } from '../../../../store/create-edit-proceedings-context';
 import DatePicker from '../../../ui/custom-form/DatePicker';
-import Input from '../../../ui/custom-form/Input';
-import { useContext } from 'react';
+import DatePickerV2 from '../../../ui/custom-form/DatePickerV2';
+import TimerPicker from '../../../ui/custom-form/TimerPicker';
+import { ErrorType, Inputs, Touched } from './CreateService';
+import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import FileCustom from 'util/types/FileCustom';
 
-const ServicesInfo: React.FC = () => {
-  const createEditProceedingCtx = useContext(CreateEditProceedingContext);
+type Props = {
+  inputs: Inputs;
+  touched: Touched;
+  errors: ErrorType;
+  changeHandler: (
+    field: string,
+    enteredValue: string | Date | GetServiceTypeResponse[] | FileCustom[] | undefined
+  ) => void;
+  blurHandler: (field: string) => void;
+};
 
+const ServicesInfo: React.FC<Props> = ({ inputs, touched, errors, changeHandler, blurHandler }) => {
   return (
     <KeyboardAwareScrollView
       style={styles.content}
       showsVerticalScrollIndicator={true}
       keyboardShouldPersistTaps="handled"
     >
-      <DatePicker
+      {/* <DatePicker
         field="date"
-        label="Data do Procedimento"
-        values={createEditProceedingCtx.inputs}
-        touched={createEditProceedingCtx.touched}
-        errors={createEditProceedingCtx.errors}
-        onChangeHandler={createEditProceedingCtx.handleChange}
+        label="Data do Atendimento"
+        values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+      /> */}
+      <DatePickerV2
+        field="date"
+        label="Data do Atendimento"
+        values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
       />
-      <Input
-        field="type"
-        label="Tipo"
-        values={createEditProceedingCtx.inputs}
-        touched={createEditProceedingCtx.touched}
-        errors={createEditProceedingCtx.errors}
-        onChangeHandler={createEditProceedingCtx.handleChange}
-        onBlurHandler={createEditProceedingCtx.handleBlur}
-      />
-      <Input
-        field="notes"
-        label="Observações Gerais"
-        values={createEditProceedingCtx.inputs}
-        touched={createEditProceedingCtx.touched}
-        errors={createEditProceedingCtx.errors}
-        onChangeHandler={createEditProceedingCtx.handleChange}
-        onBlurHandler={createEditProceedingCtx.handleBlur}
-        textInputConfig={{ multiline: true }}
+      <TimerPicker
+        field="time"
+        label="Hora do Atendimento"
+        values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
       />
     </KeyboardAwareScrollView>
   );
@@ -50,28 +60,16 @@ const ServicesInfo: React.FC = () => {
 export default ServicesInfo;
 
 const styles = StyleSheet.create({
-  patientInfoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-    marginBottom: 50,
-    marginTop: 15
-  },
-  patientInfoText: {
-    fontSize: 24,
-    textAlign: 'center'
-  },
   content: {
-    backgroundColor: Colors.primary800,
-    marginTop: 20,
+    backgroundColor: 'transparent',
+    marginTop: 10,
     marginBottom: 15,
-    marginHorizontal: 32,
     padding: 16,
     borderRadius: 8,
-    elevation: 2,
+    elevation: 1,
     shadowColor: '#000000',
-    shadowOffset: { width: 1, height: 1 },
+    shadowOffset: { width: 0.1, height: 0.1 },
     shadowOpacity: 0.35,
-    shadowRadius: 4
+    shadowRadius: 1
   }
 });

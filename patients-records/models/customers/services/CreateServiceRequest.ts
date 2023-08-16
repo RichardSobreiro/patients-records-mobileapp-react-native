@@ -1,12 +1,6 @@
 /** @format */
+import FileCustom from '../../../util/types/FileCustom';
 import { GetServiceTypeResponse } from '../service-types/GetServiceTypesResponse';
-
-type FileCustom = {
-  id?: string;
-  file: File;
-  url?: string;
-  name?: string;
-};
 
 export class CreateServiceRequest {
   constructor(
