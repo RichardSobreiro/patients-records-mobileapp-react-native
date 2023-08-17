@@ -1,13 +1,13 @@
 import AfterPhotosScreen from '../../../screens/services/AfterPhotosScreen';
-import BeforePhotosScreen from '../../../screens/services/BeforePhotosScreen';
 import SaveServiceScreen from '../../../screens/services/SaveServiceScreen';
-import ServicesInfoScreen from '../../../screens/services/ServicesInfoScreen';
+import Step1ServiceInfoScreen from '../../../screens/services/Step1ServiceInfoScreen';
+import Step2BeforeServiceScreen from '../../../screens/services/Step2BeforeServiceScreen';
 import CreateEditProceedingProvider from '../../../store/create-edit-proceedings-context';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 export type TopBarCreateEditProceedingParamList = {
   ProceedingInfoScreen;
-  BeforePhotosScreen;
+  Step2BeforeServiceScreen;
   AfterPhotosScreen;
   SaveServiceScreen;
 };
@@ -29,17 +29,21 @@ const CreateEditProceedingTopTabs = ({ route, navigation }) => {
           }}
         >
           {({ route, navigation }) => (
-            <ServicesInfoScreen route={route} navigation={navigation} proceeding={proceeding} />
+            <Step1ServiceInfoScreen route={route} navigation={navigation} proceeding={proceeding} />
           )}
         </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen
-          name="BeforePhotosScreen"
+          name="Step2BeforeServiceScreen"
           options={{
             tabBarLabel: 'Fotos do Antes'
           }}
         >
           {({ route, navigation }) => (
-            <BeforePhotosScreen route={route} navigation={navigation} proceeding={proceeding} />
+            <Step2BeforeServiceScreen
+              route={route}
+              navigation={navigation}
+              proceeding={proceeding}
+            />
           )}
         </ProceedingTopTabs.Screen>
         <ProceedingTopTabs.Screen

@@ -1,13 +1,12 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../../constants/styles';
-import DatePicker from '../../../ui/custom-form/DatePicker';
-import DatePickerV2 from '../../../ui/custom-form/DatePickerV2';
-import TimerPicker from '../../../ui/custom-form/TimerPicker';
+import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
+import FileCustom from '../../../../util/types/FileCustom';
+import RichTextInput from '../../../ui/custom-form/RichTextInput';
+import CustomerPhotos from '../CustomerPhotos';
 import { ErrorType, Inputs, Touched } from './CreateService';
-import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import FileCustom from 'util/types/FileCustom';
 
 type Props = {
   inputs: Inputs;
@@ -20,33 +19,22 @@ type Props = {
   blurHandler: (field: string) => void;
 };
 
-const ServicesInfo: React.FC<Props> = ({ inputs, touched, errors, changeHandler, blurHandler }) => {
+const Step2BeforeService: React.FC<Props> = ({
+  inputs,
+  touched,
+  errors,
+  changeHandler,
+  blurHandler
+}) => {
   return (
     <KeyboardAwareScrollView
       style={styles.content}
       showsVerticalScrollIndicator={true}
       keyboardShouldPersistTaps="handled"
     >
-      {/* <DatePicker
-        field="date"
-        label="Data do Atendimento"
-        values={inputs}
-        touched={touched}
-        errors={errors}
-        onChangeHandler={changeHandler}
-      /> */}
-      <DatePickerV2
-        field="date"
-        label="Data do Atendimento"
-        values={inputs}
-        touched={touched}
-        errors={errors}
-        onChangeHandler={changeHandler}
-        onBlurHandler={blurHandler}
-      />
-      <TimerPicker
-        field="time"
-        label="Hora do Atendimento"
+      <RichTextInput
+        field="beforeComments"
+        label="Queixas e Anotações de Antes do Atendimento"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -57,12 +45,11 @@ const ServicesInfo: React.FC<Props> = ({ inputs, touched, errors, changeHandler,
   );
 };
 
-export default ServicesInfo;
+export default Step2BeforeService;
 
 const styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
-    marginTop: 10,
     marginBottom: 15,
     padding: 16,
     borderRadius: 8,

@@ -92,6 +92,7 @@ const SearchBar: React.FC<Props> = ({
                 setVisible={setOpenServiceTypesModal}
                 selectedServiceTypes={selectedServiceTypes}
                 setSelectedServiceTypes={setSelectedServiceTypes}
+                mode="filter"
               />
             </View>
           </Pressable>

@@ -109,7 +109,7 @@ const SaveService: React.FC = () => {
     );
   }, [createEditProceedingCtx, navigationCreateEditProceeding]);
 
-  const BeforePhotosMemo = useMemo(() => {
+  const Step2BeforeServiceMemo = useMemo(() => {
     return (
       <CustomerPhotos
         field="beforePhotos"
@@ -184,7 +184,7 @@ const SaveService: React.FC = () => {
         />
       </TouchableOpacity>
       <View style={{ marginBottom: 40 }}>
-        {BeforePhotosMemo}
+        {Step2BeforeServiceMemo}
         {AfterPhotosMemo}
       </View>
     </KeyboardAwareScrollView>

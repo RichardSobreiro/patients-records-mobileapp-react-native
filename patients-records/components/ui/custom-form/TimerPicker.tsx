@@ -34,10 +34,11 @@ const TimerPicker: React.FC<Props> = ({
   const onConfirm = React.useCallback(
     ({ hours, minutes }) => {
       setVisible(false);
-      onChangeHandler(field, { hours, minutes });
+      onChangeHandler('hour', hours);
+      onChangeHandler('minutes', minutes);
       console.log({ hours, minutes });
     },
-    [field, onChangeHandler]
+    [onChangeHandler]
   );
   return (
     <SafeAreaProvider>
@@ -51,8 +52,21 @@ const TimerPicker: React.FC<Props> = ({
           uppercase={false}
           mode="outlined"
         >
-          Selecione a hora
+          {values['hour'].value && values['hour'].value !== ''
+            ? `${
+                values['hour'].value * 1 < 10 ? '0' + values['hour'].value : values['hour'].value
+              }:${
+                values['minutes'].value * 1 < 10
+                  ? '0' + values['minutes'].value
+                  : values['minutes'].value
+              }`
+            : 'Selecione a hora'}
         </Button>
+        {errors[field] ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errors[field]}</Text>
+          </View>
+        ) : null}
         <TimePickerModal
           visible={visible}
           onDismiss={onDismiss}

@@ -70,7 +70,9 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
             alignItems: 'center'
           }}
         >
-          <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>Nenhuma imagem selecionada</Text>
+          <Text style={{ color: Colors.primary800, textAlign: 'center' }}>
+            Nenhuma imagem selecionada
+          </Text>
         </View>
       )}
       {handleChange && (
@@ -92,12 +94,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, marginHorizontal: 4 },
   title: {
     fontSize: 18,
-    color: '#ffffff',
+    color: Colors.primary800,
     marginBottom: 4
   },
   selectButtonText: {
     fontSize: 20,
-    color: '#ffffff'
+    color: Colors.primary800
   },
   selectButton: {
     margin: 5,

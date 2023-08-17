@@ -1,15 +1,18 @@
 /* eslint-disable import/order */
 import StackSheetCustom from '../../../ui/custom-form/StackSheetCustom';
-import ServicesInfo from './ServicesInfo';
+import Step1ServiceInfo from './Setp1ServicesInfo';
+import Step2BeforeService from './Step2BeforeService';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { GetServicePhotosResponse } from 'models/customers/services/GetServicePhotosResponse';
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import MultiSteps from 'react-native-multi-steps';
 import FileCustom from 'util/types/FileCustom';
 
 export type ErrorType = {
   date: null | string;
+  time: null | string;
   selectedServiceTypes: null | string;
   beforeComments: null | string;
   beforePhotos: null | string;
@@ -20,6 +23,14 @@ export type ErrorType = {
 export type Inputs = {
   date: {
     value: Date;
+    isValid: boolean;
+  };
+  hour: {
+    value: string | undefined;
+    isValid: boolean;
+  };
+  minutes: {
+    value: string | undefined;
     isValid: boolean;
   };
   selectedServiceTypes: {
@@ -46,6 +57,7 @@ export type Inputs = {
 
 export type Touched = {
   date: boolean;
+  time: boolean;
   selectedServiceTypes: boolean;
   beforeComments: boolean;
   beforePhotos: boolean;
@@ -63,6 +75,14 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible }) => 
   const [inputs, setInputs] = useState<Inputs>({
     date: {
       value: new Date(),
+      isValid: true
+    },
+    hour: {
+      value: '',
+      isValid: true
+    },
+    minutes: {
+      value: '',
       isValid: true
     },
     selectedServiceTypes: {
@@ -88,6 +108,7 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible }) => 
   });
   const [touched, setTouched] = useState<Touched>({
     date: false,
+    time: false,
     selectedServiceTypes: false,
     beforeComments: false,
     beforePhotos: false,
@@ -96,6 +117,7 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible }) => 
   });
   const [errors, setErrors] = useState<ErrorType>({
     date: null,
+    time: null,
     selectedServiceTypes: null,
     beforeComments: null,
     beforePhotos: null,
@@ -143,9 +165,14 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible }) => 
               setVisible(false);
               console.log('Submit');
             }}
+            config={{
+              nextButtonLabel: 'Próximo',
+              previousButtonLabel: 'Voltar',
+              submitButtonLabel: 'Salvar'
+            }}
           >
             <View>
-              <ServicesInfo
+              <Step1ServiceInfo
                 inputs={inputs}
                 touched={touched}
                 errors={errors}
@@ -154,7 +181,13 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible }) => 
               />
             </View>
             <View>
-              <Text>Step 2</Text>
+              <Step2BeforeService
+                inputs={inputs}
+                touched={touched}
+                errors={errors}
+                changeHandler={handleChange}
+                blurHandler={handleBlur}
+              />
             </View>
             <View>
               <Text>Step 3</Text>

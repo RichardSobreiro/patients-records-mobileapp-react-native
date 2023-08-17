@@ -27,7 +27,9 @@ const DatePickerV2: React.FC<Props> = ({
   onChangeHandler,
   onBlurHandler
 }) => {
-  const [date, setDate] = useState<string | undefined | CalendarDate>(undefined);
+  const [date, setDate] = useState<string | undefined | CalendarDate>(
+    values[field]?.value ? values[field]?.value : undefined
+  );
   const [open, setOpen] = useState(false);
 
   const onDismissSingle = useCallback(() => {
@@ -63,6 +65,7 @@ const DatePickerV2: React.FC<Props> = ({
           </View>
         ) : null}
         <DatePickerModal
+          disableStatusBar={true}
           locale="pt"
           mode="single"
           visible={open}

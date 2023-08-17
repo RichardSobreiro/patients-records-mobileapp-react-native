@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import ServicesInfo from '../../components/welcome-screen/patients-crud/services-crud/ServicesInfo';
+import Step1ServiceInfo from '../../components/welcome-screen/patients-crud/services-crud/Setp1Step1ServiceInfo';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect } from 'react';
@@ -11,7 +11,7 @@ type Props = {
   proceeding?: GetProceedingResponse;
 };
 
-const ServicesInfoScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
+const Step1ServiceInfoScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   useEffect(() => {
@@ -35,12 +35,12 @@ const ServicesInfoScreen: React.FC<Props> = ({ route, navigation, proceeding }) 
           subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
-      <ServicesInfo />
+      <Step1ServiceInfo />
     </>
   );
 };
 
-export default ServicesInfoScreen;
+export default Step1ServiceInfoScreen;
 
 const styles = StyleSheet.create({
   header: {

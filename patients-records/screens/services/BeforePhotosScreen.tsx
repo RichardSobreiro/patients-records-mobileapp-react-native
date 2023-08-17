@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import BeforePhotos from '../../components/welcome-screen/patients-crud/services-crud/BeforePhotos';
+import Step2BeforeService from '../../components/welcome-screen/patients-crud/services-crud/Step2BeforeService';
 import { GetProceedingResponse } from '../../models/proceedings/GetProceedingResponse';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { useContext, useEffect } from 'react';
@@ -11,7 +11,7 @@ type Props = {
   proceeding?: GetProceedingResponse;
 };
 
-const BeforePhotosScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
+const Step2BeforeServiceScreen: React.FC<Props> = ({ route, navigation, proceeding }) => {
   const createEditProceedingCtx = useContext(CreateEditProceedingContext);
 
   useEffect(() => {
@@ -31,16 +31,16 @@ const BeforePhotosScreen: React.FC<Props> = ({ route, navigation, proceeding }) 
       <View style={styles.header}>
         <Header
           isAddingCustomerScreen={true}
-          title={`${createEditProceedingCtx.patient?.patientName!}`}
+          title={`${createEditProceedingCtx.patient?.customerName!}`}
           subtitle={proceeding ? 'Editando Procedimento' : 'Novo Procedimento'}
         />
       </View>
-      <BeforePhotos />
+      <Step2BeforeService />
     </>
   );
 };
 
-export default BeforePhotosScreen;
+export default Step2BeforeServiceScreen;
 
 const styles = StyleSheet.create({
   header: {

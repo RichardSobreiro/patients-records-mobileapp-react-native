@@ -24,7 +24,7 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
-import { Switch, Chip, Searchbar } from 'react-native-paper';
+import { Switch, Chip, Searchbar, Button as ButtonPaper } from 'react-native-paper';
 
 type ErrorType = {
   serviceTypeDescription: null | string;
@@ -36,13 +36,19 @@ type Props = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selectedServiceTypes: GetServiceTypeResponse[];
   setSelectedServiceTypes: React.Dispatch<React.SetStateAction<GetServiceTypeResponse[]>>;
+  mode: 'filter' | 'crud';
+  onChangeHandler?: (field: string, value: GetServiceTypeResponse[]) => void;
+  onBlurHandler?: (field: string) => void;
 };
 
 const ServiceTypesModal: React.FC<Props> = ({
   visible,
   setVisible,
   selectedServiceTypes,
-  setSelectedServiceTypes
+  setSelectedServiceTypes,
+  mode,
+  onChangeHandler,
+  onBlurHandler
 }: Props) => {
   const authCtx = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -141,12 +147,15 @@ const ServiceTypesModal: React.FC<Props> = ({
                 (s) => s.serviceTypeId !== serviceType.serviceTypeId
               );
               setSelectedServiceTypes(newSelectedServiceTypes);
+              onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
             } else {
               if (selectedServiceTypes && selectedServiceTypes.length > 0) {
                 const newSelectedServiceTypes = [...selectedServiceTypes, serviceType];
                 setSelectedServiceTypes(newSelectedServiceTypes);
+                onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
               } else {
                 setSelectedServiceTypes([serviceType]);
+                onChangeHandler?.('selectedServiceTypes', [serviceType]);
               }
             }
           }}
@@ -158,7 +167,9 @@ const ServiceTypesModal: React.FC<Props> = ({
 
   const removeItemFromSelected = (serviceTypeId: string) => {
     setSelectedServiceTypes((prevState) => {
-      return prevState.filter((s) => s.serviceTypeId !== serviceTypeId);
+      const newSelectedServiceTypes = prevState.filter((s) => s.serviceTypeId !== serviceTypeId);
+      onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
+      return newSelectedServiceTypes;
     });
   };
 
@@ -205,8 +216,11 @@ const ServiceTypesModal: React.FC<Props> = ({
       setServicesTypeList(sortItemsList(newItemList));
       setSelectedServiceTypes((curSelected) => {
         if (curSelected && curSelected.length > 0) {
-          return [...curSelected, createdServiceType];
+          const newSelectedServiceTypes = [...curSelected, createdServiceType];
+          onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
+          return newSelectedServiceTypes;
         } else {
+          onChangeHandler?.('selectedServiceTypes', [createdServiceType]);
           return [createdServiceType];
         }
       });
@@ -293,15 +307,6 @@ const ServiceTypesModal: React.FC<Props> = ({
                 onChangeHandler={handleChange}
                 onBlurHandler={handleBlur}
               />
-              {/* <RichTextInput
-                field="serviceTypeDescription"
-                label="Template"
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
-                onBlurHandler={handleBlur}
-              /> */}
               <View style={styles.createUpdateServiceTypeActions}>
                 <Button
                   onPress={() => setNewServiceTypeModalVisible(false)}
@@ -318,9 +323,58 @@ const ServiceTypesModal: React.FC<Props> = ({
         </SafeAreaView>
       </StackSheetCustom>
 
-      <View style={styles.displayTextView}>
-        <Text style={{ color: Colors.primary500 }}>Tipos de atendimento...</Text>
-      </View>
+      {mode === 'filter' && (
+        <View style={styles.displayTextView}>
+          <Text style={{ color: Colors.primary500 }}>Tipos de atendimento...</Text>
+        </View>
+      )}
+
+      {mode === 'crud' && (
+        <>
+          <Text style={styles.label}>Tipo de atendimento</Text>
+          <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
+            <ButtonPaper
+              onPress={() => {
+                setVisible(true);
+                onBlurHandler?.('selectedServiceTypes');
+              }}
+              uppercase={false}
+              mode="outlined"
+            >
+              Selecione o(s) tipo(s) de atendimento
+            </ButtonPaper>
+            {selectedServiceTypes && selectedServiceTypes.length > 0 && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                  gap: 5,
+                  marginHorizontal: 20,
+                  marginVertical: 10
+                }}
+              >
+                {selectedServiceTypes.map((selected) => {
+                  return (
+                    <Chip
+                      key={selected.serviceTypeId}
+                      icon="close"
+                      onPress={removeItemFromSelected.bind(null, selected.serviceTypeId)}
+                    >
+                      {selected.serviceTypeDescription}
+                    </Chip>
+                  );
+                })}
+              </View>
+            )}
+            {errors['selectedServiceTypes'] ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{errors['selectedServiceTypes']}</Text>
+              </View>
+            ) : null}
+          </View>
+        </>
+      )}
     </>
   );
 };
@@ -375,6 +429,17 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     alignContent: 'stretch',
     gap: 15
+  },
+  label: {
+    fontSize: 18,
+    color: Colors.primary500,
+    marginBottom: 4
+  },
+  errorContainer: {
+    marginVertical: 5
+  },
+  errorText: {
+    color: '#ff7675'
   }
 });
 
