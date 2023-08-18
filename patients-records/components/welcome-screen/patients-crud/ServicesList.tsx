@@ -7,13 +7,70 @@ import { NotificationContext } from '../../../store/notification-context';
 import Header from '../Header';
 import ServicesListItem from './ServicesListItem';
 import ServicesListSearchBar from './ServicesListSearchBar';
-import CreateService from './services-crud/CreateService';
+import CreateService from './services-crud/create-services/CreateService';
+import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 // import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 // import { useNavigation } from '@react-navigation/native';
 // import { EditPatientStackParamList } from 'App';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, FlatList, Platform } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
 import { FAB, Portal } from 'react-native-paper';
+import FileCustom from 'util/types/FileCustom';
+
+export type ErrorType = {
+  date: null | string;
+  time: null | string;
+  selectedServiceTypes: null | string;
+  beforeComments: null | string;
+  beforePhotos: null | string;
+  afterComments: null | string;
+  afterPhotos: null | string;
+};
+
+export type Inputs = {
+  date: {
+    value: Date;
+    isValid: boolean;
+  };
+  hour: {
+    value: number;
+    isValid: boolean;
+  };
+  minutes: {
+    value: number;
+    isValid: boolean;
+  };
+  selectedServiceTypes: {
+    value: GetServiceTypeResponse[];
+    isValid: boolean;
+  };
+  beforeComments: {
+    value: string | undefined;
+    isValid: boolean;
+  };
+  beforePhotos: {
+    value: FileCustom[] | undefined;
+    isValid: boolean;
+  };
+  afterComments: {
+    value: string | undefined;
+    isValid: boolean;
+  };
+  afterPhotos: {
+    value: FileCustom[] | undefined;
+    isValid: boolean;
+  };
+};
+
+export type Touched = {
+  date: boolean;
+  time: boolean;
+  selectedServiceTypes: boolean;
+  beforeComments: boolean;
+  beforePhotos: boolean;
+  afterComments: boolean;
+  afterPhotos: boolean;
+};
 
 const PAGE_SIZE = 10;
 
@@ -34,6 +91,8 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
 
   const [isVisibleCreateService, setVisibleCreateService] = useState<boolean>(false);
+  const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
+  const [newServiceId, setNewServiceId] = useState<string | undefined>(undefined);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
@@ -92,6 +151,10 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
     getServiceListAsync(1);
   }, []);
 
+  useEffect(() => {
+    getServiceListAsync(1);
+  }, [getServiceListAsync, newServiceId]);
+
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
       setPage((prevState) => {
@@ -139,6 +202,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         customerId={customerId}
         visible={isVisibleCreateService}
         setVisible={setVisibleCreateService}
+        setNewServiceId={setNewServiceId}
       />
       <Portal>
         <FAB.Group
@@ -240,6 +304,7 @@ export default ServicesList;
 
 const styles = StyleSheet.create({
   fabGroupStyle: {
+    backgroundColor: 'black',
     bottom: 45,
     right: 0
   },

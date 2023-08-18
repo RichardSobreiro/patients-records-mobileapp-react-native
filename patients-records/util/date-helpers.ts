@@ -57,8 +57,12 @@ export const formatTimePTBR = (dateTime: Date): string => {
     m = new Date(dateTime as unknown as string);
   }
   const dateString =
-    (m.getHours() < 10 ? '0' + m.getHours() : m.getHours()) +
+    (m.getUTCHours() < 10 ? '0' + m.getUTCHours() : m.getUTCHours()) +
     ':' +
-    (m.getUTCMinutes() < 10 ? '0' + m.getMinutes() : m.getMinutes());
+    (m.getUTCMinutes() < 10 ? '0' + m.getUTCMinutes() : m.getUTCMinutes());
   return dateString;
+};
+
+export const isValidDate = (d: Date) => {
+  return d instanceof Date && !isNaN(d.getTime());
 };

@@ -1,5 +1,6 @@
 //import { styles } from './styles';
 import { Colors } from '../../../constants/styles';
+import { ErrorType } from '../../welcome-screen/patients-crud/ServicesList';
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-paper';
@@ -11,7 +12,7 @@ type Props = {
   label: string;
   values: any;
   touched: any;
-  errors: any;
+  errors: ErrorType;
   onChangeHandler: (field: string, value: any) => void;
   onBlurHandler: (field: string) => void;
 };
@@ -40,6 +41,7 @@ const TimerPicker: React.FC<Props> = ({
     },
     [onChangeHandler]
   );
+
   return (
     <SafeAreaProvider>
       <Text style={styles.label}>{label}</Text>
@@ -62,9 +64,9 @@ const TimerPicker: React.FC<Props> = ({
               }`
             : 'Selecione a hora'}
         </Button>
-        {errors[field] ? (
+        {errors.time ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{errors[field]}</Text>
+            <Text style={styles.errorText}>{errors.time}</Text>
           </View>
         ) : null}
         <TimePickerModal

@@ -1,9 +1,8 @@
 /* eslint-disable import/order */
-import { Colors } from '../../../../constants/styles';
-import ServiceTypesModal from '../../../ui/ServiceTypesModal';
-import DatePickerV2 from '../../../ui/custom-form/DatePickerV2';
-import TimerPicker from '../../../ui/custom-form/TimerPicker';
-import { ErrorType, Inputs, Touched } from './CreateService';
+import ServiceTypesModal from '../../../../ui/ServiceTypesModal';
+import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
+import TimerPicker from '../../../../ui/custom-form/TimerPicker';
+import { ErrorType, Inputs, Touched } from '../../ServicesList';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -58,6 +57,7 @@ const Step1ServiceInfo: React.FC<Props> = ({
         onBlurHandler={blurHandler}
       />
       <ServiceTypesModal
+        errors={errors}
         visible={openServiceTypesModal}
         setVisible={setOpenServiceTypesModal}
         selectedServiceTypes={selectedServiceTypes}

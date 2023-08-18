@@ -1,10 +1,8 @@
 /* eslint-disable import/order */
-import { Colors } from '../../../../constants/styles';
-import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
-import FileCustom from '../../../../util/types/FileCustom';
-import RichTextInput from '../../../ui/custom-form/RichTextInput';
-import CustomerPhotos from '../CustomerPhotos';
-import { ErrorType, Inputs, Touched } from './CreateService';
+import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
+import FileCustom from '../../../../../util/types/FileCustom';
+import RichTextInput from '../../../../ui/custom-form/RichTextInput';
+import { ErrorType, Inputs, Touched } from '../../ServicesList';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -19,7 +17,7 @@ type Props = {
   blurHandler: (field: string) => void;
 };
 
-const Step3BeforeServicePhotos: React.FC<Props> = ({
+const Step4AfterService: React.FC<Props> = ({
   inputs,
   touched,
   errors,
@@ -32,22 +30,24 @@ const Step3BeforeServicePhotos: React.FC<Props> = ({
       showsVerticalScrollIndicator={true}
       keyboardShouldPersistTaps="handled"
     >
-      <CustomerPhotos
-        field="beforePhotos"
-        title="Fotos do Antes"
-        handleChange={changeHandler}
+      <RichTextInput
+        field="afterComments"
+        label="Queixas e comentários após o atendimento"
         values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
       />
     </KeyboardAwareScrollView>
   );
 };
 
-export default Step3BeforeServicePhotos;
+export default Step4AfterService;
 
 const styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
-    marginTop: 10,
     marginBottom: 15,
     padding: 16,
     borderRadius: 8,

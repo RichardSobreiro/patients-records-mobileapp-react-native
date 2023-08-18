@@ -37,11 +37,12 @@ const RichTextInput: React.FC<Props> = ({
           ref={richText}
           onChange={(descriptionText) => {
             console.log('descriptionText:', descriptionText);
-            onChangeHandler?.bind(null, field, descriptionText);
+            onChangeHandler?.(field, descriptionText);
           }}
           onBlur={onBlurHandler?.bind(null, field)}
           editorStyle={styles.editorStyle}
           initialHeight={250}
+          initialContentHTML={values[field].value}
         />
       </View>
 

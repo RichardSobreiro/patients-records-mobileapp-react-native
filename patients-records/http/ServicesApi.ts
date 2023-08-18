@@ -15,7 +15,6 @@ export const createService = async (
 ): Promise<ApiResponse> => {
   try {
     const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services`;
-
     const formData = new FormData();
     formData.append('date', request.date.toLocaleString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));

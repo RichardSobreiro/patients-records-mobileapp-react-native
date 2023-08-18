@@ -1,5 +1,5 @@
 import Header from '../../components/welcome-screen/Header';
-import AfterPhotos from '../../components/welcome-screen/patients-crud/services-crud/AfterPhotos';
+import AfterPhotos from '../../components/welcome-screen/patients-crud/services-crud/create-services/AfterPhotos';
 import { GetProceedingResponse } from '../../models/proceedings/GetProceedingResponse';
 import { CreateEditProceedingContext } from '../../store/create-edit-proceedings-context';
 import { useContext, useEffect } from 'react';

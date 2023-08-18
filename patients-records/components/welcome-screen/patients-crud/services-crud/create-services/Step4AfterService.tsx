@@ -1,10 +1,8 @@
 /* eslint-disable import/order */
-import { Colors } from '../../../../constants/styles';
-import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
-import FileCustom from '../../../../util/types/FileCustom';
-import RichTextInput from '../../../ui/custom-form/RichTextInput';
-import CustomerPhotos from '../CustomerPhotos';
-import { ErrorType, Inputs, Touched } from './CreateService';
+import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
+import FileCustom from '../../../../../util/types/FileCustom';
+import RichTextInput from '../../../../ui/custom-form/RichTextInput';
+import { ErrorType, Inputs, Touched } from '../../ServicesList';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -19,7 +17,7 @@ type Props = {
   blurHandler: (field: string) => void;
 };
 
-const Step2BeforeService: React.FC<Props> = ({
+const Step4AfterService: React.FC<Props> = ({
   inputs,
   touched,
   errors,
@@ -33,8 +31,8 @@ const Step2BeforeService: React.FC<Props> = ({
       keyboardShouldPersistTaps="handled"
     >
       <RichTextInput
-        field="beforeComments"
-        label="Queixas e Anotações de Antes do Atendimento"
+        field="afterComments"
+        label="Queixas e comentários após o atendimento"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -45,7 +43,7 @@ const Step2BeforeService: React.FC<Props> = ({
   );
 };
 
-export default Step2BeforeService;
+export default Step4AfterService;
 
 const styles = StyleSheet.create({
   content: {

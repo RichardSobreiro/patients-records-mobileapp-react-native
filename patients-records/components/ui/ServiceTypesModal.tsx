@@ -8,6 +8,7 @@ import {
   GetServiceTypesResponse
 } from '../../models/customers/service-types/GetServiceTypesResponse';
 import { AuthContext } from '../../store/auth-context';
+import { ErrorType } from '../welcome-screen/patients-crud/services-crud/create-services/CreateService';
 import Button, { ButtonTypes } from './Button';
 import IconButton from './IconButton';
 import Input from './custom-form/Input';
@@ -26,12 +27,13 @@ import {
 } from 'react-native';
 import { Switch, Chip, Searchbar, Button as ButtonPaper } from 'react-native-paper';
 
-type ErrorType = {
+type ErrorTypeNewService = {
   serviceTypeDescription: null | string;
   serviceTypeTemplate: null | string;
 };
 
 type Props = {
+  errors: ErrorType;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selectedServiceTypes: GetServiceTypeResponse[];
@@ -42,6 +44,7 @@ type Props = {
 };
 
 const ServiceTypesModal: React.FC<Props> = ({
+  errors,
   visible,
   setVisible,
   selectedServiceTypes,
@@ -70,7 +73,7 @@ const ServiceTypesModal: React.FC<Props> = ({
     serviceTypeTemplate: false
   });
 
-  const [errors, setErrors] = useState<ErrorType>({
+  const [errorsNewService, setErrors] = useState<ErrorTypeNewService>({
     serviceTypeDescription: null,
     serviceTypeTemplate: null
   });
@@ -303,7 +306,7 @@ const ServiceTypesModal: React.FC<Props> = ({
                 label="Nome"
                 values={inputs}
                 touched={touched}
-                errors={errors}
+                errors={errorsNewService}
                 onChangeHandler={handleChange}
                 onBlurHandler={handleBlur}
               />
