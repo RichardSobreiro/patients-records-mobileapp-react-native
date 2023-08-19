@@ -8,6 +8,7 @@ import Header from '../Header';
 import ServicesListItem from './ServicesListItem';
 import ServicesListSearchBar from './ServicesListSearchBar';
 import CreateService from './services-crud/create-services/CreateService';
+import EditService from './services-crud/edit-services/EditService';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 // import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 // import { useNavigation } from '@react-navigation/native';
@@ -92,7 +93,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   const [isVisibleCreateService, setVisibleCreateService] = useState<boolean>(false);
   const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
-  const [newServiceId, setNewServiceId] = useState<string | undefined>(undefined);
+  const [editServiceId, setEditServiceId] = useState<string | undefined>(undefined);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
@@ -153,7 +154,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   useEffect(() => {
     getServiceListAsync(1);
-  }, [getServiceListAsync, newServiceId]);
+  }, [getServiceListAsync, editServiceId]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
@@ -178,7 +179,16 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   const renderArticle = ({ item }) => {
     return (
-      <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
+      <ServicesListItem
+        key={item.serviceId}
+        service={item}
+        navigateToUpdateProceeding={() => {
+          setVisibleEditService((curState) => {
+            setEditServiceId(item.serviceId);
+            return true;
+          });
+        }}
+      />
     );
   };
 
@@ -202,7 +212,14 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         customerId={customerId}
         visible={isVisibleCreateService}
         setVisible={setVisibleCreateService}
-        setNewServiceId={setNewServiceId}
+        setNewServiceId={setEditServiceId}
+      />
+      <EditService
+        customerId={customerId}
+        visible={isVisibleEditService}
+        setVisible={setVisibleEditService}
+        serviceId={editServiceId}
+        setServiceId={setEditServiceId}
       />
       <Portal>
         <FAB.Group
@@ -214,17 +231,20 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
             {
               icon: 'calendar-today',
               label: 'Atendimentos Agendados',
-              onPress: () => console.log('Pressed calendar')
+              onPress: () => console.log('Pressed calendar'),
+              labelTextColor: 'white'
             },
             {
               icon: 'email',
               label: 'Enviar uma Mensagem',
-              onPress: () => console.log('Pressed send message')
+              onPress: () => console.log('Pressed send message'),
+              labelTextColor: 'white'
             },
             {
               icon: 'plus',
               label: 'Novo Atendimento',
-              onPress: () => setVisibleCreateService(true)
+              onPress: () => setVisibleCreateService(true),
+              labelTextColor: 'white'
             }
           ]}
           onStateChange={({ open }) => setIsOpenFabGroup(open)}
@@ -233,9 +253,15 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               // do something if the speed dial is open
             }
           }}
-          backdropColor={'transparent'}
+          backdropColor={'rgba(25, 25, 25, 0.8)'}
           rippleColor={Colors.primary100}
-          style={styles.fabGroupStyle}
+          style={[
+            styles.fabGroupStyle
+            // {
+            //   opacity: isOpenFabGroup ? 0.2 : 1,
+            //   backgroundColor: isOpenFabGroup ? Colors.primary800 : 'transparent'
+            // }
+          ]}
           fabStyle={styles.fabStyle}
           color={Colors.primary100}
         />
@@ -304,7 +330,6 @@ export default ServicesList;
 
 const styles = StyleSheet.create({
   fabGroupStyle: {
-    backgroundColor: 'black',
     bottom: 45,
     right: 0
   },

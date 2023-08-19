@@ -9,6 +9,7 @@ export const Colors = {
   tertiary300: '#d0d0d0',
   tertiary500: '#919191',
   tertiary800: '#535353',
+  tertiary900Op12: 'rgba(52, 52, 52, 0.2)',
   error100: '#fcbfbf',
   error500: '#f31313',
   formBackgroundColor: '#f9f9f9'

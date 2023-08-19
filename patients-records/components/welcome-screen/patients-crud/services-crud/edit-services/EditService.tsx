@@ -1,12 +1,13 @@
 /* eslint-disable import/order */
-import { createService } from '../../../../../http/ServicesApi';
+import { Colors } from '../../../../../constants/styles';
+import { getServiceById, updateService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
-import { CreateServiceRequest } from '../../../../../models/customers/services/CreateServiceRequest';
+import { GetServiceByIdResponse } from '../../../../../models/customers/services/GetServiceByIdResponse';
+import { UpdateServiceRequest } from '../../../../../models/customers/services/UpdateServiceRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import { isValidDate } from '../../../../../util/date-helpers';
-import FileCustom from '../../../../../util/types/FileCustom';
-import LoadingOverlay from '../../../../ui/LoadingOverlay';
+import FileCustom, { convertArrayPhotoApiToFileCustom } from '../../../../../util/types/FileCustom';
 import StackSheetCustom from '../../../../ui/custom-form/StackSheetCustom';
 import { ErrorType, Inputs, Touched } from '../../ServicesList';
 import Step1ServiceInfo from './Setp1ServicesInfo';
@@ -14,18 +15,25 @@ import Step2BeforeService from './Step2BeforeService';
 import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
-import { useContext, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import MultiSteps from 'react-native-multi-steps';
 
 type Props = {
   customerId: string;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setNewServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  serviceId: string | undefined;
+  setServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNewServiceId }) => {
+const EditService: React.FC<Props> = ({
+  customerId,
+  visible,
+  setVisible,
+  serviceId,
+  setServiceId
+}) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
 
@@ -37,11 +45,11 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
       isValid: true
     },
     hour: {
-      value: '',
+      value: 9,
       isValid: true
     },
     minutes: {
-      value: '',
+      value: 0,
       isValid: true
     },
     selectedServiceTypes: {
@@ -84,6 +92,66 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
     afterPhotos: null
   });
 
+  useEffect(() => {
+    if (serviceId && authCtx.token?.access_token) {
+      setIsLoading(true);
+
+      const getServiceAsync = async () => {
+        const response = await getServiceById(authCtx.token?.access_token!, customerId, serviceId);
+        const getServiceResponse = response.body as GetServiceByIdResponse;
+        const dateObject = new Date(getServiceResponse.date);
+        const beforePhotosFileCustom = await convertArrayPhotoApiToFileCustom(
+          getServiceResponse.beforePhotos,
+          'before-photo'
+        );
+        const afterPhotosFileCustom = await convertArrayPhotoApiToFileCustom(
+          getServiceResponse.afterPhotos,
+          'after-photo'
+        );
+        if (response.ok) {
+          setInputs({
+            date: {
+              value: dateObject,
+              isValid: true
+            },
+            hour: {
+              value: dateObject.getUTCHours(),
+              isValid: true
+            },
+            minutes: {
+              value: dateObject.getUTCMinutes(),
+              isValid: true
+            },
+            selectedServiceTypes: {
+              value: [...getServiceResponse.serviceTypes],
+              isValid: true
+            },
+            beforeComments: {
+              value: getServiceResponse.beforeNotes,
+              isValid: true
+            },
+            beforePhotos: {
+              value: beforePhotosFileCustom,
+              isValid: true
+            },
+            afterComments: {
+              value: getServiceResponse.afterNotes,
+              isValid: true
+            },
+            afterPhotos: {
+              value: afterPhotosFileCustom,
+              isValid: true
+            }
+          });
+        }
+      };
+
+      getServiceAsync();
+
+      setIsLoading(false);
+    }
+  }, [authCtx.token?.access_token, customerId, serviceId]);
+
   const validateDate = (inputs: Inputs): boolean => {
     const newErrors = { ...errors };
     if (isValidDate(inputs.date.value)) {
@@ -101,12 +169,7 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
 
   const validateTime = (inputs: Inputs): boolean => {
     const newErrors = { ...errors };
-    if (
-      inputs.hour.value !== undefined &&
-      inputs.hour.value !== '' &&
-      inputs.minutes.value !== undefined &&
-      inputs.minutes.value !== ''
-    ) {
+    if (inputs.hour.value !== undefined && inputs.minutes.value !== undefined) {
       inputs.hour.isValid = true;
       inputs.minutes.isValid = true;
       newErrors.time = null;
@@ -192,7 +255,7 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
   };
 
   const submitHandler = async () => {
-    if (!validateForm() || !authCtx.token?.access_token) return;
+    if (!validateForm() || !authCtx.token?.access_token || !serviceId) return;
 
     setIsLoading(true);
 
@@ -200,7 +263,8 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
     dateObject.setHours(inputs.hour.value as unknown as number);
     dateObject.setMinutes(inputs.minutes.value as unknown as number);
 
-    const request = new CreateServiceRequest(
+    const request = new UpdateServiceRequest(
+      serviceId,
       dateObject,
       inputs.selectedServiceTypes.value,
       inputs.beforeComments.value,
@@ -209,27 +273,31 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
       inputs.afterPhotos.value
     );
 
-    const response = await createService(authCtx.token?.access_token, customerId, request);
+    const response = await updateService(
+      authCtx.token?.access_token,
+      customerId,
+      serviceId,
+      request
+    );
 
     if (response.ok) {
-      setNewServiceId(response.body.serviceId);
+      setServiceId(response.body.serviceId);
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
       });
     }
-    setVisible(false);
     setIsLoading(false);
   };
 
-  if (isLoading) {
-    return <LoadingOverlay message={'Criando atendimento...'} />;
-  }
-
   return (
     <>
-      <StackSheetCustom visible={visible} setVisible={setVisible}>
+      <StackSheetCustom
+        visible={visible}
+        setVisible={setVisible}
+        hideModalCallback={() => setServiceId(undefined)}
+      >
         <View style={styles.container}>
           <MultiSteps
             containerButtonStyle={styles.containerButtonStyle}
@@ -296,12 +364,29 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
             </View>
           </MultiSteps>
         </View>
+        {isLoading && (
+          <ActivityIndicator
+            color={Colors.primary800}
+            size={120}
+            style={{
+              flex: 1,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: Colors.tertiary900Op12
+            }}
+          />
+        )}
       </StackSheetCustom>
     </>
   );
 };
 
-export default CreateService;
+export default EditService;
 
 const styles = StyleSheet.create({
   container: {

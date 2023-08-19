@@ -15,6 +15,7 @@ type Props = {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   children: any;
+  hideModalCallback?: () => void;
 };
 
 const supportedOrientations: any = [
@@ -25,8 +26,16 @@ const supportedOrientations: any = [
   'landscape-right'
 ];
 
-const StackSheetCustom: React.FC<Props> = ({ visible, setVisible, children }: Props) => {
-  const hideModal = () => setVisible(false);
+const StackSheetCustom: React.FC<Props> = ({
+  visible,
+  setVisible,
+  children,
+  hideModalCallback
+}: Props) => {
+  const hideModal = () => {
+    hideModalCallback?.();
+    setVisible(false);
+  };
   const theme = useTheme();
   const dimensions = useWindowDimensions();
 

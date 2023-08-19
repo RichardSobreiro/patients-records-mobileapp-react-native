@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
 import { formatDatePTBR } from '../../../util/date-helpers';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -31,6 +31,10 @@ const DatePickerV2: React.FC<Props> = ({
     values[field]?.value ? values[field]?.value : undefined
   );
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setDate(new Date(values[field]?.value));
+  }, [values[field]]);
 
   const onDismissSingle = useCallback(() => {
     setOpen(false);

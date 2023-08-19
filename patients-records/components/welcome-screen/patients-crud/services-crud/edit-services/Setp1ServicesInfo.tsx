@@ -4,7 +4,7 @@ import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
 import TimerPicker from '../../../../ui/custom-form/TimerPicker';
 import { ErrorType, Inputs, Touched } from '../../ServicesList';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FileCustom from 'util/types/FileCustom';
@@ -31,6 +31,11 @@ const Step1ServiceInfo: React.FC<Props> = ({
   const [selectedServiceTypes, setSelectedServiceTypes] = useState<GetServiceTypeResponse[]>(
     inputs['selectedServiceTypes']?.value ? inputs['selectedServiceTypes']?.value : []
   );
+
+  useEffect(() => {
+    setSelectedServiceTypes(inputs['selectedServiceTypes']?.value);
+    console.log('inputs[selectedServiceTypes]?.value');
+  }, [inputs]);
 
   return (
     <KeyboardAwareScrollView

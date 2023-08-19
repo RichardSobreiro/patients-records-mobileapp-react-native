@@ -70,6 +70,7 @@ export const getServiceById = async (
       const responseBody: GetServiceByIdResponse = await response.json();
       return new ApiResponse(true, response.status, responseBody);
     } else {
+      console.log(`API - GET SERVICE BY ID: ${response.status} - ${response.statusText}`);
       return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
     }
   } catch (error: any) {
