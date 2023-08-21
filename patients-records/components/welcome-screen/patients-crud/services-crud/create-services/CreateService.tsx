@@ -297,47 +297,61 @@ const CreateService: React.FC<Props> = ({
         Atendimento criado com sucesso!
       </Snackbar>
       <StackSheetCustom visible={visible} setVisible={setVisible} saveModalCallback={submitHandler}>
-        {isLoading ? (
-          <ActivityIndicator color={Colors.error500} size={40} />
-        ) : (
-          <ScrollView style={styles.container} overScrollMode="never">
-            <Step1ServiceInfo
-              inputs={inputs}
-              touched={touched}
-              errors={errors}
-              changeHandler={handleChange}
-              blurHandler={handleBlur}
-            />
-            <Step2BeforeService
-              inputs={inputs}
-              touched={touched}
-              errors={errors}
-              changeHandler={handleChange}
-              blurHandler={handleBlur}
-            />
-            <Step3BeforeServicePhotos
-              inputs={inputs}
-              touched={touched}
-              errors={errors}
-              changeHandler={handleChange}
-              blurHandler={handleBlur}
-            />
-            <Step4AfterService
-              inputs={inputs}
-              touched={touched}
-              errors={errors}
-              changeHandler={handleChange}
-              blurHandler={handleBlur}
-            />
-            <Step5AfterServicePhotos
-              inputs={inputs}
-              touched={touched}
-              errors={errors}
-              changeHandler={handleChange}
-              blurHandler={handleBlur}
-            />
-          </ScrollView>
+        {isLoading && (
+          <ActivityIndicator
+            color={Colors.primary800}
+            size={120}
+            style={{
+              flex: 1,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: Colors.tertiary900Op12,
+              zIndex: 2000
+            }}
+          />
         )}
+        <ScrollView style={styles.container} overScrollMode="never">
+          <Step1ServiceInfo
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step2BeforeService
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step3BeforeServicePhotos
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step4AfterService
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step5AfterServicePhotos
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+        </ScrollView>
       </StackSheetCustom>
     </>
   );

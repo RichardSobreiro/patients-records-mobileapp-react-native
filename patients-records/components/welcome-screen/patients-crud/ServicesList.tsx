@@ -10,12 +10,9 @@ import ServicesListSearchBar from './ServicesListSearchBar';
 import CreateService from './services-crud/create-services/CreateService';
 import EditService from './services-crud/edit-services/EditService';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
-// import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-// import { useNavigation } from '@react-navigation/native';
-// import { EditPatientStackParamList } from 'App';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
-import { FAB, Portal } from 'react-native-paper';
+import { FAB, Portal, Searchbar } from 'react-native-paper';
 import FileCustom from 'util/types/FileCustom';
 
 export type ErrorType = {
@@ -99,32 +96,32 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
 
+  //console.log('CUSTOMERS LIST - Page = ', page);
+  // const startDateObject = isDate(startDate)
+  //   ? new Date(startDate)
+  //   : undefined;
+  // const endDateObject = isDate(endDate) ? new Date(endDate) : undefined;
+
+  // const selectedTypesIds = (selectedTypes as Item[])
+  //   ?.filter((type) => type.selected)
+  //   ?.map((selectedType) => selectedType.id);
   const getServiceListAsync = useCallback(
     async (nextPage: number) => {
       if (authCtx.token?.access_token) {
         setIsLoading(true);
-        console.log('CUSTOMERS LIST - Page = ', page);
-        // const startDateObject = isDate(startDate)
-        //   ? new Date(startDate)
-        //   : undefined;
-        // const endDateObject = isDate(endDate) ? new Date(endDate) : undefined;
-
-        // const selectedTypesIds = (selectedTypes as Item[])
-        //   ?.filter((type) => type.selected)
-        //   ?.map((selectedType) => selectedType.id);
 
         const response = await getServices(
           authCtx.token.access_token,
-          page as unknown as string,
+          nextPage as unknown as string,
           PAGE_SIZE as unknown as string,
           customerId as string
         );
 
         if (response.ok) {
           console.log(
-            `SERVICES LIST - SUCCESS - PAGE: ${nextPage} - PAGE SIZE: ${response.body.servicesList?.length}`
+            `SERVICES LIST - PAGE: ${nextPage} - PAGE SIZE: ${response.body.servicesList?.length}`
           );
-          if (servicesList.length > 0 && page > 1) {
+          if (servicesList.length > 0 && nextPage > 1) {
             setServicesList((prevValue) => [...prevValue, ...response.body.servicesList]);
           } else {
             setServicesList([...response.body.servicesList]);
@@ -144,9 +141,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         } else {
           setHasMoreData(false);
         }
+
+        setIsLoading(false);
       }
     },
-    [authCtx.token?.access_token, customerId, notificationCtx, page, servicesList.length]
+    [authCtx.token?.access_token, customerId, notificationCtx, servicesList.length]
   );
 
   useEffect(() => {
@@ -154,11 +153,10 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   }, []);
 
   useEffect(() => {
-    getServiceListAsync(1);
     if (editServiceId && editServiceId !== '') {
       setVisibleEditService(true);
     }
-  }, [getServiceListAsync, editServiceId]);
+  }, [editServiceId]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
@@ -174,12 +172,8 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
     // if (!startDateIsValid || !endDateIsValid) {
     //   return;
     // }
-    // await getServiceListAsync();
+    await getServiceListAsync(page);
   };
-
-  useEffect(() => {
-    onSubmitFilter();
-  }, [page]);
 
   const renderArticle = ({ item }) => {
     return (
@@ -272,9 +266,9 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
           color={Colors.primary100}
         />
       </Portal>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Header isAddingCustomerScreen={true} title="Atendimentos" />
-      </View>
+      </View> */}
       <View style={styles.container}>
         <View style={styles.content}>
           <View
@@ -284,12 +278,14 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               alignItems: 'center'
             }}
           >
-            <View>
-              <ServicesListSearchBar
-                clicked={clicked}
-                setClicked={setClicked}
-                searchPhrase={searchPhrase}
-                setSearchPhrase={setSearchPhrase}
+            <View style={{ flex: 1, marginHorizontal: 10, marginVertical: 10 }}>
+              <Searchbar
+                placeholder="Procurar"
+                onChangeText={setSearchPhrase}
+                value={searchPhrase}
+                iconColor="#120461"
+                clearButtonMode="while-editing"
+                inputStyle={{ color: Colors.primary500 }}
               />
             </View>
           </View>
@@ -312,7 +308,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
                 );
               }}
               style={{ paddingHorizontal: 25 }}
-              onEndReachedThreshold={0.2}
+              onEndReachedThreshold={0.1}
               keyExtractor={keyExtractor}
               onEndReached={fetchMoreData}
               showsVerticalScrollIndicator={true}

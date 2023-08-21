@@ -96,6 +96,61 @@ const EditService: React.FC<Props> = ({
     afterPhotos: null
   });
 
+  const resetInputs = () => {
+    setInputs({
+      date: {
+        value: new Date(),
+        isValid: true
+      },
+      hour: {
+        value: 9,
+        isValid: true
+      },
+      minutes: {
+        value: 0,
+        isValid: true
+      },
+      selectedServiceTypes: {
+        value: [],
+        isValid: true
+      },
+      beforeComments: {
+        value: '',
+        isValid: true
+      },
+      beforePhotos: {
+        value: [],
+        isValid: true
+      },
+      afterComments: {
+        value: '',
+        isValid: true
+      },
+      afterPhotos: {
+        value: [],
+        isValid: true
+      }
+    });
+    setTouched({
+      date: false,
+      time: false,
+      selectedServiceTypes: false,
+      beforeComments: false,
+      beforePhotos: false,
+      afterComments: false,
+      afterPhotos: false
+    });
+    setErrors({
+      date: null,
+      time: null,
+      selectedServiceTypes: null,
+      beforeComments: null,
+      beforePhotos: null,
+      afterComments: null,
+      afterPhotos: null
+    });
+  };
+
   useEffect(() => {
     if (showCreatedServiceSnackbar) {
       setVisibleCreatedSnackbar(true);
@@ -302,6 +357,7 @@ const EditService: React.FC<Props> = ({
     } else {
       setVisible(false);
       setServiceId(undefined);
+      resetInputs();
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
@@ -315,9 +371,31 @@ const EditService: React.FC<Props> = ({
       <StackSheetCustom
         visible={visible}
         setVisible={setVisible}
-        hideModalCallback={() => setServiceId(undefined)}
+        hideModalCallback={() => {
+          setVisible(false);
+          setServiceId(undefined);
+          resetInputs();
+        }}
         saveModalCallback={submitHandler}
       >
+        {isLoading && (
+          <ActivityIndicator
+            color={Colors.primary800}
+            size={120}
+            style={{
+              flex: 1,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: Colors.tertiary900Op12,
+              zIndex: 2000
+            }}
+          />
+        )}
         <ScrollView style={styles.container} overScrollMode="never">
           <Snackbar
             visible={visibleSnackbar}
@@ -375,23 +453,6 @@ const EditService: React.FC<Props> = ({
             blurHandler={handleBlur}
           />
         </ScrollView>
-        {isLoading && (
-          <ActivityIndicator
-            color={Colors.primary800}
-            size={120}
-            style={{
-              flex: 1,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: Colors.tertiary900Op12
-            }}
-          />
-        )}
       </StackSheetCustom>
     </>
   );

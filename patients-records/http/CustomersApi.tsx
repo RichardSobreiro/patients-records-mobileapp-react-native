@@ -1,11 +1,10 @@
 import { ApiResponse } from '../models/Api/ApiResponse';
 import { ErrorDetails } from '../models/Api/ErrorDetails';
-import { GetCustomer, GetCustomersResponse } from '../models/GetCustomersResponse';
+import { GetCustomersResponse } from '../models/GetCustomersResponse';
 import { CreateCustomerRequest } from '../models/customers/CreateCustomerRequest';
 import { CreateCustomerResponse } from '../models/customers/CreateCustomerResponse';
 import { UpdateCustomerRequest } from '../models/customers/UpdateCustomerRequest';
 import { UpdateCustomerResponse } from '../models/customers/UpdateCustomerResponse';
-import axios from 'axios';
 
 export const createCustomer = async (
   accessToken: string,
@@ -109,14 +108,12 @@ export const GetCustomers = async (
 
   url += `${
     advancedFilters?.startDate
-      ? '&lastServiceStartDate=' + advancedFilters.startDate.toLocaleString()
+      ? '&lastServiceStartDate=' + advancedFilters.startDate.toString()
       : ''
   }`;
 
   url += `${
-    advancedFilters?.endDate
-      ? '&lastServiceEndDate=' + advancedFilters.endDate.toLocaleString()
-      : ''
+    advancedFilters?.endDate ? '&lastServiceEndDate=' + advancedFilters.endDate.toString() : ''
   }`;
 
   if (advancedFilters?.serviceTypeIds && advancedFilters.serviceTypeIds.length > 0) {

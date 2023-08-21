@@ -45,7 +45,6 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
   const requestApi = useCallback(
     async (nextPage: number) => {
       setIsLoading(true);
-      console.log('CUSTOMERS LIST - Page = ', nextPage);
 
       const response = await GetCustomers(
         authCtx.token?.access_token!,
@@ -56,9 +55,6 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
       );
 
       if (response) {
-        console.log(
-          `CUSTOMERS LIST - SUCCESS - PAGE: ${nextPage} - PAGE SIZE: ${response.customers?.length}`
-        );
         if (customers?.length > 0 && nextPage > 1) {
           setCustomers((prevCustomers) => [...prevCustomers, ...response.customers!]);
         } else {

@@ -3,7 +3,7 @@ import { GetServiceTypeResponse } from '../../../../../models/customers/service-
 import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
 import { ErrorType, Inputs, Touched } from '../../ServicesList';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
@@ -25,11 +25,7 @@ const Step2BeforeService: React.FC<Props> = ({
   blurHandler
 }) => {
   return (
-    <KeyboardAwareScrollView
-      style={styles.content}
-      showsVerticalScrollIndicator={true}
-      keyboardShouldPersistTaps="handled"
-    >
+    <View style={styles.content}>
       <RichTextInput
         field="beforeComments"
         label="Queixas e anotações anteriores ao atendimento"
@@ -39,7 +35,7 @@ const Step2BeforeService: React.FC<Props> = ({
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
       />
-    </KeyboardAwareScrollView>
+    </View>
   );
 };
 
@@ -49,6 +45,8 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
     marginBottom: 15,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     padding: 16,
     borderRadius: 8,
     elevation: 1,

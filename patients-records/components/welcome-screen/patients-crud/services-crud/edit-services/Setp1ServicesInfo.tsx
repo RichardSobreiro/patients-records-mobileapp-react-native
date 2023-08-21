@@ -34,7 +34,6 @@ const Step1ServiceInfo: React.FC<Props> = ({
 
   useEffect(() => {
     setSelectedServiceTypes(inputs['selectedServiceTypes']?.value);
-    console.log('inputs[selectedServiceTypes]?.value');
   }, [inputs]);
 
   return (

@@ -17,10 +17,10 @@ const ServicesListItem: React.FC<Props> = ({ service, navigateToUpdateProceeding
         <View style={styles.serviceContainer}>
           <View style={{ flex: 1 }}>
             <Text style={styles.serviceText} numberOfLines={3}>
-              {service.date ? formatDatePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
+              {service.date ? formatDatePTBR(service.date) : 'Nenhuma data cadastrada'}
             </Text>
             <Text style={styles.serviceText} numberOfLines={3}>
-              {service.date ? formatTimePTBR(new Date(service.date)) : 'Nenhuma data cadastrada'}
+              {service.date ? formatTimePTBR(service.date) : 'Nenhuma data cadastrada'}
             </Text>
           </View>
 

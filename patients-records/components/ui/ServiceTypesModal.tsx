@@ -250,7 +250,7 @@ const ServiceTypesModal: React.FC<Props> = ({
       >
         <View style={styles.topBarActions}>
           <View style={styles.topBarActionsLeftContent}>
-            <Searchbar placeholder="Search" onChangeText={onChangeSearch} value={searchQuery} />
+            <Searchbar placeholder="Procurar" onChangeText={onChangeSearch} value={searchQuery} />
           </View>
           <View style={styles.topBarActionsRightContent}>
             <IconButton

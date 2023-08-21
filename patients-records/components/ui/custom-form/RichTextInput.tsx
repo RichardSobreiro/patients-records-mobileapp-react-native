@@ -1,5 +1,5 @@
 import { Colors } from '../../../constants/styles';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
@@ -30,6 +30,16 @@ const RichTextInput: React.FC<Props> = ({
 }) => {
   const richText = useRef<any>(undefined);
   const dimensions = useWindowDimensions();
+  const [firstRender, setFirstRender] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (values[field].value !== '' && !firstRender) {
+      richText?.current.setContentHTML(values[field].value);
+      setFirstRender(true);
+      console.log(`${field}: ${values[field].value}`);
+    }
+  }, [values[field].value]);
+
   return (
     <View style={{ marginHorizontal: 4 }}>
       <Text style={[styles.label, { maxWidth: dimensions.width * 0.8 }]}>{label}</Text>
@@ -37,12 +47,12 @@ const RichTextInput: React.FC<Props> = ({
         <RichEditor
           ref={richText}
           onChange={(descriptionText) => {
+            setFirstRender(true);
             onChangeHandler?.(field, descriptionText);
           }}
           onBlur={onBlurHandler?.bind(null, field)}
           editorStyle={styles.editorStyle}
           initialHeight={250}
-          initialContentHTML={values[field].value}
         />
       </View>
 
