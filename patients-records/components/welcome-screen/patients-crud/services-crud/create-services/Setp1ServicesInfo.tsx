@@ -33,14 +33,10 @@ const Step1ServiceInfo: React.FC<Props> = ({
   );
 
   return (
-    <KeyboardAwareScrollView
-      style={styles.content}
-      showsVerticalScrollIndicator={true}
-      keyboardShouldPersistTaps="handled"
-    >
+    <>
       <DatePickerV2
         field="date"
-        label="Data do Atendimento"
+        label="Data do Atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -49,7 +45,7 @@ const Step1ServiceInfo: React.FC<Props> = ({
       />
       <TimerPicker
         field="time"
-        label="Hora do Atendimento"
+        label="Hora do Atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -66,22 +62,8 @@ const Step1ServiceInfo: React.FC<Props> = ({
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
       />
-    </KeyboardAwareScrollView>
+    </>
   );
 };
 
 export default Step1ServiceInfo;
-
-const styles = StyleSheet.create({
-  content: {
-    backgroundColor: 'transparent',
-    marginBottom: 15,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0.1, height: 0.1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 1
-  }
-});

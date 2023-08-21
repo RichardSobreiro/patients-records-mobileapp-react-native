@@ -15,19 +15,27 @@ import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
 import { useContext, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import MultiSteps from 'react-native-multi-steps';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { Snackbar } from 'react-native-paper';
 
 type Props = {
   customerId: string;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setNewServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setShowCreatedServiceSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNewServiceId }) => {
+const CreateService: React.FC<Props> = ({
+  customerId,
+  visible,
+  setVisible,
+  setNewServiceId,
+  setShowCreatedServiceSnackbar
+}) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -209,6 +217,7 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
 
     if (response.ok) {
       setNewServiceId(response.body.serviceId);
+      setShowCreatedServiceSnackbar(true);
       setInputs({
         date: {
           value: new Date(),
@@ -261,6 +270,10 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
         afterComments: false,
         afterPhotos: false
       });
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
@@ -273,76 +286,57 @@ const CreateService: React.FC<Props> = ({ customerId, visible, setVisible, setNe
 
   return (
     <>
-      <StackSheetCustom visible={visible} setVisible={setVisible}>
+      <Snackbar
+        visible={visibleSnackbar}
+        onDismiss={() => {}}
+        wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
+        style={{
+          backgroundColor: Colors.secondary500
+        }}
+      >
+        Atendimento criado com sucesso!
+      </Snackbar>
+      <StackSheetCustom visible={visible} setVisible={setVisible} saveModalCallback={submitHandler}>
         {isLoading ? (
           <ActivityIndicator color={Colors.error500} size={40} />
         ) : (
-          <View style={styles.container}>
-            <MultiSteps
-              containerButtonStyle={styles.containerButtonStyle}
-              onMoveNext={function (data: any): void {
-                console.log('next', data);
-              }}
-              onMovePrevious={function (data: any): void {
-                console.log('previous', data);
-              }}
-              onSubmit={function () {
-                submitHandler();
-                console.log('Submit');
-              }}
-              config={{
-                nextButtonLabel: 'Próximo',
-                previousButtonLabel: 'Voltar',
-                submitButtonLabel: 'Salvar'
-              }}
-            >
-              <View>
-                <Step1ServiceInfo
-                  inputs={inputs}
-                  touched={touched}
-                  errors={errors}
-                  changeHandler={handleChange}
-                  blurHandler={handleBlur}
-                />
-              </View>
-              <View>
-                <Step2BeforeService
-                  inputs={inputs}
-                  touched={touched}
-                  errors={errors}
-                  changeHandler={handleChange}
-                  blurHandler={handleBlur}
-                />
-              </View>
-              <View>
-                <Step3BeforeServicePhotos
-                  inputs={inputs}
-                  touched={touched}
-                  errors={errors}
-                  changeHandler={handleChange}
-                  blurHandler={handleBlur}
-                />
-              </View>
-              <View>
-                <Step4AfterService
-                  inputs={inputs}
-                  touched={touched}
-                  errors={errors}
-                  changeHandler={handleChange}
-                  blurHandler={handleBlur}
-                />
-              </View>
-              <View>
-                <Step5AfterServicePhotos
-                  inputs={inputs}
-                  touched={touched}
-                  errors={errors}
-                  changeHandler={handleChange}
-                  blurHandler={handleBlur}
-                />
-              </View>
-            </MultiSteps>
-          </View>
+          <ScrollView style={styles.container} overScrollMode="never">
+            <Step1ServiceInfo
+              inputs={inputs}
+              touched={touched}
+              errors={errors}
+              changeHandler={handleChange}
+              blurHandler={handleBlur}
+            />
+            <Step2BeforeService
+              inputs={inputs}
+              touched={touched}
+              errors={errors}
+              changeHandler={handleChange}
+              blurHandler={handleBlur}
+            />
+            <Step3BeforeServicePhotos
+              inputs={inputs}
+              touched={touched}
+              errors={errors}
+              changeHandler={handleChange}
+              blurHandler={handleBlur}
+            />
+            <Step4AfterService
+              inputs={inputs}
+              touched={touched}
+              errors={errors}
+              changeHandler={handleChange}
+              blurHandler={handleBlur}
+            />
+            <Step5AfterServicePhotos
+              inputs={inputs}
+              touched={touched}
+              errors={errors}
+              changeHandler={handleChange}
+              blurHandler={handleBlur}
+            />
+          </ScrollView>
         )}
       </StackSheetCustom>
     </>
@@ -354,9 +348,7 @@ export default CreateService;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 20
+    marginHorizontal: 20
   },
   containerButtonStyle: {
     display: 'flex',

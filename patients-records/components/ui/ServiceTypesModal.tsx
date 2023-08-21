@@ -243,7 +243,11 @@ const ServiceTypesModal: React.FC<Props> = ({
 
   return (
     <>
-      <StackSheetCustom visible={visible} setVisible={setVisible}>
+      <StackSheetCustom
+        visible={visible}
+        setVisible={setVisible}
+        saveModalCallback={() => setVisible(false)}
+      >
         <View style={styles.topBarActions}>
           <View style={styles.topBarActionsLeftContent}>
             <Searchbar placeholder="Search" onChangeText={onChangeSearch} value={searchQuery} />
@@ -334,8 +338,8 @@ const ServiceTypesModal: React.FC<Props> = ({
 
       {mode === 'crud' && (
         <>
-          <Text style={styles.label}>Tipo de atendimento</Text>
-          <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
+          <Text style={styles.label}>Tipo de atendimento:</Text>
+          <View style={{ justifyContent: 'center', flex: 1, alignItems: 'flex-start' }}>
             <ButtonPaper
               onPress={() => {
                 setVisible(true);

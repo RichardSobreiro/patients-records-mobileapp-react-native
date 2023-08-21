@@ -25,21 +25,21 @@ const Step4AfterService: React.FC<Props> = ({
   blurHandler
 }) => {
   return (
-    <KeyboardAwareScrollView
-      style={styles.content}
-      showsVerticalScrollIndicator={true}
-      keyboardShouldPersistTaps="handled"
-    >
-      <RichTextInput
-        field="afterComments"
-        label="Queixas e comentários após o atendimento"
-        values={inputs}
-        touched={touched}
-        errors={errors}
-        onChangeHandler={changeHandler}
-        onBlurHandler={blurHandler}
-      />
-    </KeyboardAwareScrollView>
+    // <KeyboardAwareScrollView
+    //   style={styles.content}
+    //   showsVerticalScrollIndicator={true}
+    //   keyboardShouldPersistTaps="handled"
+    // >
+    <RichTextInput
+      field="afterComments"
+      label="Queixas e comentários após o atendimento"
+      values={inputs}
+      touched={touched}
+      errors={errors}
+      onChangeHandler={changeHandler}
+      onBlurHandler={blurHandler}
+    />
+    // </KeyboardAwareScrollView>
   );
 };
 

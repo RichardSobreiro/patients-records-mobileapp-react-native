@@ -1,6 +1,6 @@
 import { Colors } from '../../../constants/styles';
 import React, { useRef } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 const handleHead = ({ tintColor }) => <Text style={{ color: tintColor }}>H1</Text>;
@@ -29,14 +29,14 @@ const RichTextInput: React.FC<Props> = ({
   onBlurHandler
 }) => {
   const richText = useRef<any>(undefined);
+  const dimensions = useWindowDimensions();
   return (
     <View style={{ marginHorizontal: 4 }}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.editorStyleContainer}>
+      <Text style={[styles.label, { maxWidth: dimensions.width * 0.8 }]}>{label}</Text>
+      <View style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 0.8 }]}>
         <RichEditor
           ref={richText}
           onChange={(descriptionText) => {
-            console.log('descriptionText:', descriptionText);
             onChangeHandler?.(field, descriptionText);
           }}
           onBlur={onBlurHandler?.bind(null, field)}
@@ -47,6 +47,7 @@ const RichTextInput: React.FC<Props> = ({
       </View>
 
       <RichToolbar
+        style={[{ maxWidth: dimensions.width * 0.8 }]}
         editor={richText}
         actions={[
           // actions.fontName,
@@ -80,14 +81,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     color: Colors.primary500,
-    marginBottom: 4
+    marginBottom: 4,
+    flexWrap: 'wrap'
   },
   editorStyleContainer: {
     borderColor: Colors.primary500,
     borderWidth: 2,
-    borderRadius: 5,
-    flex: 1,
-    height: '100%'
+    borderRadius: 5
   },
   editorStyle: {
     backgroundColor: Colors.primary100

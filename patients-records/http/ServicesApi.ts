@@ -14,20 +14,29 @@ export const createService = async (
   request: CreateServiceRequest
 ): Promise<ApiResponse> => {
   try {
-    const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services`;
+    //const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services`;
+    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services`;
     const formData = new FormData();
-    formData.append('date', request.date.toLocaleString());
+    formData.append('date', request.date.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);
     formData.append('afterNotes', request.afterNotes!);
     if (request.beforePhotos) {
       for (const photo of request.beforePhotos) {
-        formData.append('beforePhotos', photo.file);
+        formData.append('beforePhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
     if (request.afterPhotos) {
       for (const photo of request.afterPhotos) {
-        formData.append('afterPhotos', photo.file);
+        formData.append('afterPhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
     const response = await fetch(URL_ADDRESS, {
@@ -85,21 +94,30 @@ export const updateService = async (
   request: UpdateServiceRequest
 ): Promise<ApiResponse> => {
   try {
-    const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
+    //const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
+    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
 
     const formData = new FormData();
-    formData.append('date', request.date.toLocaleString());
+    formData.append('date', request.date.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);
     formData.append('afterNotes', request.afterNotes!);
     if (request.beforePhotos) {
       for (const photo of request.beforePhotos) {
-        formData.append('beforePhotos', photo.file, photo.id);
+        formData.append('beforePhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
     if (request.afterPhotos) {
       for (const photo of request.afterPhotos) {
-        formData.append('afterPhotos', photo.file, photo.id);
+        formData.append('afterPhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
     const response = await fetch(URL_ADDRESS, {

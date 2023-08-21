@@ -7123,13 +7123,6 @@
   "resolved" "https://registry.npmjs.org/react-native-mask-input/-/react-native-mask-input-1.2.3.tgz"
   "version" "1.2.3"
 
-"react-native-multi-steps@^0.1.8":
-  "integrity" "sha512-H0ikrRNFYm2Ux08v5OE7FxZR1Srby4Ixk896HCmfePobVBM2ylFyoDCzr9wFgltUwvxCc7N7CerDWRfgdH2bLg=="
-  "resolved" "https://registry.npmjs.org/react-native-multi-steps/-/react-native-multi-steps-0.1.8.tgz"
-  "version" "0.1.8"
-  dependencies:
-    "prop-types" "^15.8.1"
-
 "react-native-pager-view@*", "react-native-pager-view@>= 4.0.0", "react-native-pager-view@6.1.2":
   "integrity" "sha512-qs2KSFc+7N7B+UZ6SG2sTvCkppagm5fVyRclv1KFKc7lDtrhXLzN59tXJw575LDP/dRJoXsNwqUAhZJdws6ABQ=="
   "resolved" "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-6.1.2.tgz"

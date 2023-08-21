@@ -94,6 +94,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [isVisibleCreateService, setVisibleCreateService] = useState<boolean>(false);
   const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
   const [editServiceId, setEditServiceId] = useState<string | undefined>(undefined);
+  const [showCreatedServiceSnackbar, setShowCreatedServiceSnackbar] = useState<boolean>(false);
 
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
@@ -154,6 +155,9 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   useEffect(() => {
     getServiceListAsync(1);
+    if (editServiceId && editServiceId !== '') {
+      setVisibleEditService(true);
+    }
   }, [getServiceListAsync, editServiceId]);
 
   const fetchMoreData = () => {
@@ -213,6 +217,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         visible={isVisibleCreateService}
         setVisible={setVisibleCreateService}
         setNewServiceId={setEditServiceId}
+        setShowCreatedServiceSnackbar={setShowCreatedServiceSnackbar}
       />
       <EditService
         customerId={customerId}
@@ -220,6 +225,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         setVisible={setVisibleEditService}
         serviceId={editServiceId}
         setServiceId={setEditServiceId}
+        showCreatedServiceSnackbar={showCreatedServiceSnackbar}
       />
       <Portal>
         <FAB.Group

@@ -52,7 +52,7 @@ const DatePickerV2: React.FC<Props> = ({
   return (
     <SafeAreaProvider>
       <Text style={styles.label}>{label}</Text>
-      <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
+      <View style={{ flex: 1, alignItems: 'flex-start' }}>
         <Button
           onPress={() => {
             setOpen(true);

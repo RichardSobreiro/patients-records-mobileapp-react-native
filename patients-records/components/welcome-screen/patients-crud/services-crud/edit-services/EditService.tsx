@@ -16,8 +16,8 @@ import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import MultiSteps from 'react-native-multi-steps';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { Snackbar } from 'react-native-paper';
 
 type Props = {
   customerId: string;
@@ -25,6 +25,7 @@ type Props = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   serviceId: string | undefined;
   setServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  showCreatedServiceSnackbar: boolean;
 };
 
 const EditService: React.FC<Props> = ({
@@ -32,10 +33,13 @@ const EditService: React.FC<Props> = ({
   visible,
   setVisible,
   serviceId,
-  setServiceId
+  setServiceId,
+  showCreatedServiceSnackbar
 }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+  const [visibleCreatedSnackbar, setVisibleCreatedSnackbar] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -93,6 +97,15 @@ const EditService: React.FC<Props> = ({
   });
 
   useEffect(() => {
+    if (showCreatedServiceSnackbar) {
+      setVisibleCreatedSnackbar(true);
+      setTimeout(() => {
+        setVisibleCreatedSnackbar(false);
+      }, 5000);
+    }
+  }, [showCreatedServiceSnackbar]);
+
+  useEffect(() => {
     if (serviceId && authCtx.token?.access_token) {
       setIsLoading(true);
 
@@ -115,11 +128,11 @@ const EditService: React.FC<Props> = ({
               isValid: true
             },
             hour: {
-              value: dateObject.getUTCHours(),
+              value: dateObject.getHours(),
               isValid: true
             },
             minutes: {
-              value: dateObject.getUTCMinutes(),
+              value: dateObject.getMinutes(),
               isValid: true
             },
             selectedServiceTypes: {
@@ -282,7 +295,13 @@ const EditService: React.FC<Props> = ({
 
     if (response.ok) {
       setServiceId(response.body.serviceId);
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
     } else {
+      setVisible(false);
+      setServiceId(undefined);
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
@@ -297,73 +316,65 @@ const EditService: React.FC<Props> = ({
         visible={visible}
         setVisible={setVisible}
         hideModalCallback={() => setServiceId(undefined)}
+        saveModalCallback={submitHandler}
       >
-        <View style={styles.container}>
-          <MultiSteps
-            containerButtonStyle={styles.containerButtonStyle}
-            onMoveNext={function (data: any): void {
-              console.log('next', data);
-            }}
-            onMovePrevious={function (data: any): void {
-              console.log('previous', data);
-            }}
-            onSubmit={function () {
-              submitHandler();
-              console.log('Submit');
-            }}
-            config={{
-              nextButtonLabel: 'Próximo',
-              previousButtonLabel: 'Voltar',
-              submitButtonLabel: 'Salvar'
+        <ScrollView style={styles.container} overScrollMode="never">
+          <Snackbar
+            visible={visibleSnackbar}
+            onDismiss={() => {}}
+            wrapperStyle={{ zIndex: 7000, top: 0 }}
+            style={{
+              backgroundColor: Colors.secondary500
             }}
           >
-            <View>
-              <Step1ServiceInfo
-                inputs={inputs}
-                touched={touched}
-                errors={errors}
-                changeHandler={handleChange}
-                blurHandler={handleBlur}
-              />
-            </View>
-            <View>
-              <Step2BeforeService
-                inputs={inputs}
-                touched={touched}
-                errors={errors}
-                changeHandler={handleChange}
-                blurHandler={handleBlur}
-              />
-            </View>
-            <View>
-              <Step3BeforeServicePhotos
-                inputs={inputs}
-                touched={touched}
-                errors={errors}
-                changeHandler={handleChange}
-                blurHandler={handleBlur}
-              />
-            </View>
-            <View>
-              <Step4AfterService
-                inputs={inputs}
-                touched={touched}
-                errors={errors}
-                changeHandler={handleChange}
-                blurHandler={handleBlur}
-              />
-            </View>
-            <View>
-              <Step5AfterServicePhotos
-                inputs={inputs}
-                touched={touched}
-                errors={errors}
-                changeHandler={handleChange}
-                blurHandler={handleBlur}
-              />
-            </View>
-          </MultiSteps>
-        </View>
+            Alterações com sucesso!
+          </Snackbar>
+          <Snackbar
+            visible={visibleCreatedSnackbar}
+            onDismiss={() => {}}
+            wrapperStyle={{ zIndex: 7000, top: 0 }}
+            style={{
+              backgroundColor: Colors.secondary500
+            }}
+          >
+            Atendimento criado com sucesso!
+          </Snackbar>
+          <Step1ServiceInfo
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step2BeforeService
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step3BeforeServicePhotos
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step4AfterService
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+          <Step5AfterServicePhotos
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            changeHandler={handleChange}
+            blurHandler={handleBlur}
+          />
+        </ScrollView>
         {isLoading && (
           <ActivityIndicator
             color={Colors.primary800}
@@ -391,9 +402,7 @@ export default EditService;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 20
+    marginHorizontal: 20
   },
   containerButtonStyle: {
     display: 'flex',

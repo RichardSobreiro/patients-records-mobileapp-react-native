@@ -16,6 +16,7 @@ type Props = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   children: any;
   hideModalCallback?: () => void;
+  saveModalCallback?: () => void;
 };
 
 const supportedOrientations: any = [
@@ -30,7 +31,8 @@ const StackSheetCustom: React.FC<Props> = ({
   visible,
   setVisible,
   children,
-  hideModalCallback
+  hideModalCallback,
+  saveModalCallback
 }: Props) => {
   const hideModal = () => {
     hideModalCallback?.();
@@ -70,7 +72,13 @@ const StackSheetCustom: React.FC<Props> = ({
                   dimensions.width > 650 ? styles.modalContentBig : null
                 ]}
               >
-                <StackSheetHeader onDismiss={hideModal} onSave={() => {}} locale="pt" />
+                <StackSheetHeader
+                  onDismiss={hideModal}
+                  onSave={() => {
+                    saveModalCallback?.();
+                  }}
+                  locale="pt"
+                />
                 {children}
               </View>
             </View>

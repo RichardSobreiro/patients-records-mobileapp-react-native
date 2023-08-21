@@ -57,9 +57,9 @@ export const formatTimePTBR = (dateTime: Date): string => {
     m = new Date(dateTime as unknown as string);
   }
   const dateString =
-    (m.getUTCHours() < 10 ? '0' + m.getUTCHours() : m.getUTCHours()) +
+    (m.getHours() < 10 ? '0' + m.getHours() : m.getHours()) +
     ':' +
-    (m.getUTCMinutes() < 10 ? '0' + m.getUTCMinutes() : m.getUTCMinutes());
+    (m.getMinutes() < 10 ? '0' + m.getMinutes() : m.getMinutes());
   return dateString;
 };
 

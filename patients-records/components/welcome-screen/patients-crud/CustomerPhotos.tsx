@@ -12,7 +12,7 @@ import {
   FlatList,
   TouchableOpacity
 } from 'react-native';
-import { SliderBox } from 'react-native-image-slider-box';
+import { Button as ButtonPaper } from 'react-native-paper';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
 type Props = {
@@ -108,24 +108,41 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
     (carouselRef?.current as any)?.snapToItem(touched);
   };
 
+  let containerViewStyle: any = {
+    backgroundColor: 'transparent',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    maxWidth: '95%',
+    marginVertical: 0
+  };
+  if (imagesGalery && imagesGalery.length > 0) {
+    containerViewStyle = {
+      backgroundColor: 'transparent',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+      maxWidth: '95%',
+      marginVertical: 0,
+      height: 800
+    };
+  }
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent', alignItems: 'center' }}>
+    <View style={containerViewStyle}>
       <Text style={styles.title}>{title}</Text>
 
       {handleChange && (
-        <FlatButton
+        <ButtonPaper
+          style={{ marginVertical: 10 }}
           onPress={pickImage}
-          text={styles.selectButtonText}
-          pressable={styles.selectButton}
-          view={{ borderWidth: 1, borderColor: Colors.primary800, borderRadius: 25, padding: 10 }}
+          uppercase={false}
+          mode="outlined"
         >
           Selecionar imagens da galeria
-        </FlatButton>
+        </ButtonPaper>
       )}
 
       <View
         style={{
-          flex: 1 / 2,
+          flex: 0.7,
           marginTop: 0,
           alignItems: 'center',
           alignContent: 'center',
@@ -155,6 +172,18 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         activeDotIndex={indexSelected}
         dotsLength={imagesGalery.length}
         animatedDuration={150}
+        dotContainerStyle={{
+          alignContent: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          alignSelf: 'center'
+        }}
+        containerStyle={{
+          alignContent: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          alignSelf: 'center'
+        }}
         inactiveDotScale={1}
       />
       <View
@@ -199,60 +228,6 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
       />
     </View>
   );
-
-  // return (
-  //   <View style={styles.container}>
-  //     <Text style={styles.title}>{title}</Text>
-  //     {/* <SliderBox
-  //       images={images}
-  //       sliderBoxHeight={400}
-  //       dotColor="#FFEE58"
-  //       inactiveDotColor="#90A4AE"
-  //       onCurrentImagePressed={(index) => console.log(`image ${index} pressed`)}
-  //       paginationBoxVerticalPadding={40}
-  //       autoplay
-  //       circleLoop
-  //     /> */}
-  //     {handleChange && (
-  //       <FlatButton
-  //         onPress={pickImage}
-  //         text={styles.selectButtonText}
-  //         pressable={styles.selectButton}
-  //         view={{ borderWidth: 1, borderColor: Colors.primary800, borderRadius: 25, padding: 10 }}
-  //       >
-  //         Selecionar imagens da galeria
-  //       </FlatButton>
-  //     )}
-  //     {/* {images && images.length === 0 && (
-  //       <View
-  //         style={{
-  //           padding: 10,
-  //           justifyContent: 'center',
-  //           alignContent: 'center',
-  //           alignItems: 'center'
-  //         }}
-  //       >
-  //         <Text style={{ color: Colors.primary800, textAlign: 'center' }}>
-  //           Nenhuma imagem selecionada
-  //         </Text>
-  //       </View>
-  //     )} */}
-  //     <Carousel
-  //       layout="default"
-  //       data={imagesGalery}
-  //       sliderWidth={width}
-  //       itemWidth={width}
-  //       renderItem={({ item, index }) => (
-  //         <Image
-  //           key={index}
-  //           style={{ width: '100%', height: '100%' }}
-  //           resizeMode="contain"
-  //           source={item.image}
-  //         />
-  //       )}
-  //     />
-  //   </View>
-  // );
 };
 
 export default CustomerPhotos;
