@@ -33,7 +33,10 @@ const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, typ
           shadowColor: '#000000',
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.25,
-          shadowRadius: 4
+          shadowRadius: 4,
+          borderWidth: 1,
+          borderColor: Colors.secondary500,
+          borderRadius: 25
         };
         TEXT_COLOR = { color: Colors.secondary500, fontWeight: 'normal' };
         break;

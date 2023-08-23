@@ -50,12 +50,7 @@ export const formatDatePTBR = (dateTime: Date): string => {
 };
 
 export const formatTimePTBR = (dateTime: Date): string => {
-  let m = new Date();
-  if (dateTime && typeof dateTime === 'string') {
-    m = new Date((dateTime as unknown as string).slice(0, -1));
-  } else {
-    m = new Date(dateTime as unknown as string);
-  }
+  const m = new Date(dateTime as unknown as string);
   const dateString =
     (m.getHours() < 10 ? '0' + m.getHours() : m.getHours()) +
     ':' +

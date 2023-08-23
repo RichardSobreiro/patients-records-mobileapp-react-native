@@ -94,9 +94,10 @@ export const updateService = async (
   request: UpdateServiceRequest
 ): Promise<ApiResponse> => {
   try {
-    const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
+    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
 
     const formData = new FormData();
+    console.log(`UPDATE API - Date: ${request.date.toString()}`);
     formData.append('date', request.date.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);

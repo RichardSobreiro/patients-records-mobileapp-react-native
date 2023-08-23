@@ -1,5 +1,4 @@
 import IconButton from './components/ui/IconButton';
-import CreateEditProceedingTopTabs from './components/ui/navigations/CreateEditProceedingTopTabs';
 import { Colors } from './constants/styles';
 import CreateCustomerScreen from './screens/CreateCustomerScreen';
 import EditCustomerScreen from './screens/EditCustomerScreen';
@@ -47,8 +46,7 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 
 const EditPatientBottomTabs = ({ route, navigation }) => {
-  const { customerId, refresh, shouldUpdatePatientsList } = route.params;
-  console.log(`EditPatientBottomTabs: ${customerId}`);
+  const { customerId } = route.params;
 
   useEffect(() => {
     navigation.setOptions({
@@ -83,26 +81,6 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
           )
         }}
       />
-      {/* <Tab.Screen
-        name="CreateProceeding"
-        component={CreateEditProceedingTopTabs}
-        //initialParams={ }}
-        options={{
-          tabBarLabel: 'Novo Atendimento',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="plus-square" size={size} color={color} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="EditProceeding"
-        component={CreateEditProceedingTopTabs}
-        //initialParams={{ patient }}
-        options={{
-          tabBarIconStyle: { display: 'none' },
-          tabBarButton: () => null
-        }}
-      />*/}
     </Tab.Navigator>
   );
 };

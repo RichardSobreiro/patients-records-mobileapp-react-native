@@ -16,6 +16,7 @@ type Props = {
   errors: any;
   onChangeHandler: (field: string, value: any) => void;
   onBlurHandler: (field: string) => void;
+  buttonStyle?: any;
 };
 
 const DatePickerV2: React.FC<Props> = ({
@@ -25,7 +26,8 @@ const DatePickerV2: React.FC<Props> = ({
   touched,
   errors,
   onChangeHandler,
-  onBlurHandler
+  onBlurHandler,
+  buttonStyle
 }) => {
   const [date, setDate] = useState<string | undefined | CalendarDate>(
     values[field]?.value ? values[field]?.value : undefined
@@ -52,7 +54,7 @@ const DatePickerV2: React.FC<Props> = ({
   return (
     <SafeAreaProvider>
       <Text style={styles.label}>{label}</Text>
-      <View style={{ flex: 1, alignItems: 'flex-start' }}>
+      <View style={[{ flex: 1, alignItems: 'flex-start' }, buttonStyle]}>
         <Button
           onPress={() => {
             setOpen(true);

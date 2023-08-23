@@ -242,7 +242,6 @@ const EditService: React.FC<Props> = ({
       inputs.minutes.isValid = true;
       newErrors.time = null;
       setErrors(newErrors);
-      console.log('No error');
       return true;
     } else {
       inputs.hour.isValid = false;
@@ -285,10 +284,12 @@ const EditService: React.FC<Props> = ({
       };
 
       if (field === 'date') {
+        console.log('FIELD date');
         newInputs[field].isValid = validateDate(newInputs);
       }
 
       if (field === 'hour' || field === 'minutes') {
+        console.log(`FIELD hour:minutes: ${newInputs.hour.value}:${newInputs.minutes.value}`);
         validateTime(newInputs);
       }
 

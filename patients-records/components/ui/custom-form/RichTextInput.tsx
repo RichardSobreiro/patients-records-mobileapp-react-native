@@ -36,7 +36,6 @@ const RichTextInput: React.FC<Props> = ({
     if (values[field].value !== '' && !firstRender) {
       richText?.current.setContentHTML(values[field].value);
       setFirstRender(true);
-      console.log(`${field}: ${values[field].value}`);
     }
   }, [values[field].value]);
 

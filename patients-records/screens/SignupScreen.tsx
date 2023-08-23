@@ -17,8 +17,9 @@ const SignupScreen: React.FC = () => {
       await createUser(email, password, username);
       Alert.alert('Usuário criado com sucesso', 'Agora faça o login!');
       navigation.replace('Login');
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Ops!?!? Algo deu errado.', 'Tente novamente!');
+      console.log(error);
       setIsAuthenticating(false);
     }
   }

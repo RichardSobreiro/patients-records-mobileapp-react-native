@@ -9,7 +9,7 @@ import ServiceTypesModal from '../ui/ServiceTypesModal';
 import DateRangePicker from '../ui/custom-form/DateRangePicker';
 import CustomerListItem from './CustomerListItem';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,

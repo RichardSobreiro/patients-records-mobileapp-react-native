@@ -1,20 +1,19 @@
 /* eslint-disable import/order */
+import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
+import { Colors } from '../../../constants/styles';
 import { createCustomer } from '../../../http/CustomersApi';
 import { GetCustomer } from '../../../models/GetCustomersResponse';
 import { CreateCustomerRequest } from '../../../models/customers/CreateCustomerRequest';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
 import Button, { ButtonTypes } from '../../ui/Button';
-import LoadingOverlay from '../../ui/LoadingOverlay';
-import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
-import Header from '../Header';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
-import { useCallback, useContext, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useContext, useState } from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type ErrorType = {
@@ -38,15 +37,9 @@ const CreateCustomer: React.FC<Props> = () => {
   const notificationCtx = useContext(NotificationContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingMessage, setIsLoadingMessage] = useState<string | undefined>(undefined);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [customer, setCustomer] = useState<GetCustomer | undefined>(undefined);
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const handleCancel = useCallback(() => {
-    navigation.navigate('Welcome', { shouldUpdatePatientsList: false });
-  }, [navigation]);
 
   const [inputs, setInputs] = useState({
     customerName: {
@@ -159,7 +152,6 @@ const CreateCustomer: React.FC<Props> = () => {
   const submitHandler = () => {
     if (validateForm(inputs, true)) {
       setIsLoading(true);
-      setIsLoadingMessage('Salvando...');
       const createPatientRequest = {
         customerName: inputs.customerName.value,
         email: inputs.email.value,
@@ -178,7 +170,6 @@ const CreateCustomer: React.FC<Props> = () => {
         const response = await createCustomer(authCtx.token?.access_token!, request);
 
         if (response.ok) {
-          setIsEditing(true);
           setCustomer(response.body);
           navigation.navigate('EditPatient', {
             customerId: response.body.customerId,
@@ -196,27 +187,32 @@ const CreateCustomer: React.FC<Props> = () => {
         }
 
         setIsLoading(false);
-        setIsLoadingMessage(undefined);
       };
 
       callCreateUpdateCustomerApi();
     }
   };
 
-  if (isLoading) {
-    return <LoadingOverlay message={isLoadingMessage} />;
-  }
-
   return (
     <>
-      <View style={styles.header}>
-        <Header
-          isAddingCustomerScreen={true}
-          onSkipBackPressed={handleCancel}
-          title={isEditing ? `${customer?.customerName!}` : 'Novo Cliente'}
-          subtitle={'Informações Básicas'}
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
         />
-      </View>
+      )}
       <KeyboardAwareScrollView style={styles.content}>
         <Input
           field="customerName"
@@ -247,25 +243,19 @@ const CreateCustomer: React.FC<Props> = () => {
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
         />
-        <DatePicker
+        <DatePickerV2
           field="birthDate"
           label="Data de Nascimento"
           values={inputs}
           touched={touched}
           errors={errors}
           onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+          buttonStyle={{ alignItems: 'center' }}
         />
         <View style={styles.buttons}>
           <Button
-            onPress={handleCancel}
-            text={styles.buttonTextStyles}
-            pressable={[styles.buttonPressable]}
-            type={ButtonTypes.Cancel}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type={ButtonTypes.Primary}
+            type={ButtonTypes.Primary_Bordered}
             onPress={submitHandler}
             text={styles.buttonTextStyles}
             pressable={[
@@ -287,8 +277,9 @@ export default CreateCustomer;
 
 const styles = StyleSheet.create({
   buttons: {
-    flexDirection: 'row',
-    marginTop: 5
+    flexDirection: 'column',
+    marginTop: 15,
+    alignItems: 'flex-end'
   },
   buttonPressable: {
     flex: 1,

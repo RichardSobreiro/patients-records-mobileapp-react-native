@@ -114,9 +114,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         );
 
         if (response.ok) {
-          console.log(
-            `SERVICES LIST - PAGE: ${nextPage} - PAGE SIZE: ${response.body.servicesList?.length}`
-          );
           if (servicesList.length > 0 && nextPage > 1) {
             setServicesList((prevValue) => [...prevValue, ...response.body.servicesList]);
           } else {
@@ -159,6 +156,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   useEffect(() => {
     if (editServiceId && editServiceId !== '') {
       setVisibleEditService(true);
+      getServiceListAsync(1);
     }
   }, [editServiceId]);
 

@@ -1,4 +1,5 @@
 /* eslint-disable import/order */
+import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
 import { Colors } from '../../../constants/styles';
 import { getCustomerById, updateCustomer } from '../../../http/CustomersApi';
 import { GetCustomer } from '../../../models/GetCustomersResponse';
@@ -51,7 +52,6 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(customerId);
     if (customerId) {
       setIsLoading(true);
       const getCustomerByIdAsync = async () => {
@@ -325,13 +325,15 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
         />
-        <DatePicker
+        <DatePickerV2
           field="birthDate"
           label="Data de Nascimento"
           values={inputs}
           touched={touched}
           errors={errors}
           onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+          buttonStyle={{ alignItems: 'center' }}
         />
         <View style={styles.buttons}>
           <Button
@@ -357,8 +359,9 @@ export default EditCustomer;
 
 const styles = StyleSheet.create({
   buttons: {
-    flexDirection: 'row',
-    marginTop: 5
+    flexDirection: 'column',
+    marginTop: 15,
+    alignItems: 'flex-end'
   },
   buttonPressable: {
     flex: 1,
