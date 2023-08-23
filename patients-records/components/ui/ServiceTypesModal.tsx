@@ -33,12 +33,12 @@ type ErrorTypeNewService = {
 };
 
 type Props = {
-  errors: ErrorType;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selectedServiceTypes: GetServiceTypeResponse[];
   setSelectedServiceTypes: React.Dispatch<React.SetStateAction<GetServiceTypeResponse[]>>;
   mode: 'filter' | 'crud';
+  errors?: ErrorType;
   onChangeHandler?: (field: string, value: GetServiceTypeResponse[]) => void;
   onBlurHandler?: (field: string) => void;
 };
@@ -374,7 +374,7 @@ const ServiceTypesModal: React.FC<Props> = ({
                 })}
               </View>
             )}
-            {errors['selectedServiceTypes'] ? (
+            {errors?.['selectedServiceTypes'] ? (
               <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>{errors['selectedServiceTypes']}</Text>
               </View>

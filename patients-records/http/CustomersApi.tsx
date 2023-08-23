@@ -100,24 +100,20 @@ export const GetCustomers = async (
   pageNumber: number,
   limit: number,
   customerName?: string,
-  advancedFilters?: any
+  startDate?: Date,
+  endDate?: Date,
+  serviceTypeIds?: string[]
 ) => {
   let url = `${process.env.API_URL}/customers?pageNumber=${pageNumber}&limit=${limit}${
     customerName ? '&customerName=' + customerName : ''
   }`;
 
-  url += `${
-    advancedFilters?.startDate
-      ? '&lastServiceStartDate=' + advancedFilters.startDate.toString()
-      : ''
-  }`;
+  url += `${startDate ? '&lastServiceStartDate=' + startDate.toString() : ''}`;
 
-  url += `${
-    advancedFilters?.endDate ? '&lastServiceEndDate=' + advancedFilters.endDate.toString() : ''
-  }`;
+  url += `${endDate ? '&lastServiceEndDate=' + endDate.toString() : ''}`;
 
-  if (advancedFilters?.serviceTypeIds && advancedFilters.serviceTypeIds.length > 0) {
-    for (const serviceTypeId of advancedFilters.serviceTypeIds) {
+  if (serviceTypeIds && serviceTypeIds.length > 0) {
+    for (const serviceTypeId of serviceTypeIds) {
       url += `&serviceTypeIds=${serviceTypeId}`;
     }
   }

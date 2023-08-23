@@ -144,6 +144,7 @@ export const getServices = async (
   pageNumber: string,
   limit: string,
   customerId: string,
+  serviceTypeDescription?: string,
   startDate?: Date,
   endDate?: Date,
   serviceTypeIds?: string[]
@@ -151,13 +152,17 @@ export const getServices = async (
   let URL = `${process.env.API_URL}/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
 
   if (startDate && endDate) {
-    URL += `&startDate=${startDate.toLocaleString()}&endDate=${endDate.toLocaleString()}`;
+    URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
   }
 
   if (serviceTypeIds && serviceTypeIds.length > 0) {
     for (const serviceTypeId of serviceTypeIds) {
       URL += `&serviceTypeIds=${serviceTypeId}`;
     }
+  }
+
+  if (serviceTypeDescription) {
+    URL += `&serviceTypeDescription=${serviceTypeDescription}`;
   }
 
   try {

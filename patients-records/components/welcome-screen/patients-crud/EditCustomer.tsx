@@ -1,21 +1,21 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
-import { getCustomerById } from '../../../http/CustomersApi';
+import { getCustomerById, updateCustomer } from '../../../http/CustomersApi';
 import { GetCustomer } from '../../../models/GetCustomersResponse';
+import { UpdateCustomerRequest } from '../../../models/customers/UpdateCustomerRequest';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
 import Button, { ButtonTypes } from '../../ui/Button';
-import LoadingOverlay from '../../ui/LoadingOverlay';
 import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
-import Header from '../Header';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, BackHandler } from 'react-native';
+import { View, StyleSheet, BackHandler, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Snackbar } from 'react-native-paper';
 
 type ErrorType = {
   customerName: null | string;
@@ -39,10 +39,10 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   const notificationCtx = useContext(NotificationContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingMessage, setIsLoadingMessage] = useState<string | undefined>(undefined);
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+
   const [isAtServicesList, setIsAtServicesList] = useState<boolean>(false);
   const [customer, setCustomer] = useState<GetCustomer | undefined>(undefined);
-  const [headerSubtitle, setHeaderSubtitle] = useState<string | undefined>('Informações Básicas');
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -105,7 +105,6 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   }, [handleCancel, customerId, notificationCtx, authCtx.token?.access_token]);
 
   const handleBackFromServicesList = () => {
-    setHeaderSubtitle('Informações Básicas');
     setIsAtServicesList(false);
   };
 
@@ -234,34 +233,69 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   };
 
   const submitHandler = () => {
-    if (validateForm(inputs, true)) {
+    if (validateForm(inputs, true) && authCtx.token?.access_token) {
       setIsLoading(true);
-      setIsLoadingMessage('Salvando...');
+      const callUpdateCustomerApi = async () => {
+        const request = new UpdateCustomerRequest(
+          customerId,
+          inputs.customerName.value,
+          inputs.phoneNumber.value,
+          inputs.birthDate.value,
+          inputs.email.value
+        );
 
-      const callUpdateCustomerApi = async () => {};
+        const response = await updateCustomer(authCtx.token?.access_token!, request);
+
+        if (response.ok) {
+          setVisibleSnackbar(true);
+          setTimeout(() => {
+            setVisibleSnackbar(false);
+          }, 5000);
+        } else {
+          notificationCtx.showNotification({
+            title: 'Ops...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          });
+        }
+
+        setIsLoading(false);
+      };
 
       callUpdateCustomerApi();
     }
   };
 
-  if (isLoading) {
-    return <LoadingOverlay message={isLoadingMessage} />;
-  }
-
   return (
     <>
-      <View style={styles.header}>
-        <Header
-          isAddingCustomerScreen={true}
-          onSkipBackPressed={handleCancel}
-          title={`${customer?.customerName!}`}
-          subtitle={headerSubtitle}
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
         />
-      </View>
-      {/* {isAtServicesList ? (
-        <ServicesList patient={customer!} />
-      ) : ( */}
+      )}
       <KeyboardAwareScrollView style={styles.content}>
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ zIndex: 7000, top: 0 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Alterações salvas com sucesso!
+        </Snackbar>
         <Input
           field="customerName"
           label="Nome"
@@ -301,15 +335,7 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         />
         <View style={styles.buttons}>
           <Button
-            onPress={handleCancel}
-            text={styles.buttonTextStyles}
-            pressable={[styles.buttonPressable]}
-            type={ButtonTypes.Cancel}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type={ButtonTypes.Primary}
+            type={ButtonTypes.Primary_Bordered}
             onPress={submitHandler}
             text={styles.buttonTextStyles}
             pressable={[
@@ -323,7 +349,6 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
           </Button>
         </View>
       </KeyboardAwareScrollView>
-      {/* )} */}
     </>
   );
 };

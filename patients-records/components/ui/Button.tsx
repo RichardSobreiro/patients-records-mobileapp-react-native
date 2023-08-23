@@ -3,6 +3,7 @@ import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-
 
 export enum ButtonTypes {
   Primary = 'primary',
+  Primary_Bordered = 'primary_bordered',
   Cancel = 'cancel'
 }
 
@@ -16,15 +17,31 @@ interface Props {
 }
 
 const Button: React.FC<Props> = ({ children, onPress, pressable, view, text, type }) => {
-  let BUTTON_COLOR = { backgroundColor: Colors.primary500 };
-  let TEXT_COLOR = { color: '#ffffff' };
+  let BUTTON_COLOR: any = {};
+  BUTTON_COLOR = { backgroundColor: Colors.primary500 };
+  let TEXT_COLOR: any = {};
+  TEXT_COLOR = { color: '#ffffff' };
   if (type) {
     switch (type) {
       case ButtonTypes.Primary:
         BUTTON_COLOR = { backgroundColor: Colors.secondary500 };
         break;
+      case ButtonTypes.Primary_Bordered:
+        BUTTON_COLOR = {
+          backgroundColor: `transparent`,
+          elevation: 0,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4
+        };
+        TEXT_COLOR = { color: Colors.secondary500, fontWeight: 'normal' };
+        break;
       case ButtonTypes.Cancel:
-        BUTTON_COLOR = { backgroundColor: Colors.tertiary300 };
+        BUTTON_COLOR = {
+          backgroundColor: Colors.tertiary300,
+          shadowColor: 'transparent'
+        };
         TEXT_COLOR = { color: Colors.tertiary800 };
         break;
       default:

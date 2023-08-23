@@ -405,7 +405,7 @@ const EditService: React.FC<Props> = ({
               backgroundColor: Colors.secondary500
             }}
           >
-            Alterações com sucesso!
+            Alterações salvas com sucesso!
           </Snackbar>
           <Snackbar
             visible={visibleCreatedSnackbar}

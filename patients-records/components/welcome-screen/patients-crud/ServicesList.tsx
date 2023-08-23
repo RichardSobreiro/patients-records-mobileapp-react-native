@@ -1,19 +1,19 @@
 /* eslint-disable import/order */
+import DateRangePicker from '../../../components/ui/custom-form/DateRangePicker';
 import { Colors } from '../../../constants/styles';
 import { getServices } from '../../../http/ServicesApi';
+import { GetServiceTypeResponse } from '../../../models/customers/service-types/GetServiceTypesResponse';
 import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
-import Header from '../Header';
+import { DateParser } from '../../../util/dateParser';
+import FileCustom from '../../../util/types/FileCustom';
 import ServicesListItem from './ServicesListItem';
-import ServicesListSearchBar from './ServicesListSearchBar';
 import CreateService from './services-crud/create-services/CreateService';
 import EditService from './services-crud/edit-services/EditService';
-import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
-import FileCustom from 'util/types/FileCustom';
 
 export type ErrorType = {
   date: null | string;
@@ -93,18 +93,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [editServiceId, setEditServiceId] = useState<string | undefined>(undefined);
   const [showCreatedServiceSnackbar, setShowCreatedServiceSnackbar] = useState<boolean>(false);
 
-  const [searchPhrase, setSearchPhrase] = useState<string>('');
-  const [clicked, setClicked] = useState<boolean>(false);
+  const [searchServiceTypeDescription, setSearchServiceTypeDescription] = useState<string>('');
+  const [searchStartDate, setSearchStartDate] = useState<Date | undefined>(undefined);
+  const [searchEndDate, setSearchEndDate] = useState<Date | undefined>(undefined);
+  const [openDateRangeModal, setOpenDateRangeModal] = useState<boolean>(false);
 
-  //console.log('CUSTOMERS LIST - Page = ', page);
-  // const startDateObject = isDate(startDate)
-  //   ? new Date(startDate)
-  //   : undefined;
-  // const endDateObject = isDate(endDate) ? new Date(endDate) : undefined;
-
-  // const selectedTypesIds = (selectedTypes as Item[])
-  //   ?.filter((type) => type.selected)
-  //   ?.map((selectedType) => selectedType.id);
   const getServiceListAsync = useCallback(
     async (nextPage: number) => {
       if (authCtx.token?.access_token) {
@@ -114,7 +107,10 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
           authCtx.token.access_token,
           nextPage as unknown as string,
           PAGE_SIZE as unknown as string,
-          customerId as string
+          customerId as string,
+          searchServiceTypeDescription,
+          searchStartDate,
+          searchEndDate
         );
 
         if (response.ok) {
@@ -145,7 +141,15 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         setIsLoading(false);
       }
     },
-    [authCtx.token?.access_token, customerId, notificationCtx, servicesList.length]
+    [
+      authCtx.token?.access_token,
+      customerId,
+      notificationCtx,
+      searchEndDate,
+      searchServiceTypeDescription,
+      searchStartDate,
+      servicesList.length
+    ]
   );
 
   useEffect(() => {
@@ -158,6 +162,24 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
     }
   }, [editServiceId]);
 
+  useEffect(() => {
+    const refreshData = () => {
+      setPage((prevState) => {
+        const nextPage = 1;
+        getServiceListAsync(nextPage);
+        return nextPage;
+      });
+    };
+    const unsubscribe = refreshData;
+    const timer = setTimeout(() => {
+      refreshData();
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [searchServiceTypeDescription, searchStartDate, searchEndDate]);
+
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
       setPage((prevState) => {
@@ -166,13 +188,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         return nextPage;
       });
     }
-  };
-
-  const onSubmitFilter = async () => {
-    // if (!startDateIsValid || !endDateIsValid) {
-    //   return;
-    // }
-    await getServiceListAsync(page);
   };
 
   const renderArticle = ({ item }) => {
@@ -266,9 +281,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
           color={Colors.primary100}
         />
       </Portal>
-      {/* <View style={styles.header}>
-        <Header isAddingCustomerScreen={true} title="Atendimentos" />
-      </View> */}
       <View style={styles.container}>
         <View style={styles.content}>
           <View
@@ -278,15 +290,49 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               alignItems: 'center'
             }}
           >
-            <View style={{ flex: 1, marginHorizontal: 10, marginVertical: 10 }}>
+            <View
+              style={{
+                flex: 1,
+                marginHorizontal: 10,
+                marginVertical: 10,
+                alignContent: 'center',
+                alignItems: 'center'
+              }}
+            >
               <Searchbar
                 placeholder="Procurar"
-                onChangeText={setSearchPhrase}
-                value={searchPhrase}
+                onChangeText={setSearchServiceTypeDescription}
+                value={searchServiceTypeDescription}
                 iconColor="#120461"
                 clearButtonMode="while-editing"
                 inputStyle={{ color: Colors.primary500 }}
               />
+              <Pressable
+                onPress={() => setOpenDateRangeModal(true)}
+                style={{
+                  height: 25,
+                  width: 200,
+                  borderWidth: 1,
+                  borderRadius: 15,
+                  padding: 2,
+                  marginTop: 5,
+                  borderColor: Colors.primary500
+                }}
+              >
+                <DateRangePicker
+                  text={
+                    searchStartDate && searchEndDate
+                      ? `${DateParser(searchStartDate)} até ${DateParser(searchEndDate)}`
+                      : 'Datas de atendimento...'
+                  }
+                  open={openDateRangeModal}
+                  setOpen={setOpenDateRangeModal}
+                  startDate={searchStartDate}
+                  setStartDate={setSearchStartDate}
+                  endDate={searchEndDate}
+                  setEndDate={setSearchEndDate}
+                />
+              </Pressable>
             </View>
           </View>
           {servicesList?.length === 0 && !hasMoreData ? (
@@ -346,13 +392,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     verticalAlign: 'middle'
   },
-  header: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#dbdbdb',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
   container: {
     flex: 1
   },
@@ -386,5 +425,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.primary500,
     flex: 1
+  },
+  extraFiltersButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 15,
+    padding: 2,
+    marginTop: 5,
+    borderColor: Colors.primary500
   }
 });
