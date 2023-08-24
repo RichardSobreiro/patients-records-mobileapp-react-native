@@ -8,7 +8,7 @@ import {
   GetServiceTypesResponse
 } from '../../models/customers/service-types/GetServiceTypesResponse';
 import { AuthContext } from '../../store/auth-context';
-import { ErrorType } from '../welcome-screen/patients-crud/ServicesList';
+import { ErrorType } from '../customers/patients-crud/services-crud/ServicesList';
 import Button, { ButtonTypes } from './Button';
 import IconButton from './IconButton';
 import Input from './custom-form/Input';

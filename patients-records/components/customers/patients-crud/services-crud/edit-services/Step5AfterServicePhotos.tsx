@@ -2,7 +2,7 @@
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
 import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerPhotos from '../../CustomerPhotos';
-import { ErrorType, Inputs, Touched } from '../../ServicesList';
+import { ErrorType, Inputs, Touched } from '../ServicesList';
 
 type Props = {
   inputs: Inputs;
@@ -15,7 +15,7 @@ type Props = {
   blurHandler: (field: string) => void;
 };
 
-const Step3BeforeServicePhotos: React.FC<Props> = ({
+const Step5AfterServicePhotos: React.FC<Props> = ({
   inputs,
   touched,
   errors,
@@ -24,12 +24,12 @@ const Step3BeforeServicePhotos: React.FC<Props> = ({
 }) => {
   return (
     <CustomerPhotos
-      field="beforePhotos"
-      title="Fotos do Antes"
+      field="afterPhotos"
+      title="Fotos do Depois"
       handleChange={changeHandler}
       values={inputs}
     />
   );
 };
 
-export default Step3BeforeServicePhotos;
+export default Step5AfterServicePhotos;

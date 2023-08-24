@@ -1,5 +1,6 @@
 import IconButton from './components/ui/IconButton';
 import { Colors } from './constants/styles';
+import AnamnesisListScreen from './screens/AnamnesisListScreen';
 import CreateCustomerScreen from './screens/CreateCustomerScreen';
 import EditCustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -31,6 +32,7 @@ WebBrowser.maybeCompleteAuthSession();
 export type EditPatientStackParamList = {
   PatientInfo: { customerId: string };
   ServicesList: { customerId: string };
+  AnamnesisList: { customerId: string };
   CreateProceeding: { patient: GetCustomer };
   EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
 };
@@ -76,6 +78,17 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         initialParams={{ customerId }}
         options={{
           tabBarLabel: 'Atendimentos',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="hand-holding-medical" size={size} color={color} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="AnamnesisList"
+        component={AnamnesisListScreen}
+        initialParams={{ customerId }}
+        options={{
+          tabBarLabel: 'Anamneses',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="book-medical" size={size} color={color} />
           )

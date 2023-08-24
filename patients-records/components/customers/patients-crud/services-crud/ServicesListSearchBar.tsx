@@ -1,5 +1,5 @@
-import { Colors } from '../../../constants/styles';
-import IconButton from '../../ui/IconButton';
+import { Colors } from '../../../../constants/styles';
+import IconButton from '../../../ui/IconButton';
 import { Feather, Entypo } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, TextInput, View, Keyboard } from 'react-native';

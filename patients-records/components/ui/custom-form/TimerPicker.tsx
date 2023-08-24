@@ -1,6 +1,6 @@
 //import { styles } from './styles';
 import { Colors } from '../../../constants/styles';
-import { ErrorType } from '../../welcome-screen/patients-crud/ServicesList';
+import { ErrorType } from '../../customers/patients-crud/services-crud/ServicesList';
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-paper';

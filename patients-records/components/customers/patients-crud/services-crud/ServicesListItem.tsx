@@ -1,5 +1,5 @@
-import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
-import { formatDatePTBR, formatTimePTBR } from '../../../util/date-helpers';
+import { GetServiceResponse } from '../../../../models/customers/services/GetServicesResponse';
+import { formatDatePTBR, formatTimePTBR } from '../../../../util/date-helpers';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Surface } from 'react-native-paper';
 

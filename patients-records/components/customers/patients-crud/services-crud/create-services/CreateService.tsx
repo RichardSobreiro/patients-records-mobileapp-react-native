@@ -8,7 +8,7 @@ import { NotificationContext } from '../../../../../store/notification-context';
 import { isValidDate } from '../../../../../util/date-helpers';
 import FileCustom from '../../../../../util/types/FileCustom';
 import StackSheetCustom from '../../../../ui/custom-form/StackSheetCustom';
-import { ErrorType, Inputs, Touched } from '../../ServicesList';
+import { ErrorType, Inputs, Touched } from '../ServicesList';
 import Step1ServiceInfo from './Setp1ServicesInfo';
 import Step2BeforeService from './Step2BeforeService';
 import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';

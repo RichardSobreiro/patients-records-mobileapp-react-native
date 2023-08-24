@@ -1,16 +1,17 @@
 /* eslint-disable import/order */
-import DateRangePicker from '../../../components/ui/custom-form/DateRangePicker';
-import { Colors } from '../../../constants/styles';
-import { getServices } from '../../../http/ServicesApi';
-import { GetServiceTypeResponse } from '../../../models/customers/service-types/GetServiceTypesResponse';
-import { GetServiceResponse } from '../../../models/customers/services/GetServicesResponse';
-import { AuthContext } from '../../../store/auth-context';
-import { NotificationContext } from '../../../store/notification-context';
-import { DateParser } from '../../../util/dateParser';
-import FileCustom from '../../../util/types/FileCustom';
+import { Colors } from '../../../../constants/styles';
+import { getServices } from '../../../../http/ServicesApi';
+import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
+import { GetServiceResponse } from '../../../../models/customers/services/GetServicesResponse';
+import { AuthContext } from '../../../../store/auth-context';
+import { NotificationContext } from '../../../../store/notification-context';
+import { DateParser } from '../../../../util/dateParser';
+import FileCustom from '../../../../util/types/FileCustom';
+import DateRangePicker from '../../../ui/custom-form/DateRangePicker';
 import ServicesListItem from './ServicesListItem';
-import CreateService from './services-crud/create-services/CreateService';
-import EditService from './services-crud/edit-services/EditService';
+import CreateService from './create-services/CreateService';
+import EditService from './edit-services/EditService';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
@@ -98,6 +99,8 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [searchEndDate, setSearchEndDate] = useState<Date | undefined>(undefined);
   const [openDateRangeModal, setOpenDateRangeModal] = useState<boolean>(false);
 
+  const isFocused = useIsFocused();
+
   const getServiceListAsync = useCallback(
     async (nextPage: number) => {
       if (authCtx.token?.access_token) {
@@ -150,8 +153,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   );
 
   useEffect(() => {
-    getServiceListAsync(1);
-  }, []);
+    if (isFocused) {
+      console.log(`SERVICES LIST - USE FOCUS EFFECT - isFocused: ${isFocused}`);
+      getServiceListAsync(1);
+    }
+  }, [getServiceListAsync, isFocused]);
 
   useEffect(() => {
     if (editServiceId && editServiceId !== '') {
@@ -237,7 +243,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}
-          visible
+          visible={isFocused}
           icon={isOpenFabGroup ? 'minus' : 'plus'}
           actions={[
             { icon: 'plus', onPress: () => console.log('Pressed add') },

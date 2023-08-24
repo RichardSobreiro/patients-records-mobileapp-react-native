@@ -2,8 +2,8 @@
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
 import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
-import { ErrorType, Inputs, Touched } from '../../ServicesList';
-import { StyleSheet, View } from 'react-native';
+import { ErrorType, Inputs, Touched } from '../ServicesList';
+import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
   blurHandler: (field: string) => void;
 };
 
-const Step2BeforeService: React.FC<Props> = ({
+const Step4AfterService: React.FC<Props> = ({
   inputs,
   touched,
   errors,
@@ -25,28 +25,30 @@ const Step2BeforeService: React.FC<Props> = ({
   blurHandler
 }) => {
   return (
-    <View style={styles.content}>
-      <RichTextInput
-        field="beforeComments"
-        label="Queixas e anotações anteriores ao atendimento"
-        values={inputs}
-        touched={touched}
-        errors={errors}
-        onChangeHandler={changeHandler}
-        onBlurHandler={blurHandler}
-      />
-    </View>
+    // <KeyboardAwareScrollView
+    //   style={styles.content}
+    //   showsVerticalScrollIndicator={true}
+    //   keyboardShouldPersistTaps="handled"
+    // >
+    <RichTextInput
+      field="afterComments"
+      label="Queixas e comentários após o atendimento"
+      values={inputs}
+      touched={touched}
+      errors={errors}
+      onChangeHandler={changeHandler}
+      onBlurHandler={blurHandler}
+    />
+    // </KeyboardAwareScrollView>
   );
 };
 
-export default Step2BeforeService;
+export default Step4AfterService;
 
 const styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
     marginBottom: 15,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
     padding: 16,
     borderRadius: 8,
     elevation: 1,

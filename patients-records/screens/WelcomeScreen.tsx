@@ -1,4 +1,4 @@
-import CustomersList from '../components/welcome-screen/CustomersList';
+import CustomersList from '../components/customers/CustomersList';
 import { AuthContext } from '../store/auth-context';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';

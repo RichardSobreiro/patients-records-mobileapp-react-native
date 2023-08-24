@@ -1,4 +1,4 @@
-import CreateCustomer from '../components/welcome-screen/patients-crud/CreateCustomer';
+import CreateCustomer from '../components/customers/patients-crud/CreateCustomer';
 
 type Props = {
   route: any;
