@@ -30,7 +30,7 @@ export class CreateAnamnesisRequest {
     public customerId: string,
     public date: Date,
     public anamnesisTypesContent: CreateAnamnesisTypeContentRequest[],
-    public birthDate: Date,
+    public birthDate?: Date,
     public freeTypeText?: string,
     public gender?: string,
     public ethnicity?: string,

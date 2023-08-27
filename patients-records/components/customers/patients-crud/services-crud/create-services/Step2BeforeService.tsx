@@ -4,7 +4,6 @@ import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 import { StyleSheet, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
   inputs: Inputs;

@@ -2,16 +2,39 @@
 import DateRangePicker from '../../../../components/ui/custom-form/DateRangePicker';
 import { Colors } from '../../../../constants/styles';
 import { getAnamnesis } from '../../../../http/AnamnesisApi';
+import { CreateAnamnesisTypeContentRequest } from '../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { GetAnamnesis } from '../../../../models/customers/anamnesis/GetAnamnesisResponse';
 import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
 import { DateParser } from '../../../../util/dateParser';
 import AnamnesisListItem from './AnamnesisListItem';
 import CreateAnamnesis from './create-anamnesis/CreateAnamnesis';
+import EditAnamnesis from './edit-anamnesis/EditAnamnesis';
 import { useIsFocused } from '@react-navigation/native';
-import { SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, FlatList } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
+
+export type ErrorType = {
+  date: null | string;
+  anamnesisTypeContents: null | string;
+};
+
+export type Inputs = {
+  date: {
+    value: Date;
+    isValid: boolean;
+  };
+  anamnesisTypeContents: {
+    value: CreateAnamnesisTypeContentRequest[];
+    isValid: boolean;
+  };
+};
+
+export type Touched = {
+  date: boolean;
+  anamnesisTypeContents: boolean;
+};
 
 type Props = { customerId: string };
 
@@ -34,6 +57,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
   const [isVisibleCreateAnamnesis, setVisibleCreateAnamnesis] = useState<boolean>(false);
+  const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
   const [editAnamnesisId, setEditAnamnesisId] = useState<string | undefined>(undefined);
   const [showCreatedAnamnesisSnackbar, setShowCreatedAnamnesisSnackbar] = useState<boolean>(false);
 
@@ -95,7 +119,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
       console.log(`ANAMNESIS LIST - USE FOCUS EFFECT - isFocused: ${isFocused}`);
       getAnamnesisListAsync(1);
     }
-  }, [getAnamnesisListAsync, isFocused]);
+  }, [getAnamnesisListAsync, isFocused, editAnamnesisId]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
@@ -112,7 +136,12 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
       <AnamnesisListItem
         key={item.serviceId}
         anamnesis={item}
-        navigateToUpdateAnamnesis={() => {}}
+        navigateToUpdateAnamnesis={() => {
+          setVisibleEditService((curState) => {
+            setEditAnamnesisId(item.anamneseId);
+            return true;
+          });
+        }}
       />
     );
   };
@@ -139,6 +168,14 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
         setVisible={setVisibleCreateAnamnesis}
         setCreatedAnamnesisId={setEditAnamnesisId}
         setShowCreatedAnamnesisSnackbar={setShowCreatedAnamnesisSnackbar}
+      />
+      <EditAnamnesis
+        customerId={customerId}
+        visible={isVisibleEditService}
+        setVisible={setVisibleEditService}
+        anamnesisId={editAnamnesisId}
+        setAnamnesisId={setEditAnamnesisId}
+        showCreatedAnamnesisSnackbar={showCreatedAnamnesisSnackbar}
       />
       <Portal>
         <FAB.Group

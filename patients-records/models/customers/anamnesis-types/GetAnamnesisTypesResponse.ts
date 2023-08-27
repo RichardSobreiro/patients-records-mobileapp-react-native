@@ -3,14 +3,11 @@ export class GetAnamnesisTypeResponse {
   constructor(
     public anamnesisTypeId: string,
     public anamnesisTypeDescription: string,
-    public template: string | null,
+    public template: string | undefined,
     public isDefault: boolean
   ) {}
 }
 
 export class GetAnamnesisTypesResponse {
-  constructor(
-    public userId: string,
-    public anamnesisTypes?: GetAnamnesisTypeResponse[] | null
-  ) {}
+  constructor(public userId: string, public anamnesisTypes?: GetAnamnesisTypeResponse[] | null) {}
 }

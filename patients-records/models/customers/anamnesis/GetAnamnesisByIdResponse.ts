@@ -20,7 +20,7 @@ export class GetAnamnesisTypeContentResponse {
     public anamnesisTypeId: string,
     public anamnesisTypeDescription: string,
     public isDefault: boolean,
-    public content?: string | null,
+    public content?: string | undefined,
     public files?: GetAnamnesisByIdTypeFileResponse[] | null
   ) {}
 }

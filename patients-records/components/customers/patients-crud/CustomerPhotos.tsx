@@ -1,6 +1,5 @@
 import { Colors } from '../../../constants/styles';
 import FileCustom from '../../../util/types/FileCustom';
-import FlatButton from '../../ui/FlatButton';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef, useState } from 'react';
 import {

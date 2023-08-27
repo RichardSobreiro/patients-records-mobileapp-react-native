@@ -5,8 +5,6 @@ import TimerPicker from '../../../../ui/custom-form/TimerPicker';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FileCustom from 'util/types/FileCustom';
 
 type Props = {
