@@ -88,6 +88,7 @@ const EditAnamnesis: React.FC<Props> = ({
       date: null,
       anamnesisTypeContents: null
     });
+    setFiles([]);
   };
 
   useEffect(() => {
@@ -123,6 +124,7 @@ const EditAnamnesis: React.FC<Props> = ({
           });
           setSelectedAnamnesisTypes(
             getAnamnesisResponse.anamnesisTypesContent.map((selected) => {
+              console.log(selected.content);
               return new GetAnamnesisTypeResponse(
                 selected.anamnesisTypeId,
                 selected.anamnesisTypeDescription,
@@ -134,6 +136,7 @@ const EditAnamnesis: React.FC<Props> = ({
           const filesApi = getAnamnesisResponse.anamnesisTypesContent.filter(
             (a) => a.anamnesisTypeDescription === 'Arquivo'
           );
+
           if (filesApi?.length > 0) {
             const newFilesState: FileCustom[] = [];
             for (const anamneseTypeFile of filesApi) {
@@ -142,7 +145,7 @@ const EditAnamnesis: React.FC<Props> = ({
                   const response = await fetch(fileApi.baseUrl);
                   const data = await response.blob();
                   const metadata = {
-                    type: data.type
+                    type: fileApi.mimeType
                   };
                   const documentFile = new File(
                     [data],
@@ -220,12 +223,10 @@ const EditAnamnesis: React.FC<Props> = ({
 
     setIsLoading(true);
 
-    const dateObject = new Date(inputs.date.value);
-
     const request = new UpdateAnamnesisRequest(
       anamnesisId,
       customerId,
-      dateObject,
+      inputs.date.value,
       selectedAnamnesisTypes.map(
         (selected) =>
           new UpdateAnamnesisTypeContentRequest(
@@ -237,7 +238,7 @@ const EditAnamnesis: React.FC<Props> = ({
       )
     );
 
-    const response = await updateAnamnesis(authCtx.token?.access_token, request);
+    const response = await updateAnamnesis(authCtx.token?.access_token, request, files);
 
     if (response.ok) {
       setAnamnesisId(response.body.anamneseId);
@@ -337,7 +338,7 @@ const EditAnamnesis: React.FC<Props> = ({
           setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
           mode={'crud'}
         />
-        {files && files?.length > 0 && (
+        {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >= 0 && (
           <CustomerFiles
             files={files}
             setFiles={setFiles}
@@ -355,7 +356,9 @@ export default EditAnamnesis;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 20
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 20
   },
   containerButtonStyle: {
     display: 'flex',

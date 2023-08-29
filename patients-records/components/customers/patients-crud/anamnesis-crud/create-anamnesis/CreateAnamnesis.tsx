@@ -8,6 +8,8 @@ import {
 } from '../../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
+import FileCustom from '../../../../../util/types/FileCustom';
+import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
 import { GetAnamnesisTypeResponse } from '/models/customers/anamnesis-types/GetAnamnesisTypesResponse';
@@ -60,6 +62,8 @@ const CreateAnamnesis: React.FC<Props> = ({
   const [selectedAnamnesisTypes, setSelectedAnamnesisTypes] = useState<GetAnamnesisTypeResponse[]>(
     []
   );
+
+  const [files, setFiles] = useState<FileCustom[] | undefined>(undefined);
 
   const handleChange = (field: string, enteredValue: string | Date | undefined) => {
     setTouched((curTouched) => {
@@ -127,11 +131,14 @@ const CreateAnamnesis: React.FC<Props> = ({
 
     console.log(`${JSON.stringify(request)}`);
 
-    const response = await createAnamnesis(authCtx.token?.access_token, request);
+    const response = await createAnamnesis(authCtx.token?.access_token, request, files);
 
     if (response.ok) {
-      setCreatedAnamnesisId(response.body.anamneseId);
-      setShowCreatedAnamnesisSnackbar(true);
+      setShowCreatedAnamnesisSnackbar(() => {
+        setCreatedAnamnesisId(response.body.anamneseId);
+        return true;
+      });
+      setSelectedAnamnesisTypes([]);
       setInputs({
         date: {
           value: new Date(),
@@ -150,6 +157,7 @@ const CreateAnamnesis: React.FC<Props> = ({
         date: false,
         anamnesisTypeContents: false
       });
+      setFiles([]);
       setVisibleSnackbar(true);
       setTimeout(() => {
         setVisibleSnackbar(false);
@@ -226,6 +234,15 @@ const CreateAnamnesis: React.FC<Props> = ({
             setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
             mode={'crud'}
           />
+          {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >=
+            0 && (
+            <CustomerFiles
+              files={files}
+              setFiles={setFiles}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
+          )}
         </KeyboardAwareScrollView>
       </StackSheetCustom>
     </>

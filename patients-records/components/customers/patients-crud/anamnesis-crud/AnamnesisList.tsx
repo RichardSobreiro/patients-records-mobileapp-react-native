@@ -116,10 +116,16 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   useEffect(() => {
     if (isFocused) {
-      console.log(`ANAMNESIS LIST - USE FOCUS EFFECT - isFocused: ${isFocused}`);
       getAnamnesisListAsync(1);
     }
-  }, [getAnamnesisListAsync, isFocused, editAnamnesisId]);
+  }, [getAnamnesisListAsync, isFocused]);
+
+  useEffect(() => {
+    if (editAnamnesisId && editAnamnesisId !== '') {
+      setVisibleEditService(true);
+      getAnamnesisListAsync(1);
+    }
+  }, [getAnamnesisListAsync, editAnamnesisId]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {

@@ -31,6 +31,7 @@ const RichTextInput: React.FC<Props> = ({
   const richText = useRef<any>(undefined);
   const dimensions = useWindowDimensions();
   const [firstRender, setFirstRender] = useState<boolean>(false);
+  const [editorAttached, setEditorAttached] = useState<boolean>(false);
 
   useEffect(() => {
     if (values[field].value !== '' && !firstRender) {
@@ -39,10 +40,14 @@ const RichTextInput: React.FC<Props> = ({
     }
   }, [values[field].value]);
 
+  richText.current?.registerToolbar(function (items) {
+    setEditorAttached(true);
+  });
+
   return (
     <View style={{ marginHorizontal: 4 }}>
-      <Text style={[styles.label, { maxWidth: dimensions.width * 0.8 }]}>{label}</Text>
-      <View style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 0.8 }]}>
+      <Text style={[styles.label, { maxWidth: dimensions.width * 1 }]}>{label}</Text>
+      <View style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 1 }]}>
         <RichEditor
           ref={richText}
           onChange={(descriptionText) => {
@@ -56,7 +61,7 @@ const RichTextInput: React.FC<Props> = ({
       </View>
 
       <RichToolbar
-        style={[{ maxWidth: dimensions.width * 0.8 }]}
+        style={[{ maxWidth: dimensions.width * 1 }]}
         editor={richText}
         actions={[
           // actions.fontName,

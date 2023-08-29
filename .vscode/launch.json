@@ -9,7 +9,7 @@
       "request": "attach",
       "name": "Debug Expo app",
       "projectRoot": "${workspaceFolder}/patients-records",
-      "bundlerPort": "19000",
+      "bundlerPort": "8081",
       "bundlerHost": "192.168.0.241"
     }
   ]

@@ -17,12 +17,19 @@ export const createAnamnesis = async (
   const URL = `${process.env.API_URL}/customers/${request.customerId}/anamnesis`;
 
   const formData = new FormData();
+
+  request.date.setHours(0, 0, 0);
+
   formData.append('customerId', request.customerId);
-  formData.append('date', request.date.toLocaleString());
+  formData.append('date', request.date.toString());
   formData.append('anamnesisTypesContent', JSON.stringify(request.anamnesisTypesContent));
   if (files) {
     for (const file of files) {
-      formData.append('files', file.file);
+      formData.append('files', {
+        name: file.name,
+        type: file.file.type,
+        uri: file.url
+      } as unknown as Blob);
     }
   }
 
@@ -83,13 +90,24 @@ export const updateAnamnesis = async (
   const URL = `${process.env.API_URL}/customers/${request.customerId}/anamnesis/${request.anamneseId}`;
 
   const formData = new FormData();
+
+  request.date.setHours(0, 0, 0);
+
   formData.append('anamneseId', request.anamneseId);
   formData.append('customerId', request.customerId);
-  formData.append('date', request.date.toLocaleString());
+  formData.append('date', request.date.toString());
   formData.append('anamnesisTypesContent', JSON.stringify(request.anamnesisTypesContent));
   if (files) {
     for (const file of files) {
-      formData.append('files', file.file);
+      if (!file.id) {
+        formData.append('files', {
+          name: file.name,
+          type: file.file.type,
+          uri: file.url
+        } as unknown as Blob);
+      } else {
+        formData.append('existingFilesIds', file.id);
+      }
     }
   }
 
@@ -110,6 +128,7 @@ export const updateAnamnesis = async (
       return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
     }
   } catch (error: any) {
+    console.log(error);
     return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
   }
 };

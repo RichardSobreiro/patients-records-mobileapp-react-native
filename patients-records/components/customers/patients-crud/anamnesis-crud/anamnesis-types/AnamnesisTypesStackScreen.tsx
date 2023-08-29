@@ -1,18 +1,38 @@
+/* eslint-disable import/order */
 import IconButton from '../../../../../components/ui/IconButton';
+import Input from '../../../../../components/ui/custom-form/Input';
 import RichTextAnamnesisInput from '../../../../../components/ui/custom-form/RichTextAnamnesisInput';
+import RichTextInput from '../../../../../components/ui/custom-form/RichTextInput';
 import StackSheetCustom from '../../../../../components/ui/custom-form/StackSheetCustom';
 import { Colors } from '../../../../../constants/styles';
-import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
-import { GetAnamnesisTypeContentResponse } from '../../../../../models/customers/anamnesis/GetAnamnesisByIdResponse';
-import { AuthContext } from '../../../../../store/auth-context';
-import { ErrorType } from '../AnamnesisList';
+import {
+  createAnamnesisType,
+  getAnamnesisTypesList,
+  updateAnamnesisType
+} from '../../../../../http/AnamnesisTypesApi';
+import { CreateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/CreateAnamnesisTypeRequest';
 import {
   GetAnamnesisTypeResponse,
   GetAnamnesisTypesResponse
-} from '/models/customers/anamnesis-types/GetAnamnesisTypesResponse';
+} from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
+import { UpdateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/UpdateAnamnesisTypeRequest';
+import { AuthContext } from '../../../../../store/auth-context';
+import { ErrorType } from '../AnamnesisList';
+import { NotificationContext } from './../../../../../store/notification-context';
+import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, FlatList, ScrollView } from 'react-native';
-import { Switch, Chip, Searchbar, Button as ButtonPaper } from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
+import { Switch, Chip, Searchbar, Button as ButtonPaper, Snackbar } from 'react-native-paper';
 
 type Props = {
   visible: boolean;
@@ -36,11 +56,17 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   onBlurHandler
 }) => {
   const authCtx = useContext(AuthContext);
+  const notificationCtx = useContext(NotificationContext);
   const [isLoading, setIsLoading] = useState(false);
   const [anamnesisTypesList, setAnamnesisTypeList] = useState<GetAnamnesisTypeResponse[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string | undefined>(undefined);
 
   const [newAnamnesisTypeModalVisible, setNewAnamnesisTypeModalVisible] = useState<boolean>(false);
+  const [editingAnamnesisTypeId, setEditingAnamnesisTypeId] = useState<string | undefined>(
+    undefined
+  );
   const [inputs, setInputs] = useState({
     anamnesisTypeDescription: {
       value: '',
@@ -107,6 +133,105 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
     });
   };
 
+  const createNewAnamnesisTypes = async () => {
+    setIsLoading(true);
+
+    console.log(`Nome: ${inputs.anamnesisTypeDescription.value}`);
+    console.log(`Template: ${inputs.anamnesisTypeTemplate.value}`);
+
+    const response = await createAnamnesisType(
+      authCtx.token?.access_token!,
+      new CreateAnamnesisTypeRequest(
+        inputs.anamnesisTypeDescription.value,
+        inputs.anamnesisTypeTemplate.value
+      )
+    );
+    if (response.ok) {
+      selectedAnamnesisTypes.push(response.body as GetAnamnesisTypeResponse);
+      getAnamnesisTypesAsync();
+      setInputs({
+        anamnesisTypeDescription: {
+          value: '',
+          isValid: true
+        },
+        anamnesisTypeTemplate: {
+          value: '',
+          isValid: true
+        }
+      });
+      setTouched({
+        anamnesisTypeDescription: false,
+        anamnesisTypeTemplate: false
+      });
+      setErrors({
+        anamnesisTypeDescription: null,
+        anamnesisTypeTemplate: null
+      });
+      setSnackbarMessage('Tipo de Anamnese criado com sucesso!');
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
+    } else {
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
+    }
+    setNewAnamnesisTypeModalVisible(false);
+    setIsLoading(false);
+  };
+
+  const updateAnamnesisTypeAsync = async () => {
+    setIsLoading(true);
+
+    console.log(`Nome: ${inputs.anamnesisTypeDescription.value}`);
+    console.log(`Template: ${inputs.anamnesisTypeTemplate.value}`);
+
+    const response = await updateAnamnesisType(
+      authCtx.token?.access_token!,
+      new UpdateAnamnesisTypeRequest(
+        editingAnamnesisTypeId!,
+        inputs.anamnesisTypeDescription.value,
+        inputs.anamnesisTypeTemplate.value
+      )
+    );
+    if (response.ok) {
+      selectedAnamnesisTypes.push(response.body as GetAnamnesisTypeResponse);
+      getAnamnesisTypesAsync();
+      setInputs({
+        anamnesisTypeDescription: {
+          value: '',
+          isValid: true
+        },
+        anamnesisTypeTemplate: {
+          value: '',
+          isValid: true
+        }
+      });
+      setTouched({
+        anamnesisTypeDescription: false,
+        anamnesisTypeTemplate: false
+      });
+      setErrors({
+        anamnesisTypeDescription: null,
+        anamnesisTypeTemplate: null
+      });
+      setSnackbarMessage('Tipo de Anamnese atualizado com sucesso!');
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
+    } else {
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
+    }
+    setNewAnamnesisTypeModalVisible(false);
+    setIsLoading(false);
+  };
+
   const getAnamnesisTypesAsync = useCallback(async () => {
     if (authCtx.token?.access_token) {
       try {
@@ -118,11 +243,15 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         }
       } catch (error: any) {
         console.log(error);
+        notificationCtx.showNotification({
+          title: 'Ops...',
+          message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+        });
       } finally {
         setIsLoading(false);
       }
     }
-  }, [authCtx.token?.access_token]);
+  }, [authCtx.token?.access_token, notificationCtx]);
 
   const removeItemFromSelected = (anamnesisTypeId: string) => {
     setSelectedAnamnesisTypes((prevState) => {
@@ -146,35 +275,66 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
     const anamnesisType = item as GetAnamnesisTypeResponse;
     return (
       <View key={anamnesisType.anamnesisTypeId} style={styles.listItemContent}>
-        <Switch
-          value={
-            !!selectedAnamnesisTypes.find(
-              (s) => s.anamnesisTypeId === anamnesisType.anamnesisTypeId
-            )
-          }
-          onValueChange={() => {
-            const existingItem = selectedAnamnesisTypes.filter(
-              (s) => s.anamnesisTypeId === anamnesisType.anamnesisTypeId
-            );
-            if (existingItem && existingItem.length === 1) {
-              const newSelectedAnamnesisTypes = selectedAnamnesisTypes.filter(
-                (s) => s.anamnesisTypeId !== anamnesisType.anamnesisTypeId
+        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center' }}>
+          <Switch
+            value={
+              !!selectedAnamnesisTypes.find(
+                (s) => s.anamnesisTypeId === anamnesisType.anamnesisTypeId
+              )
+            }
+            onValueChange={() => {
+              const existingItem = selectedAnamnesisTypes.filter(
+                (s) => s.anamnesisTypeId === anamnesisType.anamnesisTypeId
               );
-              setSelectedAnamnesisTypes(newSelectedAnamnesisTypes);
-              onChangeHandler?.('selectedAnamnesisTypes', newSelectedAnamnesisTypes);
-            } else {
-              if (selectedAnamnesisTypes && selectedAnamnesisTypes.length > 0) {
-                const newSelectedAnamnesisTypes = [...selectedAnamnesisTypes, anamnesisType];
+              if (existingItem && existingItem.length === 1) {
+                const newSelectedAnamnesisTypes = selectedAnamnesisTypes.filter(
+                  (s) => s.anamnesisTypeId !== anamnesisType.anamnesisTypeId
+                );
                 setSelectedAnamnesisTypes(newSelectedAnamnesisTypes);
                 onChangeHandler?.('selectedAnamnesisTypes', newSelectedAnamnesisTypes);
               } else {
-                setSelectedAnamnesisTypes([anamnesisType]);
-                onChangeHandler?.('selectedAnamnesisTypes', [anamnesisType]);
+                if (selectedAnamnesisTypes && selectedAnamnesisTypes.length > 0) {
+                  const newSelectedAnamnesisTypes = [...selectedAnamnesisTypes, anamnesisType];
+                  setSelectedAnamnesisTypes(newSelectedAnamnesisTypes);
+                  onChangeHandler?.('selectedAnamnesisTypes', newSelectedAnamnesisTypes);
+                } else {
+                  setSelectedAnamnesisTypes([anamnesisType]);
+                  onChangeHandler?.('selectedAnamnesisTypes', [anamnesisType]);
+                }
               }
-            }
-          }}
-        />
-        <Text>{anamnesisType.anamnesisTypeDescription}</Text>
+            }}
+          />
+          <Text>{anamnesisType.anamnesisTypeDescription}</Text>
+        </View>
+        {!anamnesisType.isDefault && (
+          <AntDesign
+            onPress={() => {
+              setEditingAnamnesisTypeId(anamnesisType.anamnesisTypeId);
+              setInputs({
+                anamnesisTypeDescription: {
+                  value: anamnesisType.anamnesisTypeDescription,
+                  isValid: true
+                },
+                anamnesisTypeTemplate: {
+                  value: anamnesisType.template!,
+                  isValid: true
+                }
+              });
+              setTouched({
+                anamnesisTypeDescription: false,
+                anamnesisTypeTemplate: false
+              });
+              setErrors({
+                anamnesisTypeDescription: null,
+                anamnesisTypeTemplate: null
+              });
+              setNewAnamnesisTypeModalVisible(true);
+            }}
+            name="edit"
+            size={32}
+            color={Colors.primary500}
+          />
+        )}
       </View>
     );
   };
@@ -200,6 +360,16 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
             />
           </View>
         </View>
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ position: 'absolute', top: 30, zIndex: 2000 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
         <View style={styles.seletedChipsList}>
           {selectedAnamnesisTypes.map((selected) => {
             return (
@@ -232,6 +402,75 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
             showsVerticalScrollIndicator={false}
           />
         )}
+      </StackSheetCustom>
+
+      <StackSheetCustom
+        visible={newAnamnesisTypeModalVisible}
+        setVisible={setNewAnamnesisTypeModalVisible}
+        saveModalCallback={() => {
+          if (editingAnamnesisTypeId) {
+            updateAnamnesisTypeAsync();
+          } else {
+            createNewAnamnesisTypes();
+          }
+        }}
+        hideModalCallback={() => {
+          setEditingAnamnesisTypeId(undefined);
+          setInputs({
+            anamnesisTypeDescription: {
+              value: '',
+              isValid: true
+            },
+            anamnesisTypeTemplate: {
+              value: '',
+              isValid: true
+            }
+          });
+          setTouched({
+            anamnesisTypeDescription: false,
+            anamnesisTypeTemplate: false
+          });
+          setErrors({
+            anamnesisTypeDescription: null,
+            anamnesisTypeTemplate: null
+          });
+        }}
+      >
+        <SafeAreaView style={{ flex: 1, width: '100%' }}>
+          <ScrollView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
+            >
+              {isLoading ? (
+                <View style={styles.loadingContent}>
+                  <ActivityIndicator color={Colors.error500} size={40} />
+                </View>
+              ) : (
+                <>
+                  <Input
+                    field="anamnesisTypeDescription"
+                    label="Nome"
+                    values={inputs}
+                    touched={touched}
+                    errors={errorsNewService}
+                    onChangeHandler={handleChange}
+                    onBlurHandler={handleBlur}
+                  />
+                  <RichTextInput
+                    field="anamnesisTypeTemplate"
+                    label="Template da Anamnese"
+                    values={inputs}
+                    touched={touched}
+                    errors={errors}
+                    onChangeHandler={handleChange}
+                    onBlurHandler={handleBlur}
+                  />
+                </>
+              )}
+            </KeyboardAvoidingView>
+          </ScrollView>
+        </SafeAreaView>
       </StackSheetCustom>
 
       {mode === 'filter' && (
@@ -354,11 +593,18 @@ const styles = StyleSheet.create({
   },
   listItemContent: {
     flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   listContent: {
     width: '100%',
     flex: 1
+  },
+  createUpdateAnamnesisTypeActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    alignContent: 'stretch',
+    gap: 15
   }
 });
