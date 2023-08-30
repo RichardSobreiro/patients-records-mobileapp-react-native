@@ -37,7 +37,6 @@ const TimerPicker: React.FC<Props> = ({
       setVisible(false);
       onChangeHandler('hour', hours);
       onChangeHandler('minutes', minutes);
-      console.log({ hours, minutes });
     },
     [onChangeHandler]
   );

@@ -37,7 +37,7 @@ export const convertPhotoApiToFileCustom = async (
   const photoFile = new File([data], photoName, metadata);
   return {
     file: photoFile,
-    id: undefined,
+    id: photoApiResponse.servicePhotoId,
     name: `${photoName}.${data.type.split('/')[1]}`,
     url: photoApiResponse.url
   };

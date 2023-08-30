@@ -124,7 +124,6 @@ const EditAnamnesis: React.FC<Props> = ({
           });
           setSelectedAnamnesisTypes(
             getAnamnesisResponse.anamnesisTypesContent.map((selected) => {
-              console.log(selected.content);
               return new GetAnamnesisTypeResponse(
                 selected.anamnesisTypeId,
                 selected.anamnesisTypeDescription,
@@ -305,14 +304,14 @@ const EditAnamnesis: React.FC<Props> = ({
           Alterações salvas com sucesso!
         </Snackbar>
         <Snackbar
-          visible={visibleCreatedSnackbar}
+          visible={showCreatedAnamnesisSnackbar}
           onDismiss={() => {}}
           wrapperStyle={{ zIndex: 7000, top: 0 }}
           style={{
             backgroundColor: Colors.secondary500
           }}
         >
-          Atendimento criado com sucesso!
+          Anamnese criada com sucesso!
         </Snackbar>
         <View
           style={{

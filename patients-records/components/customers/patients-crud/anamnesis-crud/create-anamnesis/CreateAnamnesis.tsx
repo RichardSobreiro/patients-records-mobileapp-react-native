@@ -129,8 +129,6 @@ const CreateAnamnesis: React.FC<Props> = ({
       )
     );
 
-    console.log(`${JSON.stringify(request)}`);
-
     const response = await createAnamnesis(authCtx.token?.access_token, request, files);
 
     if (response.ok) {

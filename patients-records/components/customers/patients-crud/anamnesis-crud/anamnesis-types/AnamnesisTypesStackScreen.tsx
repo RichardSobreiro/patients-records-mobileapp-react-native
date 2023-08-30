@@ -136,9 +136,6 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   const createNewAnamnesisTypes = async () => {
     setIsLoading(true);
 
-    console.log(`Nome: ${inputs.anamnesisTypeDescription.value}`);
-    console.log(`Template: ${inputs.anamnesisTypeTemplate.value}`);
-
     const response = await createAnamnesisType(
       authCtx.token?.access_token!,
       new CreateAnamnesisTypeRequest(
@@ -185,9 +182,6 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   const updateAnamnesisTypeAsync = async () => {
     setIsLoading(true);
 
-    console.log(`Nome: ${inputs.anamnesisTypeDescription.value}`);
-    console.log(`Template: ${inputs.anamnesisTypeTemplate.value}`);
-
     const response = await updateAnamnesisType(
       authCtx.token?.access_token!,
       new UpdateAnamnesisTypeRequest(
@@ -197,7 +191,6 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       )
     );
     if (response.ok) {
-      selectedAnamnesisTypes.push(response.body as GetAnamnesisTypeResponse);
       getAnamnesisTypesAsync();
       setInputs({
         anamnesisTypeDescription: {

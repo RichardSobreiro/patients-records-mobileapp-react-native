@@ -131,7 +131,6 @@ export const GetCustomers = async (
     const customers = await response.json();
     return customers as GetCustomersResponse;
   } else {
-    console.log(`GetCustomers method Error:${response.statusText}`);
     return undefined;
   }
 };

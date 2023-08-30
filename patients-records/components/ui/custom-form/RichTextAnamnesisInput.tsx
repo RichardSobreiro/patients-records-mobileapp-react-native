@@ -34,7 +34,6 @@ const RichTextAnamnesisInput: React.FC<Props> = ({
 
   useEffect(() => {
     if (currentHTML !== '' && !firstRender) {
-      // console.log(`First Render - currentHTML: ${currentHTML}`);
       richText?.current.setContentHTML(currentHTML);
       setFirstRender(true);
     }
@@ -64,7 +63,6 @@ const RichTextAnamnesisInput: React.FC<Props> = ({
                   }
                   return curSelected;
                 });
-                //console.log(`currentHTML: ${currentHTML}`);
               }}
               onBlur={() => {}}
               editorStyle={styles.editorStyle}

@@ -44,7 +44,6 @@ const CustomerFiles: React.FC<Props> = ({ files, setFiles, isLoading, setIsLoadi
     try {
       const downloadResult = await downloadResumable.downloadAsync();
       Sharing.shareAsync(downloadResult?.uri!);
-      console.log('Finished downloading to ', downloadResult?.uri);
     } catch (e) {
       console.error(e);
     }

@@ -248,18 +248,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
           actions={[
             { icon: 'plus', onPress: () => console.log('Pressed add') },
             {
-              icon: 'calendar-today',
-              label: 'Atendimentos Agendados',
-              onPress: () => console.log('Pressed calendar'),
-              labelTextColor: 'white'
-            },
-            {
-              icon: 'email',
-              label: 'Enviar uma Mensagem',
-              onPress: () => console.log('Pressed send message'),
-              labelTextColor: 'white'
-            },
-            {
               icon: 'plus',
               label: 'Novo Atendimento',
               onPress: () => setVisibleCreateService(true),
@@ -304,7 +292,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               }}
             >
               <Searchbar
-                placeholder="Procurar"
+                placeholder="Procurar por tipo"
                 onChangeText={setSearchServiceTypeDescription}
                 value={searchServiceTypeDescription}
                 iconColor="#120461"

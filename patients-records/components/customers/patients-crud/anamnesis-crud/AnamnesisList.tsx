@@ -166,6 +166,14 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   const keyExtractor = (item: GetAnamnesis) => item.anamneseId;
 
+  useEffect(() => {
+    if (showCreatedAnamnesisSnackbar) {
+      setTimeout(() => {
+        setShowCreatedAnamnesisSnackbar(false);
+      }, 5000);
+    }
+  }, [showCreatedAnamnesisSnackbar]);
+
   return (
     <>
       <CreateAnamnesis

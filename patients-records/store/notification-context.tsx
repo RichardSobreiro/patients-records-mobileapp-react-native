@@ -55,7 +55,6 @@ const NotificationProvider = ({ children }: Props) => {
                 <Text variant="bodyMedium">{notification.message}</Text>
               </Dialog.Content>
               <Dialog.Actions>
-                {/* <Button onPress={() => console.log('Cancel')}>Cancel</Button> */}
                 <Button onPress={() => hideNotification()}>Ok</Button>
               </Dialog.Actions>
             </Dialog>

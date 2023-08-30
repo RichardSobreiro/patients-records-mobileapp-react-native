@@ -192,7 +192,7 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
         style={{ minHeight: 100, paddingVertical: 10, paddingHorizontal: 15 }}
       >
         <Searchbar
-          placeholder="Procurar"
+          placeholder="Procurar por nome"
           onChangeText={setSearchPhrase}
           value={searchPhrase}
           iconColor="#120461"

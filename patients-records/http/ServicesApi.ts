@@ -94,7 +94,7 @@ export const updateService = async (
   request: UpdateServiceRequest
 ): Promise<ApiResponse> => {
   try {
-    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
+    const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
 
     const formData = new FormData();
     console.log(`UPDATE API - Date: ${request.date.toString()}`);
@@ -104,20 +104,28 @@ export const updateService = async (
     formData.append('afterNotes', request.afterNotes!);
     if (request.beforePhotos) {
       for (const photo of request.beforePhotos) {
-        formData.append('beforePhotos', {
-          name: photo.name,
-          type: photo.file.type,
-          uri: photo.url
-        } as unknown as Blob);
+        if (photo.id) {
+          formData.append('existingBeforePhotosIds', photo.id);
+        } else {
+          formData.append('beforePhotos', {
+            name: photo.name,
+            type: photo.file.type,
+            uri: photo.url
+          } as unknown as Blob);
+        }
       }
     }
     if (request.afterPhotos) {
       for (const photo of request.afterPhotos) {
-        formData.append('afterPhotos', {
-          name: photo.name,
-          type: photo.file.type,
-          uri: photo.url
-        } as unknown as Blob);
+        if (photo.id) {
+          formData.append('existingAfterPhotosIds', photo.id);
+        } else {
+          formData.append('afterPhotos', {
+            name: photo.name,
+            type: photo.file.type,
+            uri: photo.url
+          } as unknown as Blob);
+        }
       }
     }
     const response = await fetch(URL_ADDRESS, {

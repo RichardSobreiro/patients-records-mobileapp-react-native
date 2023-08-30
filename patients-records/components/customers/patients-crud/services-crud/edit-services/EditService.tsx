@@ -212,11 +212,10 @@ const EditService: React.FC<Props> = ({
             }
           });
         }
+        setIsLoading(false);
       };
 
       getServiceAsync();
-
-      setIsLoading(false);
     }
   }, [authCtx.token?.access_token, customerId, serviceId]);
 
@@ -284,12 +283,10 @@ const EditService: React.FC<Props> = ({
       };
 
       if (field === 'date') {
-        console.log('FIELD date');
         newInputs[field].isValid = validateDate(newInputs);
       }
 
       if (field === 'hour' || field === 'minutes') {
-        console.log(`FIELD hour:minutes: ${newInputs.hour.value}:${newInputs.minutes.value}`);
         validateTime(newInputs);
       }
 
