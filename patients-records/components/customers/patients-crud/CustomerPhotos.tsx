@@ -59,7 +59,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
       aspect: [4, 3],
       quality: 1,
       allowsMultipleSelection: true,
-      selectionLimit: 4
+      selectionLimit: 10
     });
 
     if (!result.canceled) {

@@ -40,7 +40,7 @@ export default function StackSheetHeader(props: StackSheetHeader) {
           color={Colors.primary500}
           testID="react-native-paper-dates-close"
         />
-        <Appbar.Content title={''} />
+        {/* <Appbar.Content title={''} /> */}
         <Button
           color={Colors.primary500}
           textColor={theme.colors.primary}
@@ -57,36 +57,13 @@ export default function StackSheetHeader(props: StackSheetHeader) {
 }
 
 const styles = StyleSheet.create({
-  fill: {
-    flex: 1
-  },
   animated: {
-    elevation: 4
-  },
-
-  header: {
-    height: 75,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingLeft: 24,
-    paddingRight: 12
-  },
-  headerContentContainer: { marginTop: 5, flexDirection: 'row' },
-  label: { color: '#fff', letterSpacing: 1, fontSize: 13 },
-  singleHeaderText: { color: '#fff', fontSize: 25 },
-  rangeHeaderText: { color: '#fff', fontSize: 25 },
-  headerTextFilled: { color: 'rgba(255,255,255,1)' },
-  headerTextEmpty: { color: 'rgba(255,255,255,0.5)' },
-  headerSeparator: {
-    color: 'rgba(255,255,255,1)',
-    fontSize: 25,
-    paddingLeft: 6,
-    paddingRight: 6
+    elevation: 4,
+    width: '100%'
   },
   appbarHeader: {
     elevation: 0,
     backgroundColor: 'transparent',
-    width: '100%',
     justifyContent: 'space-between'
   }
 });

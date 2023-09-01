@@ -5,7 +5,9 @@ import {
   StyleSheet,
   View,
   TouchableWithoutFeedback,
-  useWindowDimensions
+  useWindowDimensions,
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
@@ -64,7 +66,10 @@ const StackSheetCustom: React.FC<Props> = ({
                 ]}
               />
             </TouchableWithoutFeedback>
-            <View style={[StyleSheet.absoluteFill, styles.modalRoot]} pointerEvents="box-none">
+            <SafeAreaView
+              style={[StyleSheet.absoluteFill, styles.modalRoot]}
+              pointerEvents="box-none"
+            >
               <View
                 style={[
                   styles.modalContent,
@@ -81,7 +86,7 @@ const StackSheetCustom: React.FC<Props> = ({
                 />
                 {children}
               </View>
-            </View>
+            </SafeAreaView>
           </>
         </Modal>
         {/* </Portal> */}
@@ -112,8 +117,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   modalContentBig: {
-    maxWidth: 600,
-    maxHeight: 800,
     borderRadius: 10,
     width: '100%',
     overflow: 'hidden'

@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Meu Negócio",
-    "description": "Um app que vai fazer você economizar tempo enquato gerencia o seu próprio negócio.",
+    "name": "Portal Atender",
+    "description": "A plataforma que ajuda você a gerenciar seus atendimentos por um preço justo.",
     "slug": "patients-records",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.1",
       "supportsTablet": true,
       "bundleIdentifier": "com.sobreirostechnologies.patientsrecords"
     },
@@ -25,7 +25,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +37,12 @@
       }
     },
     "plugins": [
+      [
+        "expo-updates",
+        {
+          "username": "RichardSobreiro"
+        }
+      ],
       "expo-localization",
       [
         "expo-image-picker",
@@ -43,6 +50,12 @@
           "photosPermission": "O applicativo acessa sua galeria para gerenciar as fotos do antes e depois de seus pacientes."
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/29bd022f-4e58-4283-8160-3a2bdbbdc380"
+    }
   }
 }

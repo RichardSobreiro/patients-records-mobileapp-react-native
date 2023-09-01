@@ -229,6 +229,57 @@ eas build -p all --profile preview
 eas build -p android --profile production
 ```
 
+## Apple Production Build Release ([How to publish Expo React Native App to Apple App Store (step-by-step tutorial)
+
+](https://www.youtube.com/watch?v=LE4Mgkrf7Sk))
+
+**[App Store Connect to fill all the necessary info to publish the app](https://appstoreconnect.apple.com/apps/6463868738/testflight/groups/3ca6ee9d-9519-46ed-a746-a40ccbc15c60)**
+
+First, check the version number and the buildNumber under the expo.ios property in app.json file.
+
+Version Number:
+
+```
+"expo": {
+    ...
+    **"version": "1.0.1",
+    ...
+```
+
+Build Number:
+
+```
+"expo": {
+    ...
+    "ios": {
+      "buildNumber": "1.0.1",
+    ...
+```
+
+Next, run the following command:
+
+```
+eas build -p ios --profile production
+```
+
+Submit the build to apple developer account:
+
+```
+eas submit -p ios --latest
+```
+
+##
+
+## Live Release updates to an existing production build (Over the Ear Updates)
+
+The following command will update the app on the testers devices:
+
+```
+eas update --channel production --message 'Add up to 10 images'
+```
+
+There are some limitations: change android or ios folders, install new package, etc.
+
 ## Create a Build Locally and Install it on Android Emulator (Windows 11)
 
 1. [Install the Windows Subsystem for Linux (WSL2) and latest Ubuntu distribution](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview)

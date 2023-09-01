@@ -298,6 +298,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
                 iconColor="#120461"
                 clearButtonMode="while-editing"
                 inputStyle={{ color: Colors.primary500 }}
+                style={{ width: '100%' }}
               />
               <Pressable
                 onPress={() => setOpenDateRangeModal(true)}

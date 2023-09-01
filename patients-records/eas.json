@@ -9,7 +9,8 @@
       "prebuildCommand": "prebuild --npm",
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "channel": "development"
     },
     "preview": {
       "android": {
@@ -20,16 +21,24 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium",
-        "simulator": true
-      }
+        "simulator": false
+      },
+      "channel": "preview"
     },
     "production": {
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "richardsobreiro@gmail.com",
+        "ascAppId": "6463868738",
+        "appleTeamId": "94352YURBK"
+      }
+    }
   }
 }
