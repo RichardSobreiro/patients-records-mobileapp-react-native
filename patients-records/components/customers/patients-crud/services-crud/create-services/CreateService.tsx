@@ -16,6 +16,7 @@ import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
 import { useContext, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
 type Props = {
@@ -315,7 +316,13 @@ const CreateService: React.FC<Props> = ({
             }}
           />
         )}
-        <ScrollView style={styles.container} overScrollMode="never">
+        <KeyboardAwareScrollView
+          enableOnAndroid={true}
+          style={styles.container}
+          overScrollMode="never"
+          extraScrollHeight={200}
+          extraHeight={200}
+        >
           <Step1ServiceInfo
             inputs={inputs}
             touched={touched}
@@ -351,7 +358,7 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </StackSheetCustom>
     </>
   );
@@ -362,7 +369,9 @@ export default CreateService;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 20
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 20
   },
   containerButtonStyle: {
     display: 'flex',

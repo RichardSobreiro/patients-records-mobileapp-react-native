@@ -17,6 +17,7 @@ import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
 type Props = {
@@ -394,7 +395,13 @@ const EditService: React.FC<Props> = ({
             }}
           />
         )}
-        <ScrollView style={styles.container} overScrollMode="never">
+        <KeyboardAwareScrollView
+          enableOnAndroid={true}
+          style={styles.container}
+          overScrollMode="never"
+          extraScrollHeight={200}
+          extraHeight={200}
+        >
           <Snackbar
             visible={visibleSnackbar}
             onDismiss={() => {}}
@@ -450,7 +457,7 @@ const EditService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </StackSheetCustom>
     </>
   );
