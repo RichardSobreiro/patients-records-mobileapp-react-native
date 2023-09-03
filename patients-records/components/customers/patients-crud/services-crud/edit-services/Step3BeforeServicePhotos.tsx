@@ -25,7 +25,7 @@ const Step3BeforeServicePhotos: React.FC<Props> = ({
   return (
     <CustomerPhotos
       field="beforePhotos"
-      title="Fotos do Antes"
+      title="Fotos do antes:"
       handleChange={changeHandler}
       values={inputs}
     />

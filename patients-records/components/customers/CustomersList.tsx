@@ -137,8 +137,8 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
     return () => setIsVisibleFabGroup(false);
   });
 
-  const navigateToEditPatient = (customerId: string) => {
-    navigation?.navigate('EditPatient', { customerId });
+  const navigateToEditPatient = (customerId: string, customerName: string) => {
+    navigation?.navigate('EditPatient', { customerId, customerName });
   };
 
   const navigateToCreateCustomer = () => {
@@ -166,10 +166,10 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
           visible={isVisibleFabGroup}
           icon={isOpenFabGroup ? 'minus' : 'plus'}
           actions={[
-            { icon: 'plus', onPress: () => console.log('Pressed add') },
+            { icon: 'close', onPress: () => {} },
             {
               icon: 'plus',
-              label: 'Novo Paciente',
+              label: 'Incluir Paciente',
               onPress: () => navigateToCreateCustomer(),
               labelTextColor: 'white'
             }
@@ -192,7 +192,7 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
         style={{ minHeight: 100, paddingVertical: 10, paddingHorizontal: 15 }}
       >
         <Searchbar
-          placeholder="Procurar por nome"
+          placeholder="Procurar"
           onChangeText={setSearchPhrase}
           value={searchPhrase}
           iconColor="#120461"
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   articleSeparator: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ed7669'
+    borderBottomColor: 'white'
   },
   fabGroupStyle: {
     bottom: 0,

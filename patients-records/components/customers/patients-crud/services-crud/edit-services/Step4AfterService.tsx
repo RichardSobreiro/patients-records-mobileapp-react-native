@@ -32,7 +32,7 @@ const Step4AfterService: React.FC<Props> = ({
     >
       <RichTextInput
         field="afterComments"
-        label="Queixas e comentários após o atendimento"
+        label="Observações após o atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -48,13 +48,6 @@ export default Step4AfterService;
 const styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
-    marginBottom: 15,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0.1, height: 0.1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 1
+    marginBottom: 20
   }
 });

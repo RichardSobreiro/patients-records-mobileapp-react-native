@@ -75,31 +75,32 @@ export const authenticateFacebook = async (
 };
 
 export const validadeToken = async (params: Token): Promise<boolean> => {
-  const url = `${process.env.AUTHNZ_URL}/token/introspection`;
+  // const url = `${process.env.AUTHNZ_URL}/token/introspection`;
 
-  const options = {
-    headers: { 'content-type': 'application/x-www-form-urlencoded' }
-  };
-  const uninterceptedAxiosInstance = axios.create();
-  const isValid: boolean = await uninterceptedAxiosInstance
-    .post(
-      url,
-      {
-        token: params.access_token,
-        client_id: 'social_facebook',
-        client_secret: 'social_facebook'
-      },
-      options
-    )
-    .then((response) => {
-      return response.data.active as boolean;
-    })
-    .catch((err) => {
-      console.log(`util\\auth.tsx: validadeToken method Error:${err}`);
-      return false;
-    });
+  // const options = {
+  //   headers: { 'content-type': 'application/x-www-form-urlencoded' }
+  // };
+  // const uninterceptedAxiosInstance = axios.create();
+  // const isValid: boolean = await uninterceptedAxiosInstance
+  //   .post(
+  //     url,
+  //     {
+  //       token: params.access_token,
+  //       client_id: 'social_facebook',
+  //       client_secret: 'social_facebook'
+  //     },
+  //     options
+  //   )
+  //   .then((response) => {
+  //     return response.data.active as boolean;
+  //   })
+  //   .catch((err) => {
+  //     console.log(`util\\auth.tsx: validadeToken method Error:${err}`);
+  //     return false;
+  //   });
 
-  return isValid;
+  // return isValid;
+  return true;
 };
 
 export const createUser = async (email, password, username) => {

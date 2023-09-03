@@ -7,12 +7,14 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 type Props = {
   item: GetCustomer;
-  onNavigateToEditCustomer: (patientId: string) => void;
+  onNavigateToEditCustomer: (patientId: string, patientName: string) => void;
 };
 
 const CustomerListItem: React.FC<Props> = ({ item, onNavigateToEditCustomer }) => {
   return (
-    <TouchableOpacity onPress={onNavigateToEditCustomer.bind(null, item.customerId)}>
+    <TouchableOpacity
+      onPress={onNavigateToEditCustomer.bind(null, item.customerId, item.customerName)}
+    >
       <View style={styles.article}>
         <View style={{ flex: 1 }}>
           <Text style={styles.articleTitle} numberOfLines={3}>

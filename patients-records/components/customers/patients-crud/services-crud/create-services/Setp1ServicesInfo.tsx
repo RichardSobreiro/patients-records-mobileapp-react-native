@@ -5,6 +5,8 @@ import TimerPicker from '../../../../ui/custom-form/TimerPicker';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FileCustom from 'util/types/FileCustom';
 
 type Props = {
@@ -31,10 +33,14 @@ const Step1ServiceInfo: React.FC<Props> = ({
   );
 
   return (
-    <>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={true}
+      keyboardShouldPersistTaps="handled"
+    >
       <DatePickerV2
         field="date"
-        label="Data do Atendimento:"
+        label="Data do atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -43,7 +49,7 @@ const Step1ServiceInfo: React.FC<Props> = ({
       />
       <TimerPicker
         field="time"
-        label="Hora do Atendimento:"
+        label="Hora do atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -60,8 +66,16 @@ const Step1ServiceInfo: React.FC<Props> = ({
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
       />
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 
 export default Step1ServiceInfo;
+
+const styles = StyleSheet.create({
+  content: {
+    gap: 20,
+    backgroundColor: 'transparent',
+    marginBottom: 20
+  }
+});

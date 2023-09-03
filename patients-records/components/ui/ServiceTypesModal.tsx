@@ -338,8 +338,8 @@ const ServiceTypesModal: React.FC<Props> = ({
 
       {mode === 'crud' && (
         <>
-          <Text style={styles.label}>Tipo de atendimento:</Text>
           <View style={{ justifyContent: 'center', flex: 1, alignItems: 'flex-start' }}>
+            <Text style={styles.label}>Tipo de atendimento:</Text>
             <ButtonPaper
               onPress={() => {
                 setVisible(true);

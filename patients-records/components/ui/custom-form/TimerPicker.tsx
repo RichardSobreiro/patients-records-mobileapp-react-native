@@ -1,10 +1,10 @@
 //import { styles } from './styles';
 import { Colors } from '../../../constants/styles';
 import { ErrorType } from '../../customers/patients-crud/services-crud/ServicesList';
-import React, { useCallback, useState } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-paper';
-import { TimePickerModal } from 'react-native-paper-dates';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 type Props = {
@@ -28,18 +28,14 @@ const TimerPicker: React.FC<Props> = ({
 }) => {
   const [visible, setVisible] = useState(false);
 
-  const onDismiss = useCallback(() => {
+  const onChange = (event, selectedTime) => {
     setVisible(false);
-  }, [setVisible]);
-
-  const onConfirm = React.useCallback(
-    ({ hours, minutes }) => {
-      setVisible(false);
-      onChangeHandler('hour', hours);
-      onChangeHandler('minutes', minutes);
-    },
-    [onChangeHandler]
-  );
+    const currentDate = new Date(selectedTime);
+    console.log(`SELECTED HOUR: ${currentDate.getHours()}`);
+    console.log(`SELECTED MINUTES: ${currentDate.getMinutes()}`);
+    onChangeHandler('hour', currentDate.getHours());
+    onChangeHandler('minutes', currentDate.getMinutes());
+  };
 
   return (
     <SafeAreaProvider>
@@ -68,16 +64,18 @@ const TimerPicker: React.FC<Props> = ({
             <Text style={styles.errorText}>{errors.time}</Text>
           </View>
         ) : null}
-        <TimePickerModal
-          visible={visible}
-          onDismiss={onDismiss}
-          onConfirm={onConfirm}
-          hours={9}
-          minutes={0}
-          locale="pt"
-          cancelLabel="Cancelar"
-          label="Selecione o horário:"
-        />
+        {visible && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={new Date()}
+            mode={'time'}
+            is24Hour={true}
+            onChange={onChange}
+            onTouchCancel={() => setVisible(false)}
+            display="spinner"
+            negativeButton={{ label: 'Cancelar' }}
+          />
+        )}
       </View>
     </SafeAreaProvider>
   );

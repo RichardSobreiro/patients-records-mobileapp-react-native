@@ -28,7 +28,7 @@ const Step2BeforeService: React.FC<Props> = ({
       <>
         <RichTextInput
           field="beforeComments"
-          label="Queixas e anotações anteriores ao atendimento"
+          label="Observações antes do atendimento:"
           values={inputs}
           touched={touched}
           errors={errors}

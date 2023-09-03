@@ -197,10 +197,10 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
           visible={isFocused}
           icon={isOpenFabGroup ? 'minus' : 'plus'}
           actions={[
-            { icon: 'minus', onPress: () => console.log('Pressed add') },
+            { icon: 'close', onPress: () => {} },
             {
               icon: 'plus',
-              label: 'Nova Anamnese',
+              label: 'Incluir Anamnese',
               onPress: () => setVisibleCreateAnamnesis(true),
               labelTextColor: 'white'
             }
@@ -237,7 +237,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
               }}
             >
               <Searchbar
-                placeholder="Procurar por tipo..."
+                placeholder="Procurar"
                 onChangeText={setSearchAnamnesisTypeDescription}
                 value={searchAnamnesisTypeDescription}
                 iconColor="#120461"
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   },
   articleSeparator: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ed7669'
+    borderBottomColor: 'white'
   },
   container: {
     flex: 1
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   listHeaderStyle: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#ed7669',
+    borderBottomColor: 'white',
     paddingBottom: 10
   },
   listHeaderText: {

@@ -2,6 +2,11 @@ import DatePickerV2 from '../../../../../components/ui/custom-form/DatePickerV2'
 import StackSheetCustom from '../../../../../components/ui/custom-form/StackSheetCustom';
 import { Colors } from '../../../../../constants/styles';
 import { createAnamnesis } from '../../../../../http/AnamnesisApi';
+import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
+import {
+  GetAnamnesisTypeResponse,
+  GetAnamnesisTypesResponse
+} from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import {
   CreateAnamnesisRequest,
   CreateAnamnesisTypeContentRequest
@@ -12,7 +17,6 @@ import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
-import { GetAnamnesisTypeResponse } from '/models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -64,6 +68,33 @@ const CreateAnamnesis: React.FC<Props> = ({
   );
 
   const [files, setFiles] = useState<FileCustom[] | undefined>(undefined);
+
+  useEffect(() => {
+    const getAnamnesisTypesAsync = async () => {
+      if (authCtx.token?.access_token) {
+        try {
+          const response = await getAnamnesisTypesList(authCtx.token?.access_token!);
+          if (response.ok) {
+            const apiResponseBody = response.body as GetAnamnesisTypesResponse;
+            const defaultSelectedAnamnesisTypes = apiResponseBody.anamnesisTypes?.filter(
+              (at) =>
+                at.anamnesisTypeDescription === 'Observações' ||
+                at.anamnesisTypeDescription === 'Arquivo'
+            );
+            setSelectedAnamnesisTypes(defaultSelectedAnamnesisTypes!);
+          }
+        } catch (error: any) {
+          console.log(error);
+          notificationCtx.showNotification({
+            title: 'Ops...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          });
+        } finally {
+        }
+      }
+    };
+    getAnamnesisTypesAsync();
+  }, [authCtx.token?.access_token, notificationCtx]);
 
   const handleChange = (field: string, enteredValue: string | Date | undefined) => {
     setTouched((curTouched) => {

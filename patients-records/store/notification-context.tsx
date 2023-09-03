@@ -49,7 +49,11 @@ const NotificationProvider = ({ children }: Props) => {
       {show && (
         <>
           <Portal>
-            <Dialog visible={show} onDismiss={hideNotification}>
+            <Dialog
+              style={{ maxWidth: 150, maxHeight: 150 }}
+              visible={show}
+              onDismiss={hideNotification}
+            >
               <Dialog.Title>{notification.title}</Dialog.Title>
               <Dialog.Content>
                 <Text variant="bodyMedium">{notification.message}</Text>

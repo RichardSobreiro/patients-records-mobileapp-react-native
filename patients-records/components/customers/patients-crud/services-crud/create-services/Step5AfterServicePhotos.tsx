@@ -25,7 +25,7 @@ const Step5AfterServicePhotos: React.FC<Props> = ({
   return (
     <CustomerPhotos
       field="afterPhotos"
-      title="Fotos do Depois"
+      title="Fotos do depois:"
       handleChange={changeHandler}
       values={inputs}
     />

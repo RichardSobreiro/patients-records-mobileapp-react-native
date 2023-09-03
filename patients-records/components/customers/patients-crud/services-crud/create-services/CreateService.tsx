@@ -330,6 +330,7 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
+
           <Step2BeforeService
             inputs={inputs}
             touched={touched}
@@ -337,6 +338,7 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
+
           <Step3BeforeServicePhotos
             inputs={inputs}
             touched={touched}
@@ -344,14 +346,16 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
-          <Step4AfterService
+
+          <Step5AfterServicePhotos
             inputs={inputs}
             touched={touched}
             errors={errors}
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
-          <Step5AfterServicePhotos
+
+          <Step4AfterService
             inputs={inputs}
             touched={touched}
             errors={errors}

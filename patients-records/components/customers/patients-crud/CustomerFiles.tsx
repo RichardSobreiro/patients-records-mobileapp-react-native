@@ -51,7 +51,6 @@ const CustomerFiles: React.FC<Props> = ({ files, setFiles, isLoading, setIsLoadi
 
   const pickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'application/pdf'],
       multiple: true,
       copyToCacheDirectory: true
     });

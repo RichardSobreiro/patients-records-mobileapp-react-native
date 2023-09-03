@@ -176,8 +176,8 @@ const CreateCustomer: React.FC<Props> = () => {
             shouldUpdatePatientsList: true
           });
           notificationCtx.showNotification({
-            title: 'Cliente Cadastrado com Sucesso',
-            message: 'Agora você pode cadastrar atendimentos para seu novo cliente!'
+            title: 'Paciente cadastrado',
+            message: 'Agora você pode incluir atendimentos para seu novo paciente!'
           });
         } else {
           notificationCtx.showNotification({

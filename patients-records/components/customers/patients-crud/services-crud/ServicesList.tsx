@@ -123,7 +123,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
             setServicesList([...response.body.servicesList]);
           }
         } else {
-          console.log(`SERVICES LIST - ERROR - PAGE: ${nextPage}`);
           const notification = {
             status: 'error',
             title: 'Opsss...',
@@ -154,7 +153,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   useEffect(() => {
     if (isFocused) {
-      console.log(`SERVICES LIST - USE FOCUS EFFECT - isFocused: ${isFocused}`);
       getServiceListAsync(1);
     }
   }, [getServiceListAsync, isFocused]);
@@ -246,10 +244,10 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
           visible={isFocused}
           icon={isOpenFabGroup ? 'minus' : 'plus'}
           actions={[
-            { icon: 'plus', onPress: () => console.log('Pressed add') },
+            { icon: 'close', onPress: () => {} },
             {
               icon: 'plus',
-              label: 'Novo Atendimento',
+              label: 'Incluir Atendimento',
               onPress: () => setVisibleCreateService(true),
               labelTextColor: 'white'
             }
@@ -292,7 +290,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               }}
             >
               <Searchbar
-                placeholder="Procurar por tipo"
+                placeholder="Procurar"
                 onChangeText={setSearchServiceTypeDescription}
                 value={searchServiceTypeDescription}
                 iconColor="#120461"
@@ -405,12 +403,12 @@ const styles = StyleSheet.create({
   },
   articleSeparator: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ed7669'
+    borderBottomColor: 'white'
   },
   listHeaderStyle: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#ed7669',
+    borderBottomColor: 'white',
     paddingBottom: 10
   },
   listHeaderText: {

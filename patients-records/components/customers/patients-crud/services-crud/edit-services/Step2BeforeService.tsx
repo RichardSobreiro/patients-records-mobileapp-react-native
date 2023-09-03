@@ -4,7 +4,6 @@ import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 import { StyleSheet, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
   inputs: Inputs;
@@ -28,7 +27,7 @@ const Step2BeforeService: React.FC<Props> = ({
     <View style={styles.content}>
       <RichTextInput
         field="beforeComments"
-        label="Queixas e anotações anteriores ao atendimento"
+        label="Observações antes do atendimento:"
         values={inputs}
         touched={touched}
         errors={errors}
@@ -46,13 +45,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     marginBottom: 15,
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: 16,
-    borderRadius: 8,
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0.1, height: 0.1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 1
+    alignItems: 'flex-start'
   }
 });
