@@ -370,6 +370,7 @@ const EditService: React.FC<Props> = ({
       <StackSheetCustom
         visible={visible}
         setVisible={setVisible}
+        positiveActionLabel="Salvar"
         hideModalCallback={() => {
           setVisible(false);
           setServiceId(undefined);

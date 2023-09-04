@@ -1,11 +1,10 @@
 //import { styles } from './styles';
 import { Colors } from '../../../constants/styles';
 import { ErrorType } from '../../customers/patients-crud/services-crud/ServicesList';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Button } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 type Props = {
   field: string;
@@ -27,20 +26,27 @@ const TimerPicker: React.FC<Props> = ({
   onBlurHandler
 }) => {
   const [visible, setVisible] = useState(false);
+  const [dateValue, setDateValue] = useState<Date>(new Date());
 
-  const onChange = (event, selectedTime) => {
+  useEffect(() => {
+    if (values['hour'].value !== undefined && values['minutes'].value !== undefined) {
+      const newDateValue = new Date();
+      newDateValue.setHours(values['hour'].value, values['minutes'].value);
+      setDateValue(newDateValue);
+    }
+  }, [values]);
+
+  const onChange = (selectedTime) => {
     setVisible(false);
     const currentDate = new Date(selectedTime);
-    console.log(`SELECTED HOUR: ${currentDate.getHours()}`);
-    console.log(`SELECTED MINUTES: ${currentDate.getMinutes()}`);
     onChangeHandler('hour', currentDate.getHours());
     onChangeHandler('minutes', currentDate.getMinutes());
   };
 
   return (
-    <SafeAreaProvider>
-      <Text style={styles.label}>{label}</Text>
-      <View style={{ flex: 1, alignItems: 'flex-start' }}>
+    <>
+      <View>
+        <Text style={styles.label}>{label}</Text>
         <Button
           onPress={() => {
             setVisible(true);
@@ -48,6 +54,7 @@ const TimerPicker: React.FC<Props> = ({
           }}
           uppercase={false}
           mode="outlined"
+          style={{ width: '100%' }}
         >
           {values['hour'].value && values['hour'].value !== ''
             ? `${
@@ -64,20 +71,22 @@ const TimerPicker: React.FC<Props> = ({
             <Text style={styles.errorText}>{errors.time}</Text>
           </View>
         ) : null}
-        {visible && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={new Date()}
-            mode={'time'}
-            is24Hour={true}
-            onChange={onChange}
-            onTouchCancel={() => setVisible(false)}
-            display="spinner"
-            negativeButton={{ label: 'Cancelar' }}
-          />
-        )}
       </View>
-    </SafeAreaProvider>
+      <DateTimePicker
+        locale="pt_BR"
+        isVisible={visible}
+        date={dateValue}
+        mode={'time'}
+        is24Hour={true}
+        onConfirm={onChange}
+        onCancel={() => setVisible(false)}
+        cancelTextIOS="Cancelar"
+        confirmTextIOS="Selecionar"
+        negativeButton={{ label: 'Cancelar' }}
+        positiveButton={{ label: 'Selecionar' }}
+        timePickerModeAndroid="default"
+      />
+    </>
   );
 };
 

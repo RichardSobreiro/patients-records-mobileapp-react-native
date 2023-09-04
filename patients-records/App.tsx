@@ -114,7 +114,6 @@ const AuthenticatedStack = () => {
         name="Welcome"
         component={WelcomeScreen}
         options={{
-          //headerTitle: authCtx.userInfo?.username ?? 'Inicio',
           headerTitle: 'Pacientes',
           headerRight: ({ tintColor }) => (
             <IconButton icon="exit" color={tintColor} size={24} onPress={authCtx.logout} />
@@ -125,7 +124,6 @@ const AuthenticatedStack = () => {
         name="CreateCustomer"
         component={CreateCustomerScreen}
         options={{
-          //headerTitle: authCtx.userInfo?.username ?? 'Inicio',
           headerTitle: 'Incluir Paciente',
           headerRight: ({ tintColor }) => (
             <IconButton icon="exit" color={tintColor} size={24} onPress={authCtx.logout} />

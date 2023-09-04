@@ -246,6 +246,7 @@ const ServiceTypesModal: React.FC<Props> = ({
       <StackSheetCustom
         visible={visible}
         setVisible={setVisible}
+        positiveActionLabel={''}
         saveModalCallback={() => setVisible(false)}
       >
         <View style={styles.topBarActions}>
@@ -287,7 +288,7 @@ const ServiceTypesModal: React.FC<Props> = ({
                 Nenhum tipo de serviço encontrado
               </Text>
             }
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}
             onEndReachedThreshold={0.2}
             keyExtractor={(item) => item.serviceTypeId}
             showsVerticalScrollIndicator={false}
@@ -298,6 +299,7 @@ const ServiceTypesModal: React.FC<Props> = ({
       <StackSheetCustom
         visible={newServiceTypeModalVisible}
         setVisible={setNewServiceTypeModalVisible}
+        positiveActionLabel={'Salvar'}
       >
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <ScrollView style={{ flex: 1 }}>
@@ -347,6 +349,7 @@ const ServiceTypesModal: React.FC<Props> = ({
               }}
               uppercase={false}
               mode="outlined"
+              style={{ width: '100%' }}
             >
               Selecione o(s) tipo(s) de atendimento
             </ButtonPaper>

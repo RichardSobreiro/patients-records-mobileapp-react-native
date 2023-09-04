@@ -216,7 +216,7 @@ const CreateCustomer: React.FC<Props> = () => {
       <KeyboardAwareScrollView style={styles.content}>
         <Input
           field="customerName"
-          label="Nome"
+          label="Nome:"
           values={inputs}
           touched={touched}
           errors={errors}
@@ -225,7 +225,7 @@ const CreateCustomer: React.FC<Props> = () => {
         />
         <Input
           field="email"
-          label="E-mail (Opcional)"
+          label="E-mail (Opcional):"
           keyboardType="email-address"
           values={inputs}
           touched={touched}
@@ -235,7 +235,7 @@ const CreateCustomer: React.FC<Props> = () => {
         />
         <Input
           field="phoneNumber"
-          label="Número de Telefone"
+          label="Telefone:"
           keyboardType="phone-pad"
           values={inputs}
           touched={touched}
@@ -245,13 +245,13 @@ const CreateCustomer: React.FC<Props> = () => {
         />
         <DatePickerV2
           field="birthDate"
-          label="Data de Nascimento"
+          label="Data de Nascimento:"
           values={inputs}
           touched={touched}
           errors={errors}
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
-          buttonStyle={{ alignItems: 'center' }}
+          buttonStyle={{ marginVertical: 8 }}
         />
         <View style={styles.buttons}>
           <Button

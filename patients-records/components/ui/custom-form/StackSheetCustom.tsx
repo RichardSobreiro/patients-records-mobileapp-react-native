@@ -16,6 +16,7 @@ import { useTheme } from 'react-native-paper';
 type Props = {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  positiveActionLabel: string;
   children: any;
   hideModalCallback?: () => void;
   saveModalCallback?: () => void;
@@ -32,6 +33,7 @@ const supportedOrientations: any = [
 const StackSheetCustom: React.FC<Props> = ({
   visible,
   setVisible,
+  positiveActionLabel,
   children,
   hideModalCallback,
   saveModalCallback
@@ -83,6 +85,7 @@ const StackSheetCustom: React.FC<Props> = ({
                     saveModalCallback?.();
                   }}
                   locale="pt"
+                  positiveActionLabel={positiveActionLabel}
                 />
                 {children}
               </View>

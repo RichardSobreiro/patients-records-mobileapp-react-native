@@ -297,7 +297,12 @@ const CreateService: React.FC<Props> = ({
       >
         Atendimento criado com sucesso!
       </Snackbar>
-      <StackSheetCustom visible={visible} setVisible={setVisible} saveModalCallback={submitHandler}>
+      <StackSheetCustom
+        visible={visible}
+        setVisible={setVisible}
+        positiveActionLabel="Salvar"
+        saveModalCallback={submitHandler}
+      >
         {isLoading && (
           <ActivityIndicator
             color={Colors.primary800}
@@ -331,7 +336,7 @@ const CreateService: React.FC<Props> = ({
             blurHandler={handleBlur}
           />
 
-          <Step2BeforeService
+          <Step3BeforeServicePhotos
             inputs={inputs}
             touched={touched}
             errors={errors}
@@ -339,7 +344,7 @@ const CreateService: React.FC<Props> = ({
             blurHandler={handleBlur}
           />
 
-          <Step3BeforeServicePhotos
+          <Step2BeforeService
             inputs={inputs}
             touched={touched}
             errors={errors}

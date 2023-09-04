@@ -339,17 +339,19 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         visible={visible}
         setVisible={setVisible}
         saveModalCallback={() => setVisible(false)}
+        positiveActionLabel={''}
       >
         <View style={styles.topBarActions}>
-          <View style={styles.topBarActionsLeftContent}>
+          <View style={styles.topBarSearch}>
             <Searchbar placeholder="Procurar" onChangeText={onChangeSearch} value={searchQuery} />
           </View>
-          <View style={styles.topBarActionsRightContent}>
+          <View style={styles.topBarActionsAddTypeButton}>
             <IconButton
               icon={'add'}
               color={Colors.primary500}
               size={48}
               onPress={() => setNewAnamnesisTypeModalVisible(true)}
+              label="Incluir nova ficha"
             />
           </View>
         </View>
@@ -386,10 +388,10 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
             renderItem={renderItem}
             ListEmptyComponent={
               <Text style={{ fontSize: 18, textAlign: 'center' }}>
-                Nenhum tipo de serviço encontrado
+                Nenhum tipo de ficha encontrado
               </Text>
             }
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}
             onEndReachedThreshold={0.2}
             keyExtractor={(item) => item.anamnesisTypeId}
             showsVerticalScrollIndicator={false}
@@ -400,34 +402,35 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       <StackSheetCustom
         visible={newAnamnesisTypeModalVisible}
         setVisible={setNewAnamnesisTypeModalVisible}
-        saveModalCallback={() => {
-          if (editingAnamnesisTypeId) {
-            updateAnamnesisTypeAsync();
-          } else {
-            createNewAnamnesisTypes();
-          }
-        }}
-        hideModalCallback={() => {
-          setEditingAnamnesisTypeId(undefined);
-          setInputs({
-            anamnesisTypeDescription: {
-              value: '',
-              isValid: true
-            },
-            anamnesisTypeTemplate: {
-              value: '',
-              isValid: true
-            }
-          });
-          setTouched({
-            anamnesisTypeDescription: false,
-            anamnesisTypeTemplate: false
-          });
-          setErrors({
-            anamnesisTypeDescription: null,
-            anamnesisTypeTemplate: null
-          });
-        }}
+        positiveActionLabel=""
+        // saveModalCallback={() => {
+        //   if (editingAnamnesisTypeId) {
+        //     updateAnamnesisTypeAsync();
+        //   } else {
+        //     createNewAnamnesisTypes();
+        //   }
+        // }}
+        // hideModalCallback={() => {
+        //   setEditingAnamnesisTypeId(undefined);
+        //   setInputs({
+        //     anamnesisTypeDescription: {
+        //       value: '',
+        //       isValid: true
+        //     },
+        //     anamnesisTypeTemplate: {
+        //       value: '',
+        //       isValid: true
+        //     }
+        //   });
+        //   setTouched({
+        //     anamnesisTypeDescription: false,
+        //     anamnesisTypeTemplate: false
+        //   });
+        //   setErrors({
+        //     anamnesisTypeDescription: null,
+        //     anamnesisTypeTemplate: null
+        //   });
+        // }}
       >
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <ScrollView style={{ flex: 1 }}>
@@ -452,7 +455,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
                   />
                   <RichTextInput
                     field="anamnesisTypeTemplate"
-                    label="Template da Anamnese"
+                    label="Ficha da Anamnese"
                     values={inputs}
                     touched={touched}
                     errors={errors}
@@ -478,11 +481,13 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           <View style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
             <ButtonPaper
               onPress={() => {
-                setVisible(true);
+                //setVisible(true);
+                setNewAnamnesisTypeModalVisible(true);
                 onBlurHandler?.('selectedAnamnesisTypes');
               }}
               uppercase={false}
               mode="outlined"
+              style={{ width: '100%' }}
             >
               Selecione o(s) tipo(s) de anamnese
             </ButtonPaper>
@@ -558,16 +563,18 @@ const styles = StyleSheet.create({
   },
   topBarActions: {
     width: '100%',
+    height: 140,
     paddingHorizontal: 20,
     marginBottom: 5,
-    flexDirection: 'row',
     alignItems: 'center'
   },
-  topBarActionsLeftContent: {
-    flex: 5
+  topBarSearch: {
+    flex: 1,
+    width: '100%'
   },
-  topBarActionsRightContent: {
-    flex: 1
+  topBarActionsAddTypeButton: {
+    flex: 1,
+    width: '100%'
   },
   seletedChipsList: {
     flexDirection: 'row',

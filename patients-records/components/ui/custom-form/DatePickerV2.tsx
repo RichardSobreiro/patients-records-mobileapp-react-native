@@ -2,11 +2,10 @@
 import { Colors } from '../../../constants/styles';
 import { formatDatePTBR } from '../../../util/date-helpers';
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-paper';
-import { DatePickerModal } from 'react-native-paper-dates';
+import { Calendar, DatePickerModal } from 'react-native-paper-dates';
 import { CalendarDate } from 'react-native-paper-dates/lib/typescript/Date/Calendar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 type Props = {
   field: string;
@@ -52,9 +51,11 @@ const DatePickerV2: React.FC<Props> = ({
   );
 
   return (
-    <SafeAreaProvider>
-      <Text style={styles.label}>{label}</Text>
-      <View style={[{ flex: 1, alignItems: 'flex-start' }, buttonStyle]}>
+    <>
+      <View>
+        <View style={[{ flex: 1, alignItems: 'flex-start' }, buttonStyle]}>
+          <Text style={styles.label}>{label}</Text>
+        </View>
         <Button
           onPress={() => {
             setOpen(true);
@@ -62,6 +63,7 @@ const DatePickerV2: React.FC<Props> = ({
           }}
           uppercase={false}
           mode="outlined"
+          style={{ width: '100%' }}
         >
           {date ? formatDatePTBR(new Date(date)) : 'Selecione a data'}
         </Button>
@@ -70,17 +72,17 @@ const DatePickerV2: React.FC<Props> = ({
             <Text style={styles.errorText}>{errors[field]}</Text>
           </View>
         ) : null}
-        <DatePickerModal
-          disableStatusBar={true}
-          locale="pt"
-          mode="single"
-          visible={open}
-          onDismiss={onDismissSingle}
-          date={date as CalendarDate}
-          onConfirm={onConfirmSingle}
-        />
       </View>
-    </SafeAreaProvider>
+      <DatePickerModal
+        locale="pt"
+        mode="single"
+        visible={open}
+        onDismiss={onDismissSingle}
+        date={new Date()}
+        onConfirm={onConfirmSingle}
+        disableStatusBar={true}
+      />
+    </>
   );
 };
 

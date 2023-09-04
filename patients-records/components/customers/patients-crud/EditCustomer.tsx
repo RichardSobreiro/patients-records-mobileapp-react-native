@@ -7,7 +7,6 @@ import { UpdateCustomerRequest } from '../../../models/customers/UpdateCustomerR
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
 import Button, { ButtonTypes } from '../../ui/Button';
-import DatePicker from '../../ui/custom-form/DatePicker';
 import Input from '../../ui/custom-form/Input';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
@@ -298,7 +297,7 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         </Snackbar>
         <Input
           field="customerName"
-          label="Nome"
+          label="Nome:"
           values={inputs}
           touched={touched}
           errors={errors}
@@ -307,7 +306,7 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         />
         <Input
           field="email"
-          label="E-mail (Opcional)"
+          label="E-mail (Opcional):"
           keyboardType="email-address"
           values={inputs}
           touched={touched}
@@ -317,7 +316,7 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         />
         <Input
           field="phoneNumber"
-          label="Número de Telefone"
+          label="Telefone:"
           keyboardType="phone-pad"
           values={inputs}
           touched={touched}
@@ -327,13 +326,13 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         />
         <DatePickerV2
           field="birthDate"
-          label="Data de Nascimento"
+          label="Data de Nascimento:"
           values={inputs}
           touched={touched}
           errors={errors}
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
-          buttonStyle={{ alignItems: 'center' }}
+          buttonStyle={{ marginVertical: 8 }}
         />
         <View style={styles.buttons}>
           <Button
@@ -377,8 +376,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 15,
     marginHorizontal: 32,
-    padding: 16,
-    backgroundColor: Colors.primary100
+    padding: 16
   },
   button: {
     borderRadius: 15

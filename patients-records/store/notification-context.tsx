@@ -1,4 +1,5 @@
 /** @format */
+import { Colors } from '../constants/styles';
 import { createContext, useState } from 'react';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
@@ -50,15 +51,43 @@ const NotificationProvider = ({ children }: Props) => {
         <>
           <Portal>
             <Dialog
-              style={{ maxWidth: 150, maxHeight: 150 }}
+              style={{
+                backgroundColor: Colors.secondary500,
+                justifyContent: 'center',
+                alignContent: 'center',
+                alignSelf: 'center',
+                maxWidth: 250,
+                maxHeight: 270
+              }}
               visible={show}
               onDismiss={hideNotification}
             >
-              <Dialog.Title>{notification.title}</Dialog.Title>
-              <Dialog.Content>
-                <Text variant="bodyMedium">{notification.message}</Text>
+              <Dialog.Title
+                style={{
+                  flex: 2,
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                {notification.title}
+              </Dialog.Title>
+              <Dialog.Content
+                style={{
+                  flex: 2,
+                  alignItems: 'flex-start',
+                  flexWrap: 'wrap'
+                }}
+              >
+                <Text variant="bodyMedium" style={{ alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                  {notification.message}
+                </Text>
               </Dialog.Content>
-              <Dialog.Actions>
+              <Dialog.Actions
+                style={{
+                  flex: 1
+                }}
+              >
                 <Button onPress={() => hideNotification()}>Ok</Button>
               </Dialog.Actions>
             </Dialog>

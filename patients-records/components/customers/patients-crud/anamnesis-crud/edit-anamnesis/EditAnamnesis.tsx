@@ -261,6 +261,7 @@ const EditAnamnesis: React.FC<Props> = ({
     <StackSheetCustom
       visible={visible}
       setVisible={setVisible}
+      positiveActionLabel="Salvar"
       hideModalCallback={() => {
         setVisible(false);
         setAnamnesisId(undefined);
@@ -313,23 +314,15 @@ const EditAnamnesis: React.FC<Props> = ({
         >
           Anamnese criada com sucesso!
         </Snackbar>
-        <View
-          style={{
-            minHeight: 90,
-            justifyContent: 'center',
-            alignItems: 'flex-start'
-          }}
-        >
-          <DatePickerV2
-            field="date"
-            label="Data da Anamnese:"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-            onBlurHandler={handleBlur}
-          />
-        </View>
+        <DatePickerV2
+          field="date"
+          label="Data da Anamnese:"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+        />
         <AnamnesisTypesStackScreen
           visible={isVisibleAnamnesisTypesModal}
           setVisible={setIsVisibleAnamnesisTypesModal}

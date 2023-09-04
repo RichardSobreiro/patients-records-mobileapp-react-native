@@ -68,6 +68,7 @@ const RichTextAnamnesisInput: React.FC<Props> = ({
               editorStyle={styles.editorStyle}
               initialHeight={350}
               initialContentHTML={currentHTML}
+              accessibilityLanguage="pt-BR"
             />
           </KeyboardAvoidingView>
         </ScrollView>

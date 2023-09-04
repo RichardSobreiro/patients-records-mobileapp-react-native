@@ -213,7 +213,12 @@ const CreateAnamnesis: React.FC<Props> = ({
       >
         Atendimento criado com sucesso!
       </Snackbar>
-      <StackSheetCustom visible={visible} setVisible={setVisible} saveModalCallback={submitHandler}>
+      <StackSheetCustom
+        visible={visible}
+        setVisible={setVisible}
+        positiveActionLabel="Salvar"
+        saveModalCallback={submitHandler}
+      >
         {isLoading && (
           <ActivityIndicator
             color={Colors.primary800}
@@ -239,23 +244,15 @@ const CreateAnamnesis: React.FC<Props> = ({
           extraScrollHeight={400}
           extraHeight={400}
         >
-          <View
-            style={{
-              minHeight: 90,
-              justifyContent: 'center',
-              alignItems: 'flex-start'
-            }}
-          >
-            <DatePickerV2
-              field="date"
-              label="Data da Anamnese:"
-              values={inputs}
-              touched={touched}
-              errors={errors}
-              onChangeHandler={handleChange}
-              onBlurHandler={handleBlur}
-            />
-          </View>
+          <DatePickerV2
+            field="date"
+            label="Data da Anamnese:"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
           <AnamnesisTypesStackScreen
             visible={isVisibleAnamnesisTypesModal}
             setVisible={setIsVisibleAnamnesisTypesModal}

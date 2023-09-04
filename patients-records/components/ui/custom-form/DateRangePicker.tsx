@@ -1,8 +1,8 @@
 import { Colors } from '../../../constants/styles';
 import React, { useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, SafeAreaView } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 type Props = {
   text: string;
@@ -39,20 +39,31 @@ const DateRangePicker: React.FC<Props> = ({
   );
 
   return (
-    <SafeAreaView
-      style={{ justifyContent: 'center', flex: 1, alignItems: 'center', marginTop: 20 }}
-    >
-      <Text style={{ color: Colors.primary500 }}>{text}</Text>
-      <DatePickerModal
-        locale="pt"
-        mode="range"
-        visible={open}
-        onDismiss={onDismiss}
-        startDate={startDate}
-        endDate={endDate}
-        onConfirm={onConfirm}
-      />
-    </SafeAreaView>
+    <>
+      <View
+        style={{ alignContent: 'center', justifyContent: 'center', flex: 1, alignItems: 'center' }}
+      >
+        <Text
+          style={{
+            color: Colors.primary500
+          }}
+        >
+          {text}
+        </Text>
+      </View>
+      <SafeAreaView>
+        <DatePickerModal
+          locale="pt"
+          mode="range"
+          visible={open}
+          onDismiss={onDismiss}
+          startDate={startDate}
+          endDate={endDate}
+          onConfirm={onConfirm}
+          disableStatusBar={true}
+        />
+      </SafeAreaView>
+    </>
   );
 };
 

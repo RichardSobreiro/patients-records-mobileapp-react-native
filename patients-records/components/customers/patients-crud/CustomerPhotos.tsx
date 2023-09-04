@@ -130,7 +130,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
 
       {handleChange && (
         <ButtonPaper
-          style={{ marginVertical: 10 }}
+          style={{ marginVertical: 10, width: '100%' }}
           onPress={pickImage}
           uppercase={false}
           mode="outlined"

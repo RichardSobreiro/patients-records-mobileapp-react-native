@@ -6,19 +6,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface StackSheetHeader {
   disableSafeTop?: boolean;
-  saveLabel?: string;
-  saveLabelDisabled?: boolean;
-  uppercase?: boolean;
+  locale: string | undefined;
+  positiveActionLabel: string;
   onDismiss: () => void;
   onSave: () => void;
-  locale: string | undefined;
+  positiveActionDisabled?: boolean;
+  uppercase?: boolean;
   closeIcon?: string;
 }
 
 export default function StackSheetHeader(props: StackSheetHeader) {
   const theme = useTheme();
   const { disableSafeTop, locale, closeIcon = 'close' } = props;
-  const saveLabel = `Salvar`;
   const insets = useSafeAreaInsets();
 
   return (
@@ -45,11 +44,11 @@ export default function StackSheetHeader(props: StackSheetHeader) {
           color={Colors.primary500}
           textColor={theme.colors.primary}
           onPress={props.onSave}
-          disabled={props.saveLabelDisabled ?? false}
+          disabled={props.positiveActionDisabled ?? false}
           uppercase={false}
           testID="react-native-paper-dates-save"
         >
-          {saveLabel}
+          {props.positiveActionLabel}
         </Button>
       </Appbar>
     </Animated.View>
