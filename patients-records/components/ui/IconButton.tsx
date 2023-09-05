@@ -27,7 +27,6 @@ export default IconButton;
 
 const styles = StyleSheet.create({
   button: {
-    margin: 8,
     borderWidth: 1,
     borderColor: Colors.primary500,
     borderRadius: 20,

@@ -1,5 +1,7 @@
+import IconButton from '../../../components/ui/IconButton';
 import { Colors } from '../../../constants/styles';
 import FileCustom from '../../../util/types/FileCustom';
+import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -11,7 +13,6 @@ import {
   FlatList,
   TouchableOpacity
 } from 'react-native';
-import { Button as ButtonPaper } from 'react-native-paper';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 
 type Props = {
@@ -29,8 +30,7 @@ const SPACING = 10;
 const THUMB_SIZE = 80;
 
 const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values }) => {
-  const [images, setImages] = useState<any>([]);
-  const [imagesGalery, setImagesGalery] = useState<any>([]);
+  const [imagesGalery, setImagesGalery] = useState<any[]>([]);
 
   useEffect(() => {
     const imagesArray: any = [];
@@ -39,6 +39,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
     if (values[field]?.value && values[field]?.value?.length >= 0) {
       values[field]?.value.map((image) => {
         imagesArray.push(image.uri ?? image.url);
+
         imagesGalleryArray.push({
           id: imageId,
           image: {
@@ -48,9 +49,8 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         imageId++;
       });
     }
-    setImages(imagesArray);
     setImagesGalery(imagesGalleryArray);
-  }, [field, values, values[field]]);
+  }, [field, values]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -63,7 +63,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
     });
 
     if (!result.canceled) {
-      const beforePhotoFiles: FileCustom[] = [];
+      let photoFilesArray: FileCustom[] = [];
       for (let i = 0; i < result.assets.length; i++) {
         const response = await fetch(result.assets[i].uri);
         const data = await response.blob();
@@ -72,7 +72,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         };
         const photoName = result.assets[i].uri.slice(result.assets[i].uri.lastIndexOf('/') + 1);
         const photoFile = new File([data], photoName, metadata);
-        beforePhotoFiles.push({
+        photoFilesArray.push({
           file: photoFile,
           id: undefined,
           name: photoName,
@@ -80,7 +80,12 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         });
       }
 
-      handleChange(field, beforePhotoFiles);
+      if (values[field].value && values[field].value.length > 0) {
+        photoFilesArray = [...values[field].value, ...photoFilesArray];
+      }
+
+      handleChange(field, photoFilesArray);
+
       const imagesArray: any = [];
       const imagesGalleryArray: any = [];
       let imageId = 1;
@@ -89,8 +94,14 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         imagesGalleryArray.push({ id: imageId, image });
         imageId++;
       });
-      setImages(imagesArray);
-      setImagesGalery(imagesGalleryArray);
+
+      setImagesGalery((curImages) => {
+        if (curImages?.length > 0) {
+          return [...curImages, imagesGalleryArray];
+        } else {
+          return imagesGalleryArray;
+        }
+      });
     }
   };
 
@@ -99,6 +110,18 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
 
   const onSelectImageInCarousel = (indexSelected) => {
     setIndexSelected(indexSelected);
+  };
+
+  const onRemoveImage = (indexSelected) => {
+    console.log('IMAGE REMOVED: ' + indexSelected);
+    setImagesGalery((curImages) => {
+      const currentPhotosArray = [...values[field]?.value];
+      currentPhotosArray.splice(indexSelected, 1);
+      handleChange(field, currentPhotosArray);
+      const newImagesArray = [...curImages];
+      newImagesArray.splice(indexSelected, 1);
+      return newImagesArray;
+    });
   };
 
   const onTouchThumbnail = (touched) => {
@@ -111,7 +134,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
     backgroundColor: 'transparent',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    maxWidth: '95%',
+    maxWidth: '100%',
     marginVertical: 0
   };
   if (imagesGalery && imagesGalery.length > 0) {
@@ -119,9 +142,9 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
       backgroundColor: 'transparent',
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
-      maxWidth: '95%',
+      maxWidth: '100%',
       marginVertical: 0,
-      height: 800
+      height: 900
     };
   }
   return (
@@ -129,14 +152,14 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
       <Text style={styles.title}>{title}</Text>
 
       {handleChange && (
-        <ButtonPaper
-          style={{ marginVertical: 10, width: '100%' }}
+        <IconButton
+          icon={'add'}
+          color={Colors.primary500}
+          pressable={{ marginVertical: 10, width: '100%', marginHorizontal: 0 }}
+          size={40}
           onPress={pickImage}
-          uppercase={false}
-          mode="outlined"
-        >
-          Selecionar imagens da galeria
-        </ButtonPaper>
+          label="Adicionar"
+        />
       )}
 
       <View
@@ -155,12 +178,22 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
           sliderWidth={width * 1}
           itemWidth={width}
           renderItem={({ item, index }) => (
-            <Image
-              key={index}
-              style={{ width: '100%', height: '100%' }}
-              resizeMode="contain"
-              source={item.image}
-            />
+            <View>
+              <Image
+                key={index}
+                style={{ width: '100%', height: '90%' }}
+                resizeMode="contain"
+                source={item.image}
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                <AntDesign
+                  name="delete"
+                  size={40}
+                  color={Colors.primary500}
+                  onPress={() => onRemoveImage(index)}
+                />
+              </View>
+            </View>
           )}
           onSnapToItem={(index) => onSelectImageInCarousel(index)}
         />

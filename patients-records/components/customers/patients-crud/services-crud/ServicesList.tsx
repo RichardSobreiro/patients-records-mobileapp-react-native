@@ -84,7 +84,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [servicesList, setServicesList] = useState<GetServiceResponse[]>([]);
-  const [page, setPage] = useState(1);
+  const [, setPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
@@ -160,7 +160,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   useEffect(() => {
     if (editServiceId && editServiceId !== '') {
       setVisibleEditService(true);
-      getServiceListAsync(1);
     }
   }, [editServiceId]);
 
@@ -237,6 +236,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         serviceId={editServiceId}
         setServiceId={setEditServiceId}
         showCreatedServiceSnackbar={showCreatedServiceSnackbar}
+        updateList={getServiceListAsync}
       />
       <Portal>
         <FAB.Group

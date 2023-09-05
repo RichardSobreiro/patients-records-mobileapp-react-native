@@ -350,7 +350,10 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
               icon={'add'}
               color={Colors.primary500}
               size={48}
-              onPress={() => setNewAnamnesisTypeModalVisible(true)}
+              onPress={() => {
+                setVisible(false);
+                setNewAnamnesisTypeModalVisible(true);
+              }}
               label="Incluir nova ficha"
             />
           </View>
@@ -402,35 +405,39 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       <StackSheetCustom
         visible={newAnamnesisTypeModalVisible}
         setVisible={setNewAnamnesisTypeModalVisible}
-        positiveActionLabel=""
-        // saveModalCallback={() => {
-        //   if (editingAnamnesisTypeId) {
-        //     updateAnamnesisTypeAsync();
-        //   } else {
-        //     createNewAnamnesisTypes();
-        //   }
-        // }}
-        // hideModalCallback={() => {
-        //   setEditingAnamnesisTypeId(undefined);
-        //   setInputs({
-        //     anamnesisTypeDescription: {
-        //       value: '',
-        //       isValid: true
-        //     },
-        //     anamnesisTypeTemplate: {
-        //       value: '',
-        //       isValid: true
-        //     }
-        //   });
-        //   setTouched({
-        //     anamnesisTypeDescription: false,
-        //     anamnesisTypeTemplate: false
-        //   });
-        //   setErrors({
-        //     anamnesisTypeDescription: null,
-        //     anamnesisTypeTemplate: null
-        //   });
-        // }}
+        positiveActionLabel="Salvar"
+        saveModalCallback={() => {
+          if (editingAnamnesisTypeId) {
+            updateAnamnesisTypeAsync();
+          } else {
+            createNewAnamnesisTypes();
+          }
+        }}
+        hideModalCallback={() => {
+          setNewAnamnesisTypeModalVisible((cur) => {
+            setVisible(true);
+            return false;
+          });
+          setEditingAnamnesisTypeId(undefined);
+          setInputs({
+            anamnesisTypeDescription: {
+              value: '',
+              isValid: true
+            },
+            anamnesisTypeTemplate: {
+              value: '',
+              isValid: true
+            }
+          });
+          setTouched({
+            anamnesisTypeDescription: false,
+            anamnesisTypeTemplate: false
+          });
+          setErrors({
+            anamnesisTypeDescription: null,
+            anamnesisTypeTemplate: null
+          });
+        }}
       >
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <ScrollView style={{ flex: 1 }}>
@@ -481,8 +488,8 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           <View style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
             <ButtonPaper
               onPress={() => {
-                //setVisible(true);
-                setNewAnamnesisTypeModalVisible(true);
+                setVisible(true);
+                //setNewAnamnesisTypeModalVisible(true);
                 onBlurHandler?.('selectedAnamnesisTypes');
               }}
               uppercase={false}

@@ -97,7 +97,6 @@ export const updateService = async (
     const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
 
     const formData = new FormData();
-    console.log(`UPDATE API - Date: ${request.date.toString()}`);
     formData.append('date', request.date.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);

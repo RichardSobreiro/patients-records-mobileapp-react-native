@@ -16,7 +16,7 @@ import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
@@ -27,6 +27,7 @@ type Props = {
   serviceId: string | undefined;
   setServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
   showCreatedServiceSnackbar: boolean;
+  updateList: (pageNumber: number) => void;
 };
 
 const EditService: React.FC<Props> = ({
@@ -35,7 +36,8 @@ const EditService: React.FC<Props> = ({
   setVisible,
   serviceId,
   setServiceId,
-  showCreatedServiceSnackbar
+  showCreatedServiceSnackbar,
+  updateList
 }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
@@ -161,57 +163,62 @@ const EditService: React.FC<Props> = ({
     }
   }, [showCreatedServiceSnackbar]);
 
+  const setServiceState = async (getServiceResponse: GetServiceByIdResponse) => {
+    const dateObject = new Date(getServiceResponse.date);
+    const beforePhotosFileCustom = await convertArrayPhotoApiToFileCustom(
+      getServiceResponse.beforePhotos,
+      'before-photo'
+    );
+
+    const afterPhotosFileCustom = await convertArrayPhotoApiToFileCustom(
+      getServiceResponse.afterPhotos,
+      'after-photo'
+    );
+    setInputs({
+      date: {
+        value: dateObject,
+        isValid: true
+      },
+      hour: {
+        value: dateObject.getHours(),
+        isValid: true
+      },
+      minutes: {
+        value: dateObject.getMinutes(),
+        isValid: true
+      },
+      selectedServiceTypes: {
+        value: [...getServiceResponse.serviceTypes],
+        isValid: true
+      },
+      beforeComments: {
+        value: getServiceResponse.beforeNotes,
+        isValid: true
+      },
+      beforePhotos: {
+        value: beforePhotosFileCustom,
+        isValid: true
+      },
+      afterComments: {
+        value: getServiceResponse.afterNotes,
+        isValid: true
+      },
+      afterPhotos: {
+        value: afterPhotosFileCustom,
+        isValid: true
+      }
+    });
+  };
+
   useEffect(() => {
     if (serviceId && authCtx.token?.access_token) {
       setIsLoading(true);
 
       const getServiceAsync = async () => {
         const response = await getServiceById(authCtx.token?.access_token!, customerId, serviceId);
-        const getServiceResponse = response.body as GetServiceByIdResponse;
-        const dateObject = new Date(getServiceResponse.date);
-        const beforePhotosFileCustom = await convertArrayPhotoApiToFileCustom(
-          getServiceResponse.beforePhotos,
-          'before-photo'
-        );
-        const afterPhotosFileCustom = await convertArrayPhotoApiToFileCustom(
-          getServiceResponse.afterPhotos,
-          'after-photo'
-        );
         if (response.ok) {
-          setInputs({
-            date: {
-              value: dateObject,
-              isValid: true
-            },
-            hour: {
-              value: dateObject.getHours(),
-              isValid: true
-            },
-            minutes: {
-              value: dateObject.getMinutes(),
-              isValid: true
-            },
-            selectedServiceTypes: {
-              value: [...getServiceResponse.serviceTypes],
-              isValid: true
-            },
-            beforeComments: {
-              value: getServiceResponse.beforeNotes,
-              isValid: true
-            },
-            beforePhotos: {
-              value: beforePhotosFileCustom,
-              isValid: true
-            },
-            afterComments: {
-              value: getServiceResponse.afterNotes,
-              isValid: true
-            },
-            afterPhotos: {
-              value: afterPhotosFileCustom,
-              isValid: true
-            }
-          });
+          const getServiceResponse = response.body as GetServiceByIdResponse;
+          await setServiceState(getServiceResponse);
         }
         setIsLoading(false);
       };
@@ -349,10 +356,13 @@ const EditService: React.FC<Props> = ({
 
     if (response.ok) {
       setServiceId(response.body.serviceId);
+      const getServiceResponse = response.body as GetServiceByIdResponse;
+      await setServiceState(getServiceResponse);
       setVisibleSnackbar(true);
       setTimeout(() => {
         setVisibleSnackbar(false);
       }, 5000);
+      updateList(1);
     } else {
       setVisible(false);
       setServiceId(undefined);

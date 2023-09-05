@@ -66,7 +66,7 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         component={EditCustomerScreen}
         initialParams={{ customerId }}
         options={{
-          tabBarLabel: 'Informações Básicas',
+          tabBarLabel: 'Dados Pessoais',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="address-book-o" size={size} color={color} />
           )

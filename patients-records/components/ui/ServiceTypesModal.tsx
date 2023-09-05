@@ -258,7 +258,12 @@ const ServiceTypesModal: React.FC<Props> = ({
               icon={'add'}
               color={Colors.primary500}
               size={48}
-              onPress={() => setNewServiceTypeModalVisible(true)}
+              onPress={() => {
+                setVisible((cur) => {
+                  setNewServiceTypeModalVisible(true);
+                  return false;
+                });
+              }}
             />
           </View>
         </View>
