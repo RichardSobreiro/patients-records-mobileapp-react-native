@@ -6,12 +6,9 @@ import {
   View,
   TouchableWithoutFeedback,
   useWindowDimensions,
-  Platform,
   SafeAreaView
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
-
-// import { Modal, Portal, Text } from 'react-native-paper';
 
 type Props = {
   visible: boolean;
@@ -116,8 +113,7 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
+    paddingHorizontal: 20
   },
   modalContentBig: {
     borderRadius: 10,

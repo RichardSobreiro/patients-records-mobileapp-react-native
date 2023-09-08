@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../constants/styles';
 import { GetCustomers } from '../../http/CustomersApi';
-import { GetCustomer } from '../../models/GetCustomersResponse';
+import { GetCustomer } from '../../models/customers/GetCustomersResponse';
 import { GetServiceTypeResponse } from '../../models/customers/service-types/GetServiceTypesResponse';
 import { AuthContext } from '../../store/auth-context';
 import { DateParser } from '../../util/dateParser';

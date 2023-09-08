@@ -10,13 +10,13 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
+import { GetCustomer } from '/models/customers/GetCustomersResponse';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
-import { GetCustomer } from 'models/GetCustomersResponse';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
@@ -42,7 +42,7 @@ export type RootStackParamList = {
   Signup: undefined;
   Welcome: { shouldUpdatePatientsList?: boolean };
   CreateCustomer: undefined;
-  EditPatient: { customerId: string; shouldUpdatePatientsList?: boolean };
+  EditPatient: { customerId: string; customerName: string; shouldUpdatePatientsList?: boolean };
 };
 
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();

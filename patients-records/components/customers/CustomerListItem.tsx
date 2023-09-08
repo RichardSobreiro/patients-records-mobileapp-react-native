@@ -1,6 +1,6 @@
 //import { formatDistanceToNow } from 'date-fns';
 import { Colors } from '../../constants/styles';
-import { GetCustomer } from '../../models/GetCustomersResponse';
+import { GetCustomer } from '../../models/customers/GetCustomersResponse';
 import { getAgePTBR } from '../../util/date-helpers';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';

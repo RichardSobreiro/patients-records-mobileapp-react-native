@@ -1,27 +1,47 @@
 /* eslint-disable import/order */
+import AccordionItem from '../../../components/ui/AccordionItem';
+import Dropdown from '../../../components/ui/Dropdown';
+import DropdownModal from '../../../components/ui/DropdownModal';
 import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
 import { Colors } from '../../../constants/styles';
 import { getCustomerById, updateCustomer } from '../../../http/CustomersApi';
-import { GetCustomer } from '../../../models/GetCustomersResponse';
+import { getCepInfo } from '../../../http/PostalService';
+import { GetCustomer } from '../../../models/customers/GetCustomersResponse';
 import { UpdateCustomerRequest } from '../../../models/customers/UpdateCustomerRequest';
+import { PostalServiceResponse } from '../../../models/postal-service/PostalServiceResponse';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
+import { maskCEP, maskCPF } from '../../../util/mask-functions';
 import Button, { ButtonTypes } from '../../ui/Button';
 import Input from '../../ui/custom-form/Input';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, BackHandler, ActivityIndicator } from 'react-native';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, BackHandler, ActivityIndicator, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
 type ErrorType = {
   customerName: null | string;
-  email: null | string;
-  phoneNumber: null | string;
   birthDate: null | string;
+  cpf: null | string;
+  gender: null | string;
+  maritalStatus: null | string;
+  ethnicity: null | string;
+  placeOfBirth: null | string;
+  occupation: null | string;
+  phoneNumber: null | string;
+  email: null | string;
+  instagramAccount: null | string;
+  cep: null | string;
+  street: null | string;
+  number: null | string;
+  district: null | string;
+  city: null | string;
+  complement: null | string;
+  state: null | string;
 };
 
 type Props = {
@@ -41,10 +61,14 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
+  const scrollViewRef = useRef<any>(null);
+
   const [isAtServicesList, setIsAtServicesList] = useState<boolean>(false);
   const [customer, setCustomer] = useState<GetCustomer | undefined>(undefined);
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [statesModalVisible, setStatesModalVisible] = useState<boolean>(false);
+  const [yPosition, setYPosition] = useState<number>(0);
 
   const handleCancel = useCallback(() => {
     navigation.navigate('Welcome', { shouldUpdatePatientsList: false });
@@ -64,16 +88,72 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
                     value: response.body.customerName,
                     isValid: true
                   },
-                  email: {
-                    value: response.body.email,
-                    isValid: true
-                  },
                   birthDate: {
                     value: new Date(response.body.birthDate),
                     isValid: true
                   },
+                  cpf: {
+                    value: response.body.cpf,
+                    isValid: true
+                  },
+                  gender: {
+                    value: response.body.gender,
+                    isValid: true
+                  },
+                  maritalStatus: {
+                    value: response.body.maritalStatus,
+                    isValid: true
+                  },
+                  ethnicity: {
+                    value: response.body.ethnicity,
+                    isValid: true
+                  },
+                  placeOfBirth: {
+                    value: response.body.placeOfBirth,
+                    isValid: true
+                  },
+                  occupation: {
+                    value: response.body.occupation,
+                    isValid: true
+                  },
                   phoneNumber: {
                     value: response.body.phoneNumber,
+                    isValid: true
+                  },
+                  email: {
+                    value: response.body.email,
+                    isValid: true
+                  },
+                  instagramAccount: {
+                    value: response.body.instagramAccount,
+                    isValid: true
+                  },
+                  cep: {
+                    value: response.body.cep,
+                    isValid: true
+                  },
+                  street: {
+                    value: response.body.street,
+                    isValid: true
+                  },
+                  number: {
+                    value: response.body.number,
+                    isValid: true
+                  },
+                  district: {
+                    value: response.body.district,
+                    isValid: true
+                  },
+                  city: {
+                    value: response.body.city,
+                    isValid: true
+                  },
+                  complement: {
+                    value: response.body.complement,
+                    isValid: true
+                  },
+                  state: {
+                    value: response.body.state,
                     isValid: true
                   }
                 });
@@ -128,33 +208,144 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
       value: customer ? customer.customerName : '',
       isValid: true
     },
-    email: {
-      value: customer ? customer.email : '',
-      isValid: true
-    },
     birthDate: {
       value: customer ? new Date(customer.birthDate) : new Date(),
       isValid: true
     },
+    cpf: {
+      value: customer ? customer.cpf : '',
+      isValid: true
+    },
+    gender: {
+      value: customer ? customer.gender : '',
+      isValid: true
+    },
+    maritalStatus: {
+      value: customer ? customer.maritalStatus : '',
+      isValid: true
+    },
+    ethnicity: {
+      value: customer ? customer.ethnicity : '',
+      isValid: true
+    },
+    placeOfBirth: {
+      value: customer ? customer.placeOfBirth : '',
+      isValid: true
+    },
+    occupation: {
+      value: customer ? customer.occupation : '',
+      isValid: true
+    },
     phoneNumber: {
       value: customer ? customer.phoneNumber : '',
+      isValid: true
+    },
+    email: {
+      value: customer ? customer.email : '',
+      isValid: true
+    },
+    instagramAccount: {
+      value: customer ? customer.instagramAccount : '',
+      isValid: true
+    },
+    cep: {
+      value: customer ? customer.cep : '',
+      isValid: true
+    },
+    street: {
+      value: customer ? customer.street : '',
+      isValid: true
+    },
+    number: {
+      value: customer ? customer.number : '',
+      isValid: true
+    },
+    district: {
+      value: customer ? customer.district : '',
+      isValid: true
+    },
+    city: {
+      value: customer ? customer.city : '',
+      isValid: true
+    },
+    complement: {
+      value: customer ? customer.complement : '',
+      isValid: true
+    },
+    state: {
+      value: customer ? customer.state : '',
       isValid: true
     }
   });
 
   const [touched, setTouched] = useState({
     customerName: false,
-    email: false,
+    birthDate: false,
+    cpf: false,
+    gender: false,
+    maritalStatus: false,
+    ethnicity: false,
+    placeOfBirth: false,
+    occupation: false,
     phoneNumber: false,
-    birthDate: false
+    email: false,
+    instagramAccount: false,
+    cep: false,
+    street: false,
+    number: false,
+    district: false,
+    city: false,
+    complement: false,
+    state: false
   });
 
   const [errors, setErrors] = useState<ErrorType>({
     customerName: null,
-    email: null,
+    birthDate: null,
+    cpf: null,
+    gender: null,
+    maritalStatus: null,
+    ethnicity: null,
+    placeOfBirth: null,
+    occupation: null,
     phoneNumber: null,
-    birthDate: null
+    email: null,
+    instagramAccount: null,
+    cep: null,
+    street: null,
+    number: null,
+    district: null,
+    city: null,
+    complement: null,
+    state: null
   });
+
+  const [scrollTos, setScrollTo] = useState({
+    customerName: false,
+    birthDate: false,
+    phoneNumber: false
+  });
+
+  const getAddressInfoByCEP = async (cep: string) => {
+    setIsLoading(true);
+    const postalServiceReponse = await getCepInfo(cep);
+    if (postalServiceReponse.ok) {
+      const address = postalServiceReponse.body as PostalServiceResponse;
+      handleChange('street', address.logradouro!);
+      handleChange('district', address.bairro!);
+      handleChange('city', address.localidade!);
+      handleChange('state', address.uf!);
+    } else {
+      const notification = {
+        status: 'error',
+        title: 'Erro ao buscar o CEP',
+        message: 'Insira os campos do endereço manualmente!'
+      };
+      notificationCtx.showNotification(notification);
+    }
+    setIsLoading(false);
+    Keyboard.dismiss();
+  };
 
   const handleChange = (field: string, enteredValue: any) => {
     setTouched((curTouched) => {
@@ -162,6 +353,16 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
       return curTouched;
     });
     setInputs((curInputs) => {
+      if (field === 'cep') {
+        if (enteredValue.length === 9) {
+          const unmaskedCep = enteredValue.replace('-', '');
+          getAddressInfoByCEP(unmaskedCep);
+        }
+        enteredValue = maskCEP(enteredValue);
+      }
+      if (field === 'cpf') {
+        enteredValue = maskCPF(enteredValue);
+      }
       const newInputs = {
         ...curInputs,
         [field]: { value: enteredValue, isValid: true }
@@ -175,6 +376,13 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
     setTouched((curTouched) => {
       curTouched[field] = true;
       return curTouched;
+    });
+  };
+
+  const handleScrollTo = (field: string, value: boolean) => {
+    setScrollTo((curScroll) => {
+      curScroll[field] = value;
+      return curScroll;
     });
   };
 
@@ -227,6 +435,14 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
       return true;
     } else {
       setIsFormValid(false);
+      if (!customerNameIsValid) {
+        handleScrollTo('customerName', true);
+        return false;
+      }
+      if (!phoneNumberIsValid) {
+        handleScrollTo('phoneNumber', true);
+        return false;
+      }
       return false;
     }
   };
@@ -238,9 +454,23 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
         const request = new UpdateCustomerRequest(
           customerId,
           inputs.customerName.value,
-          inputs.phoneNumber.value,
           inputs.birthDate.value,
-          inputs.email.value
+          inputs.cpf.value,
+          inputs.gender.value,
+          inputs.maritalStatus.value,
+          inputs.ethnicity.value,
+          inputs.placeOfBirth.value,
+          inputs.occupation.value,
+          inputs.phoneNumber.value,
+          inputs.instagramAccount.value,
+          inputs.email.value,
+          inputs.cep.value,
+          inputs.street.value,
+          inputs.number.value,
+          inputs.district.value,
+          inputs.city.value,
+          inputs.complement.value,
+          inputs.state.value
         );
 
         const response = await updateCustomer(authCtx.token?.access_token!, request);
@@ -284,56 +514,266 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
           }}
         />
       )}
-      <KeyboardAwareScrollView style={styles.content}>
+      <KeyboardAwareScrollView
+        innerRef={(ref) => {
+          scrollViewRef.current = ref;
+        }}
+        contentContainerStyle={styles.content}
+        onScroll={(event) => {
+          setYPosition(event.nativeEvent.contentOffset.y);
+        }}
+      >
         <Snackbar
           visible={visibleSnackbar}
           onDismiss={() => {}}
-          wrapperStyle={{ zIndex: 7000, top: 0 }}
+          wrapperStyle={{ zIndex: 7000, top: yPosition }}
           style={{
             backgroundColor: Colors.secondary500
           }}
         >
           Alterações salvas com sucesso!
         </Snackbar>
-        <Input
-          field="customerName"
-          label="Nome:"
-          values={inputs}
-          touched={touched}
-          errors={errors}
-          onChangeHandler={handleChange}
-          onBlurHandler={handleBlur}
-        />
-        <Input
-          field="email"
-          label="E-mail (Opcional):"
-          keyboardType="email-address"
-          values={inputs}
-          touched={touched}
-          errors={errors}
-          onChangeHandler={handleChange}
-          onBlurHandler={handleBlur}
-        />
-        <Input
-          field="phoneNumber"
-          label="Telefone:"
-          keyboardType="phone-pad"
-          values={inputs}
-          touched={touched}
-          errors={errors}
-          onChangeHandler={handleChange}
-          onBlurHandler={handleBlur}
-        />
-        <DatePickerV2
-          field="birthDate"
-          label="Data de Nascimento:"
-          values={inputs}
-          touched={touched}
-          errors={errors}
-          onChangeHandler={handleChange}
-          onBlurHandler={handleBlur}
-          buttonStyle={{ marginVertical: 8 }}
-        />
+
+        <AccordionItem title="Identificação" initiallyExpanded={true}>
+          <Input
+            field="customerName"
+            label="Nome:"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+            scrollTos={scrollTos}
+            handleScrollTo={handleScrollTo}
+            scrollViewRef={scrollViewRef}
+          />
+          <DatePickerV2
+            field="birthDate"
+            label="Data de Nascimento:"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+            buttonStyle={{ marginVertical: 8 }}
+          />
+          <Input
+            field="cpf"
+            label="CPF (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+          <Dropdown
+            field="gender"
+            label="Sexo (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            data={[
+              { label: 'Masculino', value: 'male' },
+              { label: 'Feminino', value: 'female' }
+            ]}
+          />
+          <Dropdown
+            field="maritalStatus"
+            label="Estado Civil (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            data={[
+              { label: 'Solteiro', value: 'single' },
+              { label: 'Casado', value: 'married' },
+              { label: 'Separado', value: 'separeted' },
+              { label: 'Divorciado', value: 'divorced' },
+              { label: 'Viúvo', value: 'widowed' }
+            ]}
+          />
+          <Dropdown
+            field="ethnicity"
+            label="Cor ou Raça/Etnia (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            data={[
+              { label: 'Preto', value: 'preto' },
+              { label: 'Pardo', value: 'pardo' },
+              { label: 'Branco', value: 'branco' },
+              { label: 'Indígena', value: 'indigena' },
+              { label: 'Amarelo', value: 'amarelo' }
+            ]}
+          />
+
+          <Input
+            field="occupation"
+            label="Profissão (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="placeOfBirth"
+            label="Cidade de Nascimento (Opcional):"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+        </AccordionItem>
+
+        <AccordionItem title="Contatos" initiallyExpanded={true}>
+          <Input
+            field="phoneNumber"
+            label="Telefone:"
+            keyboardType="phone-pad"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+            scrollTos={scrollTos}
+            handleScrollTo={handleScrollTo}
+            scrollViewRef={scrollViewRef}
+          />
+          <Input
+            field="email"
+            label="E-mail (Opcional):"
+            keyboardType="email-address"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+          <Input
+            field="instagramAccount"
+            label="Instagram (Opcional):"
+            keyboardType="default"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+        </AccordionItem>
+
+        <AccordionItem title="Endereço (Opcional)" initiallyExpanded={true}>
+          <Input
+            field="cep"
+            label="Cep:"
+            keyboardType="number-pad"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="street"
+            label="Rua:"
+            keyboardType="default"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="number"
+            label="Número:"
+            keyboardType="number-pad"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="complement"
+            label="Complemento:"
+            keyboardType="default"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="district"
+            label="Bairro:"
+            keyboardType="default"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <Input
+            field="city"
+            label="Cidade:"
+            keyboardType="default"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
+          />
+
+          <DropdownModal
+            visible={statesModalVisible}
+            setVisible={setStatesModalVisible}
+            field="state"
+            label="Estado:"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            data={[
+              { label: 'Acre', value: 'AC' },
+              { label: 'Alagoas', value: 'AL' },
+              { label: 'Amapá', value: 'AP' },
+              { label: 'Amazonas', value: 'AM' },
+              { label: 'Bahia', value: 'BA' },
+              { label: 'Ceará', value: 'CE' },
+              { label: 'Espírito Santo', value: 'ES' },
+              { label: 'Goiás', value: 'GO' },
+              { label: 'Maranhão', value: 'MA' },
+              { label: 'Mato Grosso', value: 'MT' },
+              { label: 'Mato Grosso do Sul', value: 'MS' },
+              { label: 'Minas Gerais', value: 'MG' },
+              { label: 'Pará', value: 'PA' },
+              { label: 'Paraíba', value: 'PB' },
+              { label: 'Paraná', value: 'PR' },
+              { label: 'Pernambuco', value: 'PE' },
+              { label: 'Piauí', value: 'PI' },
+              { label: 'Rio de Janeiro', value: 'RJ' },
+              { label: 'Rio Grande do Norte', value: 'RN' },
+              { label: 'Rio Grande do Sul', value: 'RS' },
+              { label: 'Rondônia', value: 'RO' },
+              { label: 'Roraima', value: 'RR' },
+              { label: 'Santa Catarina', value: 'SC' },
+              { label: 'São Paulo', value: 'SP' },
+              { label: 'Sergipe', value: 'SE' },
+              { label: 'Tocantins', value: 'TO' },
+              { label: 'Distrito Federal', value: 'DF' }
+            ]}
+          />
+        </AccordionItem>
+
         <View style={styles.buttons}>
           <Button
             type={ButtonTypes.Primary_Bordered}
@@ -359,8 +799,8 @@ export default EditCustomer;
 const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'column',
-    marginTop: 15,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    marginBottom: 30
   },
   buttonPressable: {
     flex: 1,

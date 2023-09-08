@@ -1,5 +1,5 @@
 import { Colors } from '../../../constants/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import MaskInput from 'react-native-mask-input';
 
@@ -13,6 +13,9 @@ type Props = {
   onChangeHandler?: (field: string, value: any) => void;
   onBlurHandler?: (field: string, value: any) => void;
   textInputConfig?;
+  scrollTos?: any;
+  handleScrollTo?: (field: string, value: boolean) => void;
+  scrollViewRef?: any;
 };
 
 const Input: React.FC<Props> = ({
@@ -24,12 +27,31 @@ const Input: React.FC<Props> = ({
   errors,
   onChangeHandler,
   onBlurHandler,
-  textInputConfig
+  textInputConfig,
+  scrollTos,
+  handleScrollTo,
+  scrollViewRef
 }) => {
   const invalid = errors[field];
+  const ref = useRef<any>(null);
+
+  useEffect(() => {
+    if (scrollViewRef && handleScrollTo && scrollTos) {
+      ref?.current!.measureLayout(scrollViewRef.current, (x, y, width, height, pageX, pageY) => {
+        if (scrollTos[field]) {
+          scrollViewRef.current.scrollTo({
+            x,
+            y,
+            animated: true
+          });
+        }
+        handleScrollTo?.(field, false);
+      });
+    }
+  }, [field, handleScrollTo, scrollTos, scrollViewRef, ref]);
 
   return (
-    <View style={[styles.inputContainer]}>
+    <View ref={ref} onLayout={(event) => {}} style={[styles.inputContainer]}>
       <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
 
       {keyboardType === 'phone-pad' ? (

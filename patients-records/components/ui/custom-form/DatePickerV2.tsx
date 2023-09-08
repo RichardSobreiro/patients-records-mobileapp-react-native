@@ -28,14 +28,17 @@ const DatePickerV2: React.FC<Props> = ({
   onBlurHandler,
   buttonStyle
 }) => {
-  const [date, setDate] = useState<string | undefined | CalendarDate>(
+  const [date, setDate] = useState<undefined | Date>(
     values[field]?.value ? values[field]?.value : undefined
   );
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setDate(new Date(values[field]?.value));
-  }, [values[field]]);
+    const test = new Date(values[field]?.value.toISOString());
+    const newDate = new Date();
+    newDate.setFullYear(test.getFullYear(), test.getMonth(), test.getDate());
+    setDate(newDate);
+  }, [field, values]);
 
   const onDismissSingle = useCallback(() => {
     setOpen(false);
@@ -63,7 +66,7 @@ const DatePickerV2: React.FC<Props> = ({
           }}
           uppercase={false}
           mode="outlined"
-          style={{ width: '100%' }}
+          style={{ width: '100%', borderColor: Colors.primary500 }}
         >
           {date ? formatDatePTBR(new Date(date)) : 'Selecione a data'}
         </Button>

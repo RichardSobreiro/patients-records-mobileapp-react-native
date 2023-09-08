@@ -1,6 +1,6 @@
 import { Colors } from '../../constants/styles';
 import { Ionicons } from '@expo/vector-icons';
-import React, { FC, ReactElement, useRef, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, Modal, View } from 'react-native';
 
 export type DropdownData = { label: string; value: string };
@@ -23,6 +23,15 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
   const [overlayWidth, setOverlayWidth] = useState(0);
   const [overlayXPosition, setOverlayXPosition] = useState(0);
 
+  useEffect(() => {
+    if (values[field]?.value !== undefined && values[field].value !== '') {
+      const itemSelected = data?.find((item) => item.value === values[field].value);
+      if (itemSelected) {
+        setSelected(itemSelected);
+      }
+    }
+  }, [data, field, values]);
+
   const toggleDropdown = (): void => {
     // eslint-disable-next-line no-unused-expressions
     visible ? setVisible(false) : openDropdown();
@@ -30,7 +39,7 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
 
   const openDropdown = (): void => {
     DropdownButton.current!.measure((_fx, _fy, _w, h, _px, py) => {
-      setDropdownTop(py + h);
+      setDropdownTop(py + h - 24);
       setOverlayWidth(_w);
       setOverlayXPosition(_px);
     });
@@ -46,13 +55,13 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
 
   const renderItem = ({ item }): ReactElement<any, any> => (
     <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-      <Text>{item.label}</Text>
+      <Text style={styles.itemText}>{item.label}</Text>
     </TouchableOpacity>
   );
 
   const renderDropdown = (): ReactElement<any, any> => {
     return (
-      <Modal visible={visible} transparent animationType="none">
+      <Modal visible={visible} transparent animationType="fade">
         <TouchableOpacity
           style={[styles.overlay, { width: overlayWidth, left: overlayXPosition }]}
           onPress={() => setVisible(false)}
@@ -70,29 +79,39 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
   };
 
   return (
-    <TouchableOpacity ref={DropdownButton} style={styles.button} onPress={toggleDropdown}>
-      {touched[field] && errors[field] ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{errors[field]}</Text>
-        </View>
-      ) : null}
-      {renderDropdown()}
-      <Text style={styles.buttonText}>{selected?.label ?? label}</Text>
-      <Ionicons style={styles.icon} size={25} name="chevron-down" />
-    </TouchableOpacity>
+    <View style={{ marginTop: 15 }}>
+      <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 10 }]}>
+        <Text style={styles.label}>{label}</Text>
+      </View>
+      <TouchableOpacity ref={DropdownButton} style={styles.button} onPress={toggleDropdown}>
+        {touched[field] && errors[field] ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errors[field]}</Text>
+          </View>
+        ) : null}
+        <Text style={styles.buttonText}>{selected?.label ?? label}</Text>
+        <Ionicons style={styles.icon} size={25} name="chevron-down" />
+        {renderDropdown()}
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  label: {
+    fontSize: 18,
+    color: Colors.primary500,
+    marginBottom: 4
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.primary100,
-    minHeight: 50,
     zIndex: 1,
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#e3e3e3'
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: Colors.primary500,
+    padding: 6
   },
   buttonText: {
     flex: 1,
@@ -105,7 +124,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.primary100,
     width: '100%',
     shadowColor: '#000000',
     shadowRadius: 4,
@@ -119,7 +138,11 @@ const styles = StyleSheet.create({
   item: {
     paddingHorizontal: 10,
     paddingVertical: 10,
-    borderBottomWidth: 1
+    borderWidth: 1,
+    borderColor: Colors.primary500
+  },
+  itemText: {
+    color: Colors.primary800
   },
   errorContainer: {
     marginVertical: 5

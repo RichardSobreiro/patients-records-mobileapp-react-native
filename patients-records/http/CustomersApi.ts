@@ -1,16 +1,17 @@
 import { ApiResponse } from '../models/Api/ApiResponse';
 import { ErrorDetails } from '../models/Api/ErrorDetails';
-import { GetCustomersResponse } from '../models/GetCustomersResponse';
 import { CreateCustomerRequest } from '../models/customers/CreateCustomerRequest';
 import { CreateCustomerResponse } from '../models/customers/CreateCustomerResponse';
+import { GetCustomersResponse } from '../models/customers/GetCustomersResponse';
 import { UpdateCustomerRequest } from '../models/customers/UpdateCustomerRequest';
 import { UpdateCustomerResponse } from '../models/customers/UpdateCustomerResponse';
+import { GetCustomerByIdResponse } from '/models/customers/GetCustomerByIdResponse';
 
 export const createCustomer = async (
   accessToken: string,
   request: CreateCustomerRequest
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers`;
+  const URL = `http://10.0.2.2:3006/customers`;
 
   try {
     const response = await fetch(URL, {
@@ -38,7 +39,7 @@ export const updateCustomer = async (
   accessToken: string,
   request: UpdateCustomerRequest
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/${request.customerId}`;
+  const URL = `http://10.0.2.2:3006/customers/${request.customerId}`;
 
   try {
     const response = await fetch(URL, {
@@ -66,7 +67,7 @@ export const getCustomerById = async (
   accessToken: string,
   customerId: string
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/${customerId}`;
+  const URL = `http://10.0.2.2:3006/customers/${customerId}`;
 
   try {
     const response = await fetch(URL, {
@@ -79,7 +80,7 @@ export const getCustomerById = async (
     });
 
     if (response.ok) {
-      const getCustomerResponse: GetCustomersResponse = await response.json();
+      const getCustomerResponse: GetCustomerByIdResponse = await response.json();
       return new ApiResponse(true, response.status, getCustomerResponse);
     } else {
       const error = await response.json();

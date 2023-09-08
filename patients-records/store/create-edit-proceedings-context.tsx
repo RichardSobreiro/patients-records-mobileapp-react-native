@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 
 /* eslint-disable import/order */
-import { GetCustomer } from '../models/GetCustomersResponse';
+import { GetCustomer } from '../models/customers/GetCustomersResponse';
 import {
   GetProceedingPhotosResponse,
   GetProceedingResponse
