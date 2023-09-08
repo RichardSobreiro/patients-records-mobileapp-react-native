@@ -11,7 +11,7 @@ export const createCustomer = async (
   accessToken: string,
   request: CreateCustomerRequest
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers`;
+  const URL = `${process.env.API_URL}/customers`;
 
   try {
     const response = await fetch(URL, {
@@ -39,7 +39,7 @@ export const updateCustomer = async (
   accessToken: string,
   request: UpdateCustomerRequest
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${request.customerId}`;
+  const URL = `${process.env.API_URL}/customers/${request.customerId}`;
 
   try {
     const response = await fetch(URL, {
@@ -67,7 +67,7 @@ export const getCustomerById = async (
   accessToken: string,
   customerId: string
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${customerId}`;
+  const URL = `${process.env.API_URL}/customers/${customerId}`;
 
   try {
     const response = await fetch(URL, {
