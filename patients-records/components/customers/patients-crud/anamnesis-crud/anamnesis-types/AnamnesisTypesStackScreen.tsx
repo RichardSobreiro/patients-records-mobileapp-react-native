@@ -19,6 +19,7 @@ import { UpdateAnamnesisTypeRequest } from '../../../../../models/customers/anam
 import { AuthContext } from '../../../../../store/auth-context';
 import { ErrorType } from '../AnamnesisList';
 import { NotificationContext } from './../../../../../store/notification-context';
+import AnamnesisGeneralForm from './AnamnesisGeneralForm';
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
@@ -402,6 +403,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         )}
       </StackSheetCustom>
 
+      {/* Create Anamnesis */}
       <StackSheetCustom
         visible={newAnamnesisTypeModalVisible}
         setVisible={setNewAnamnesisTypeModalVisible}
@@ -489,7 +491,6 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
             <ButtonPaper
               onPress={() => {
                 setVisible(true);
-                //setNewAnamnesisTypeModalVisible(true);
                 onBlurHandler?.('selectedAnamnesisTypes');
               }}
               uppercase={false}
@@ -533,7 +534,9 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
 
       {selectedAnamnesisTypes?.length > 0 &&
         selectedAnamnesisTypes.map((anamnesisType) => {
-          if (anamnesisType.anamnesisTypeDescription !== 'Arquivo') {
+          if (anamnesisType.anamnesisTypeDescription === 'Bioestimulador de colágeno') {
+            return <AnamnesisGeneralForm anamnesisTypeId={anamnesisType.anamnesisTypeId} />;
+          } else if (anamnesisType.anamnesisTypeDescription !== 'Arquivo') {
             return (
               <RichTextAnamnesisInput
                 key={anamnesisType.anamnesisTypeId}

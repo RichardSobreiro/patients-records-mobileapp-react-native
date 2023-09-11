@@ -18,7 +18,7 @@ import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
@@ -241,8 +241,8 @@ const CreateAnamnesis: React.FC<Props> = ({
           enableOnAndroid={true}
           style={styles.container}
           overScrollMode="never"
-          extraScrollHeight={400}
-          extraHeight={400}
+          extraScrollHeight={20}
+          extraHeight={20}
         >
           <DatePickerV2
             field="date"
@@ -253,6 +253,7 @@ const CreateAnamnesis: React.FC<Props> = ({
             onChangeHandler={handleChange}
             onBlurHandler={handleBlur}
           />
+
           <AnamnesisTypesStackScreen
             visible={isVisibleAnamnesisTypesModal}
             setVisible={setIsVisibleAnamnesisTypesModal}
@@ -260,6 +261,7 @@ const CreateAnamnesis: React.FC<Props> = ({
             setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
             mode={'crud'}
           />
+
           {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >=
             0 && (
             <CustomerFiles
