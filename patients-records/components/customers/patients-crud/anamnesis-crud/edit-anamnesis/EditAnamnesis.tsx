@@ -16,7 +16,7 @@ import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
 
@@ -104,12 +104,15 @@ const EditAnamnesis: React.FC<Props> = ({
     if (anamnesisId && authCtx.token?.access_token) {
       const getAnamneseAsync = async () => {
         setIsLoading(true);
+
         const response = await getAnamnesisById(
           authCtx.token?.access_token!,
           customerId,
           anamnesisId
         );
+
         const getAnamnesisResponse = response.body as GetAnamnesisByIdResponse;
+
         const dateObject = new Date((getAnamnesisResponse.date as unknown as string).slice(0, -1));
         if (response.ok) {
           setInputs({
@@ -128,7 +131,8 @@ const EditAnamnesis: React.FC<Props> = ({
                 selected.anamnesisTypeId,
                 selected.anamnesisTypeDescription,
                 selected.content,
-                selected.isDefault
+                selected.isDefault,
+                selected.questions
               );
             })
           );
@@ -232,7 +236,9 @@ const EditAnamnesis: React.FC<Props> = ({
             selected.anamnesisTypeId,
             selected.anamnesisTypeDescription,
             selected.isDefault,
-            selected.template
+            selected.template,
+            undefined,
+            selected.questions
           )
       )
     );
@@ -291,8 +297,8 @@ const EditAnamnesis: React.FC<Props> = ({
         enableOnAndroid={true}
         style={styles.container}
         overScrollMode="never"
-        extraScrollHeight={400}
-        extraHeight={400}
+        extraScrollHeight={50}
+        extraHeight={50}
       >
         <Snackbar
           visible={visibleSnackbar}

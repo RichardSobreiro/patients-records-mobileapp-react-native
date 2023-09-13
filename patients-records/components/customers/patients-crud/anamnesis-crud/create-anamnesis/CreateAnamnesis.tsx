@@ -9,7 +9,8 @@ import {
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import {
   CreateAnamnesisRequest,
-  CreateAnamnesisTypeContentRequest
+  CreateAnamnesisTypeContentRequest,
+  CreateQuestionAnswerRequest
 } from '../../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
@@ -155,7 +156,9 @@ const CreateAnamnesis: React.FC<Props> = ({
             selected.anamnesisTypeId,
             selected.anamnesisTypeDescription,
             selected.isDefault,
-            selected.template
+            selected.template,
+            null,
+            selected.questions
           )
       )
     );

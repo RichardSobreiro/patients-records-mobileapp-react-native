@@ -5,7 +5,8 @@ export class GetQuestionItem {
     public questionItemId: string,
     public questionType: string,
     public questionPhrase: string,
-    public questionAnswersOptions?: string[]
+    public questionAnswersOptions: string[] | undefined,
+    public questionValue: string | undefined
   ) {}
 }
 

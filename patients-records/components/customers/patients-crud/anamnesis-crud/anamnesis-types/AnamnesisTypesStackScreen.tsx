@@ -68,7 +68,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   const [editingAnamnesisTypeId, setEditingAnamnesisTypeId] = useState<string | undefined>(
     undefined
   );
-  const [inputs, setInputs] = useState({
+  const [inputsNew, setInputsNew] = useState({
     anamnesisTypeDescription: {
       value: '',
       isValid: true
@@ -78,13 +78,11 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       isValid: true
     }
   });
-
-  const [touched, setTouched] = useState({
+  const [touchedNew, setTouchedNew] = useState({
     anamnesisTypeDescription: false,
     anamnesisTypeTemplate: false
   });
-
-  const [errorsNewService, setErrors] = useState<{
+  const [errorsNewService, setErrorsNew] = useState<{
     anamnesisTypeDescription: null | string;
     anamnesisTypeTemplate: null | string;
   }>({
@@ -93,16 +91,16 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   });
 
   const handleChange = (field: string, enteredValue: any) => {
-    setTouched((curTouched) => {
+    setTouchedNew((curTouched) => {
       curTouched[field] = true;
       return curTouched;
     });
-    setInputs((curInputs) => {
+    setInputsNew((curInputs) => {
       const newInputs = {
         ...curInputs,
         [field]: { value: enteredValue, isValid: true }
       };
-      setErrors((curErrors) => {
+      setErrorsNew((curErrors) => {
         if (
           newInputs.anamnesisTypeDescription.value &&
           newInputs.anamnesisTypeDescription.value !== ''
@@ -128,7 +126,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   };
 
   const handleBlur = (field: string) => {
-    setTouched((curTouched) => {
+    setTouchedNew((curTouched) => {
       curTouched[field] = true;
       return curTouched;
     });
@@ -140,14 +138,14 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
     const response = await createAnamnesisType(
       authCtx.token?.access_token!,
       new CreateAnamnesisTypeRequest(
-        inputs.anamnesisTypeDescription.value,
-        inputs.anamnesisTypeTemplate.value
+        inputsNew.anamnesisTypeDescription.value,
+        inputsNew.anamnesisTypeTemplate.value
       )
     );
     if (response.ok) {
       selectedAnamnesisTypes.push(response.body as GetAnamnesisTypeResponse);
       getAnamnesisTypesAsync();
-      setInputs({
+      setInputsNew({
         anamnesisTypeDescription: {
           value: '',
           isValid: true
@@ -157,11 +155,11 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           isValid: true
         }
       });
-      setTouched({
+      setTouchedNew({
         anamnesisTypeDescription: false,
         anamnesisTypeTemplate: false
       });
-      setErrors({
+      setErrorsNew({
         anamnesisTypeDescription: null,
         anamnesisTypeTemplate: null
       });
@@ -187,13 +185,13 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       authCtx.token?.access_token!,
       new UpdateAnamnesisTypeRequest(
         editingAnamnesisTypeId!,
-        inputs.anamnesisTypeDescription.value,
-        inputs.anamnesisTypeTemplate.value
+        inputsNew.anamnesisTypeDescription.value,
+        inputsNew.anamnesisTypeTemplate.value
       )
     );
     if (response.ok) {
       getAnamnesisTypesAsync();
-      setInputs({
+      setInputsNew({
         anamnesisTypeDescription: {
           value: '',
           isValid: true
@@ -203,11 +201,11 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           isValid: true
         }
       });
-      setTouched({
+      setTouchedNew({
         anamnesisTypeDescription: false,
         anamnesisTypeTemplate: false
       });
-      setErrors({
+      setErrorsNew({
         anamnesisTypeDescription: null,
         anamnesisTypeTemplate: null
       });
@@ -304,7 +302,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           <AntDesign
             onPress={() => {
               setEditingAnamnesisTypeId(anamnesisType.anamnesisTypeId);
-              setInputs({
+              setInputsNew({
                 anamnesisTypeDescription: {
                   value: anamnesisType.anamnesisTypeDescription,
                   isValid: true
@@ -314,11 +312,11 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
                   isValid: true
                 }
               });
-              setTouched({
+              setTouchedNew({
                 anamnesisTypeDescription: false,
                 anamnesisTypeTemplate: false
               });
-              setErrors({
+              setErrorsNew({
                 anamnesisTypeDescription: null,
                 anamnesisTypeTemplate: null
               });
@@ -403,7 +401,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         )}
       </StackSheetCustom>
 
-      {/* Create Anamnesis */}
+      {/* Create/Edit Anamnesis Type */}
       <StackSheetCustom
         visible={newAnamnesisTypeModalVisible}
         setVisible={setNewAnamnesisTypeModalVisible}
@@ -421,7 +419,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
             return false;
           });
           setEditingAnamnesisTypeId(undefined);
-          setInputs({
+          setInputsNew({
             anamnesisTypeDescription: {
               value: '',
               isValid: true
@@ -431,11 +429,11 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
               isValid: true
             }
           });
-          setTouched({
+          setTouchedNew({
             anamnesisTypeDescription: false,
             anamnesisTypeTemplate: false
           });
-          setErrors({
+          setErrorsNew({
             anamnesisTypeDescription: null,
             anamnesisTypeTemplate: null
           });
@@ -456,21 +454,22 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
                   <Input
                     field="anamnesisTypeDescription"
                     label="Nome"
-                    values={inputs}
-                    touched={touched}
+                    values={inputsNew}
+                    touched={touchedNew}
                     errors={errorsNewService}
                     onChangeHandler={handleChange}
                     onBlurHandler={handleBlur}
                   />
-                  <RichTextInput
+                  <AnamnesisGeneralForm anamnesisTypeId={editingAnamnesisTypeId!} />
+                  {/* <RichTextInput
                     field="anamnesisTypeTemplate"
                     label="Ficha da Anamnese"
-                    values={inputs}
-                    touched={touched}
+                    values={inputsNew}
+                    touched={touchedNew}
                     errors={errors}
                     onChangeHandler={handleChange}
                     onBlurHandler={handleBlur}
-                  />
+                  /> */}
                 </>
               )}
             </KeyboardAvoidingView>
@@ -535,7 +534,13 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       {selectedAnamnesisTypes?.length > 0 &&
         selectedAnamnesisTypes.map((anamnesisType) => {
           if (anamnesisType.anamnesisTypeDescription === 'Bioestimulador de colágeno') {
-            return <AnamnesisGeneralForm anamnesisTypeId={anamnesisType.anamnesisTypeId} />;
+            return (
+              <AnamnesisGeneralForm
+                anamnesisTypeId={anamnesisType.anamnesisTypeId}
+                selectedAnamnesisTypes={selectedAnamnesisTypes}
+                setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
+              />
+            );
           } else if (anamnesisType.anamnesisTypeDescription !== 'Arquivo') {
             return (
               <RichTextAnamnesisInput

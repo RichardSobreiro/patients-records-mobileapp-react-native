@@ -12,7 +12,7 @@ export const createAnamnesisType = async (
   accessToken: string,
   request: CreateAnamnesisTypeRequest
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/anamnesis/types`;
+  const URL = `http://10.0.2.2:3006/customers/anamnesis/types`;
 
   try {
     const response = await fetch(URL, {
@@ -40,7 +40,7 @@ export const getAnamnesisTypeById = async (
   accessToken: string,
   anamnesisTypeId: string
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/anamnesis/types/${anamnesisTypeId}`;
+  const URL = `http://10.0.2.2:3006/customers/anamnesis/types/${anamnesisTypeId}`;
 
   try {
     const response = await fetch(URL, {
@@ -67,7 +67,7 @@ export const getAnamnesisTypesList = async (
   accessToken: string,
   anamnesisTypeDescription?: string
 ): Promise<ApiResponse> => {
-  let URL = `${process.env.API_URL}/customers/anamnesis/types`;
+  let URL = `http://10.0.2.2:3006/customers/anamnesis/types`;
 
   if (anamnesisTypeDescription) {
     URL += `?anamnesisTypeDescription=${anamnesisTypeDescription}`;

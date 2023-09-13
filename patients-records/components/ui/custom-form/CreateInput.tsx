@@ -1,7 +1,6 @@
 import { Colors } from '../../../constants/styles';
 import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import MaskInput from 'react-native-mask-input';
 
 type Props = {
   field: string;
@@ -11,6 +10,7 @@ type Props = {
   touched?;
   errors?;
   onChangeHandler?: (field: string, value: any) => void;
+  onChangeHandlerQuestionPhrase?: (field: string, value: any) => void;
   onBlurHandler?: (field: string, value: any) => void;
   textInputConfig?;
   scrollTos?: any;
@@ -18,7 +18,7 @@ type Props = {
   scrollViewRef?: any;
 };
 
-const Input: React.FC<Props> = ({
+const CreateInput: React.FC<Props> = ({
   field,
   label,
   keyboardType,
@@ -26,6 +26,7 @@ const Input: React.FC<Props> = ({
   touched,
   errors,
   onChangeHandler,
+  onChangeHandlerQuestionPhrase,
   onBlurHandler,
   textInputConfig,
   scrollTos,
@@ -52,56 +53,32 @@ const Input: React.FC<Props> = ({
 
   return (
     <View ref={ref} onLayout={(event) => {}} style={[styles.inputContainer]}>
-      <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
+      <Text style={[styles.labelQuestion, invalid && styles.invalidLabel]}>{label}</Text>
 
-      {keyboardType === 'phone-pad' ? (
-        <MaskInput
-          style={[
-            styles.input,
-            textInputConfig?.multiline && styles.inputMultiline,
-            invalid && styles.invalidInput
-          ]}
-          value={values[field].value}
-          onChangeText={onChangeHandler?.bind(null, field)}
-          onBlur={onBlurHandler?.bind(null, field)}
-          {...textInputConfig}
-          keyboardType={keyboardType}
-          returnKeyType="next"
-          mask={[
-            '(',
-            /\d/,
-            /\d/,
-            ')',
-            ' ',
-            /\d/,
-            /\d/,
-            /\d/,
-            /\d/,
-            /\d/,
-            '-',
-            /\d/,
-            /\d/,
-            /\d/,
-            /\d/
-          ]}
-        />
-      ) : (
-        <TextInput
-          style={[
-            styles.input,
-            textInputConfig?.multiline && styles.inputMultiline,
-            invalid && styles.invalidInput
-          ]}
-          value={values[field].value}
-          onChangeText={onChangeHandler?.bind(null, field)}
-          onBlur={onBlurHandler?.bind(null, field)}
-          {...textInputConfig}
-          keyboardType={keyboardType}
-          returnKeyType="next"
-          editable={!!(onBlurHandler && onChangeHandler)}
-          selectTextOnFocus={!!(onBlurHandler && onChangeHandler)}
-        />
-      )}
+      <TextInput
+        style={[styles.label, invalid && styles.invalidLabel]}
+        value={values[field].questionPhrase}
+        onChangeText={onChangeHandlerQuestionPhrase?.bind(null, field)}
+        returnKeyType="next"
+        selectTextOnFocus={!!(onBlurHandler && onChangeHandler)}
+      />
+
+      <TextInput
+        style={[
+          styles.input,
+          textInputConfig?.multiline && styles.inputMultiline,
+          invalid && styles.invalidInput
+        ]}
+        value={values[field].value}
+        onChangeText={onChangeHandler?.bind(null, field)}
+        onBlur={onBlurHandler?.bind(null, field)}
+        {...textInputConfig}
+        keyboardType={keyboardType}
+        returnKeyType="next"
+        editable={false}
+        selectTextOnFocus={!!(onBlurHandler && onChangeHandler)}
+      />
+
       {errors[field] ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errors[field]}</Text>
@@ -111,12 +88,19 @@ const Input: React.FC<Props> = ({
   );
 };
 
-export default Input;
+export default CreateInput;
 
 const styles = StyleSheet.create({
   inputContainer: {
     marginHorizontal: 4,
     marginVertical: 8
+  },
+  labelQuestion: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+    color: Colors.primary500,
+    marginBottom: 4
   },
   label: {
     fontSize: 18,

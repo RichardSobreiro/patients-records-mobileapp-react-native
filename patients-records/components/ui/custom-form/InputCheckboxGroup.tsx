@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
 import React, { FC, useEffect, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 
 export type CheckboxItem = { label: string; value: string };
@@ -78,15 +78,19 @@ const InputCheckboxGroup: FC<Props> = ({
       <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 10 }]}>
         <Text style={styles.label}>{label}</Text>
       </View>
-
-      <FlatList
+      <View style={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}>
+        {list.map((item, index) => {
+          return renderItem({ item, index });
+        })}
+      </View>
+      {/* <FlatList
         scrollEnabled={true}
         data={list}
         renderItem={renderItem}
         contentContainerStyle={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}
         keyExtractor={(item) => item.serviceTypeId}
         showsVerticalScrollIndicator={true}
-      />
+      /> */}
     </View>
   );
 };
