@@ -18,7 +18,7 @@ type Props = {
   scrollViewRef?: any;
 };
 
-const CreateInput: React.FC<Props> = ({
+const EditInput: React.FC<Props> = ({
   field,
   label,
   keyboardType,
@@ -88,12 +88,16 @@ const CreateInput: React.FC<Props> = ({
   );
 };
 
-export default CreateInput;
+export default EditInput;
 
 const styles = StyleSheet.create({
   inputContainer: {
     marginHorizontal: 4,
-    marginVertical: 8
+    marginVertical: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    paddingVertical: 10,
+    paddingHorizontal: 2
   },
   labelQuestion: {
     fontSize: 16,

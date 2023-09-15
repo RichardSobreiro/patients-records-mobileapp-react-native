@@ -205,7 +205,13 @@ const theme = {
     primary: Colors.primary500,
     secondary: Colors.secondary500,
     surface: Colors.primary100,
-    onSurfaceVariant: Colors.primary500
+    onSurfaceVariant: Colors.primary500,
+    onSecondaryContainer: Colors.primary500,
+    onSurface: Colors.primary500,
+    outline: Colors.primary500,
+    surfaceDisabled: Colors.primary500,
+    onSurfaceDisabled: Colors.primary500,
+    secondaryContainer: Colors.secondary100
   }
 };
 

@@ -1,4 +1,6 @@
-import CreateInput from '../../../../../components/ui/custom-form/CreateInput';
+import IconButton from '../../../../../components/ui/IconButton';
+import CreateInputCheckboxGroup from '../../../../../components/ui/custom-form/CreateInputCheckboxGroup';
+import EditInput from '../../../../../components/ui/custom-form/EditInput';
 import Input from '../../../../../components/ui/custom-form/Input';
 import InputCheckboxGroup from '../../../../../components/ui/custom-form/InputCheckboxGroup';
 import { Colors } from '../../../../../constants/styles';
@@ -9,7 +11,8 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import { GetQuestionItem } from '/models/customers/anamnesis/GetAnamnesisByIdResponse';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
+import { SegmentedButtons } from 'react-native-paper';
 
 type Props = {
   anamnesisTypeId: string;
@@ -34,7 +37,12 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
 
   const [mode] = useState<boolean>(!!(selectedAnamnesisTypes && setSelectedAnamnesisTypes));
 
+  const [typeQuestionAdding, setTypeQuestionAdding] = useState('');
+  const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
+  const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('Pergunta...');
+
   const getAnamnesisTypeAsync = useCallback(async () => {
+    console.log('TESTE');
     if (anamensisType === undefined) {
       setIsLoading(true);
 
@@ -189,7 +197,7 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
                 onBlurHandler={handleBlur}
               />
             ) : (
-              <CreateInput
+              <EditInput
                 key={question.questionItemId}
                 field={question.questionItemId}
                 label={`Pergunta ${index + 1}: `}
@@ -204,7 +212,7 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
             );
           } else if (question.questionType === 'checkbox') {
             console.log(`Question: ${question.questionPhrase}`);
-            return (
+            return mode ? (
               <InputCheckboxGroup
                 key={`${question.questionType}-${question.questionItemId}`}
                 field={question.questionItemId}
@@ -220,9 +228,91 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
                   };
                 })}
               />
+            ) : (
+              <CreateInputCheckboxGroup
+                key={`${question.questionType}-${question.questionItemId}`}
+                field={question.questionItemId}
+                label={`Pergunta ${index + 1}: `}
+                values={inputs}
+                touched={touched}
+                errors={errors}
+                onChangeHandler={handleChange}
+                onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                data={question.questionAnswersOptions!.map((opt) => {
+                  return {
+                    label: opt,
+                    value: opt
+                  };
+                })}
+                anamnesisType={anamensisType}
+                setAnamnesisType={setAnamnesisType}
+              />
             );
           }
         })}
+
+      {visibleAddNewQuestion && (
+        <View
+          style={{
+            marginVertical: 10,
+            paddingVertical: 10,
+            borderWidth: 1,
+            borderStyle: 'dashed',
+            borderColor: Colors.primary500
+          }}
+        >
+          <Text
+            style={{
+              color: Colors.primary500,
+              fontSize: 16,
+              textDecorationLine: 'underline',
+              fontStyle: 'italic',
+              marginBottom: 20,
+              marginHorizontal: 1
+            }}
+          >
+            Nova pergunta:{' '}
+          </Text>
+          <SegmentedButtons
+            value={typeQuestionAdding}
+            onValueChange={setTypeQuestionAdding}
+            buttons={[
+              {
+                value: 'simple',
+                label: 'Simples'
+              },
+              {
+                value: 'checkbox',
+                label: 'Opções'
+              }
+            ]}
+          />
+          {typeQuestionAdding === 'simple' && (
+            <EditInput
+              field={'1'}
+              label={`Nova Pergunta: `}
+              keyboardType="default"
+              values={inputs}
+              touched={touched}
+              errors={errors}
+              onChangeHandler={handleChange}
+              onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+              onBlurHandler={handleBlur}
+            />
+          )}
+        </View>
+      )}
+      <IconButton
+        pressable={{ paddingVertical: 5, borderColor: Colors.secondary800, marginVertical: 20 }}
+        icon={visibleAddNewQuestion ? 'close' : 'add'}
+        color={Colors.secondary500}
+        size={36}
+        onPress={() => {
+          setVisibleAddNewQuestion((curValue) => !curValue);
+        }}
+        label={visibleAddNewQuestion ? 'Cancelar' : 'Adicionar nova pergunta'}
+        labelStyle={{ color: Colors.secondary500 }}
+      />
     </>
   );
 };

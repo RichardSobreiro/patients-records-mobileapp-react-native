@@ -9,16 +9,25 @@ interface Props {
   onPress: ((event: GestureResponderEvent) => void) | null | undefined;
   pressable?;
   label?: string;
+  labelStyle?;
 }
 
-const IconButton: React.FC<Props> = ({ icon, color, size, onPress, pressable, label }) => {
+const IconButton: React.FC<Props> = ({
+  icon,
+  color,
+  size,
+  onPress,
+  pressable,
+  label,
+  labelStyle
+}) => {
   return (
     <Pressable
       style={({ pressed }) => [styles.button, pressed && styles.pressed, pressable]}
       onPress={onPress}
     >
       <Ionicons name={icon} color={color} size={size} />
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
     </Pressable>
   );
 };
