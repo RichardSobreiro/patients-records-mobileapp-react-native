@@ -9,8 +9,9 @@ import { NotificationContext } from '../../../../store/notification-context';
 import { DateParser } from '../../../../util/dateParser';
 import AnamnesisListItem from './AnamnesisListItem';
 import CreateAnamnesis from './create-anamnesis/CreateAnamnesis';
-import EditAnamnesis from './edit-anamnesis/EditAnamnesis';
-import { useIsFocused } from '@react-navigation/native';
+import { RootStackAnamnesisCrudParamList } from '/App';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, FlatList } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
@@ -43,6 +44,7 @@ const PAGE_SIZE = 10;
 const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackAnamnesisCrudParamList>>();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +59,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
   const [isVisibleCreateAnamnesis, setVisibleCreateAnamnesis] = useState<boolean>(false);
-  const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
   const [editAnamnesisId, setEditAnamnesisId] = useState<string | undefined>(undefined);
   const [showCreatedAnamnesisSnackbar, setShowCreatedAnamnesisSnackbar] = useState<boolean>(false);
 
@@ -122,7 +123,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   useEffect(() => {
     if (editAnamnesisId && editAnamnesisId !== '') {
-      setVisibleEditService(true);
       getAnamnesisListAsync(1);
     }
   }, [getAnamnesisListAsync, editAnamnesisId]);
@@ -140,12 +140,12 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   const renderItem = ({ item }) => {
     return (
       <AnamnesisListItem
-        key={item.serviceId}
+        key={item.anamneseId}
         anamnesis={item}
         navigateToUpdateAnamnesis={() => {
-          setVisibleEditService((curState) => {
-            setEditAnamnesisId(item.anamneseId);
-            return true;
+          navigation.push('EditAnamnesis', {
+            customerId,
+            anamnesisId: item.anamneseId
           });
         }}
       />
@@ -183,14 +183,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
         setCreatedAnamnesisId={setEditAnamnesisId}
         setShowCreatedAnamnesisSnackbar={setShowCreatedAnamnesisSnackbar}
       />
-      <EditAnamnesis
-        customerId={customerId}
-        visible={isVisibleEditService}
-        setVisible={setVisibleEditService}
-        anamnesisId={editAnamnesisId}
-        setAnamnesisId={setEditAnamnesisId}
-        showCreatedAnamnesisSnackbar={showCreatedAnamnesisSnackbar}
-      />
+
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}

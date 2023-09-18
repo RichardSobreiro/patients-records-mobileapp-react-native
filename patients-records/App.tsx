@@ -1,6 +1,9 @@
 import IconButton from './components/ui/IconButton';
 import { Colors } from './constants/styles';
-import AnamnesisListScreen from './screens/AnamnesisListScreen';
+import AnamnesisListScreen from './screens/AnamnesisScreens/AnamnesisListScreen';
+import CreateAnamnesisTypeScreen from './screens/AnamnesisScreens/CreateAnamnesisTypeScreen';
+import EditAnamnesisScreen from './screens/AnamnesisScreens/EditAnamnesisScreen';
+import EditAnamnesisTypeScreen from './screens/AnamnesisScreens/EditAnamnesisTypeScreen';
 import CreateCustomerScreen from './screens/CreateCustomerScreen';
 import EditCustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -11,15 +14,21 @@ import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
 import { GetCustomer } from '/models/customers/GetCustomersResponse';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
-import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  LogBox,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
 import { pt, registerTranslation } from 'react-native-paper-dates';
 
@@ -32,7 +41,7 @@ WebBrowser.maybeCompleteAuthSession();
 export type EditPatientStackParamList = {
   PatientInfo: { customerId: string };
   ServicesList: { customerId: string };
-  AnamnesisList: { customerId: string };
+  AnamnesisCrud: { customerId: string };
   CreateProceeding: { patient: GetCustomer };
   EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
 };
@@ -45,6 +54,89 @@ export type RootStackParamList = {
   EditPatient: { customerId: string; customerName: string; shouldUpdatePatientsList?: boolean };
 };
 
+export type RootStackAnamnesisCrudParamList = {
+  AnamnesisList: { customerId: string; updateList?: boolean };
+  EditAnamnesis: { customerId: string; anamnesisId: string };
+  CreateAnamnesis: { customerId: string };
+  EditAnamnesisType: { anamnesisTypeId: string };
+  CreateAnamnesisType;
+};
+
+const StackAnamnesisCrud = createNativeStackNavigator<RootStackAnamnesisCrudParamList>();
+
+const AnamnesisCrudStackComp = ({ route, navigation }) => {
+  const { customerId, anamnesisId, anamnesisTypeId } = route.params;
+
+  return (
+    <StackAnamnesisCrud.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: Colors.primary100 }
+      }}
+    >
+      <StackAnamnesisCrud.Screen
+        name="AnamnesisList"
+        component={AnamnesisListScreen}
+        initialParams={{ customerId }}
+        options={{
+          headerShown: false
+        }}
+      />
+      <StackAnamnesisCrud.Screen
+        name="EditAnamnesis"
+        component={EditAnamnesisScreen}
+        initialParams={{ customerId, anamnesisId }}
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity>
+              <AntDesign
+                style={{ paddingLeft: 0, paddingRight: 30 }}
+                name="arrowleft"
+                size={24}
+                color={Colors.primary500}
+                onPress={() => {
+                  navigation.setOptions({
+                    headerShown: false
+                  });
+                  navigation.replace('AnamnesisList', { customerId });
+                }}
+              />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+      <StackAnamnesisCrud.Screen
+        name="EditAnamnesisType"
+        component={EditAnamnesisTypeScreen}
+        initialParams={{ anamnesisTypeId }}
+        options={{
+          headerTitle: '',
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+      <StackAnamnesisCrud.Screen
+        name="CreateAnamnesisType"
+        component={CreateAnamnesisTypeScreen}
+        options={{
+          headerShown: true,
+          headerTitle: 'Nova Ficha de Anamnese',
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+    </StackAnamnesisCrud.Navigator>
+  );
+};
+
 const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 
 const EditPatientBottomTabs = ({ route, navigation }) => {
@@ -52,12 +144,14 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Paciente: ${customerName}`
+      title: `Paciente: ${customerName}`,
+      headerShown: true
     });
-  });
+  }, [customerName, navigation]);
 
   return (
     <Tab.Navigator
+      id="PatientsBottomTab"
       screenOptions={{ headerShown: false }}
       sceneContainerStyle={{ backgroundColor: Colors.primary100 }}
     >
@@ -84,8 +178,8 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         }}
       />
       <Tab.Screen
-        name="AnamnesisList"
-        component={AnamnesisListScreen}
+        name="AnamnesisCrud"
+        component={AnamnesisCrudStackComp}
         initialParams={{ customerId }}
         options={{
           tabBarLabel: 'Anamneses',
@@ -104,6 +198,7 @@ const AuthenticatedStack = () => {
   const authCtx = useContext(AuthContext);
   return (
     <Stack.Navigator
+      id="RootStack"
       screenOptions={{
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: '#ffffff',

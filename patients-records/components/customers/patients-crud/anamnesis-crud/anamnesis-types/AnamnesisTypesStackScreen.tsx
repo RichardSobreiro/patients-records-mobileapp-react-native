@@ -20,19 +20,13 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { ErrorType } from '../AnamnesisList';
 import { NotificationContext } from './../../../../../store/notification-context';
 import AnamnesisGeneralForm from './AnamnesisGeneralForm';
+import { RootStackAnamnesisCrudParamList } from '/App';
 import { AntDesign } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, FlatList, Platform } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Switch, Chip, Searchbar, Button as ButtonPaper, Snackbar } from 'react-native-paper';
 
 type Props = {
@@ -58,6 +52,8 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
 }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackAnamnesisCrudParamList>>();
+
   const [isLoading, setIsLoading] = useState(false);
   const [anamnesisTypesList, setAnamnesisTypeList] = useState<GetAnamnesisTypeResponse[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -301,26 +297,30 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         {!anamnesisType.isDefault && (
           <AntDesign
             onPress={() => {
-              setEditingAnamnesisTypeId(anamnesisType.anamnesisTypeId);
-              setInputsNew({
-                anamnesisTypeDescription: {
-                  value: anamnesisType.anamnesisTypeDescription,
-                  isValid: true
-                },
-                anamnesisTypeTemplate: {
-                  value: anamnesisType.template!,
-                  isValid: true
-                }
+              setVisible(false);
+              navigation.push('EditAnamnesisType', {
+                anamnesisTypeId: anamnesisType.anamnesisTypeId
               });
-              setTouchedNew({
-                anamnesisTypeDescription: false,
-                anamnesisTypeTemplate: false
-              });
-              setErrorsNew({
-                anamnesisTypeDescription: null,
-                anamnesisTypeTemplate: null
-              });
-              setNewAnamnesisTypeModalVisible(true);
+              // setEditingAnamnesisTypeId(anamnesisType.anamnesisTypeId);
+              // setInputsNew({
+              //   anamnesisTypeDescription: {
+              //     value: anamnesisType.anamnesisTypeDescription,
+              //     isValid: true
+              //   },
+              //   anamnesisTypeTemplate: {
+              //     value: anamnesisType.template!,
+              //     isValid: true
+              //   }
+              // });
+              // setTouchedNew({
+              //   anamnesisTypeDescription: false,
+              //   anamnesisTypeTemplate: false
+              // });
+              // setErrorsNew({
+              //   anamnesisTypeDescription: null,
+              //   anamnesisTypeTemplate: null
+              // });
+              // setNewAnamnesisTypeModalVisible(true);
             }}
             name="edit"
             size={32}
@@ -404,7 +404,10 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
       {/* Create/Edit Anamnesis Type */}
       <StackSheetCustom
         visible={newAnamnesisTypeModalVisible}
-        setVisible={setNewAnamnesisTypeModalVisible}
+        setVisible={(value) => {
+          setVisible(!value);
+          setNewAnamnesisTypeModalVisible(value);
+        }}
         positiveActionLabel="Salvar"
         saveModalCallback={() => {
           if (editingAnamnesisTypeId) {
@@ -439,29 +442,30 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           });
         }}
       >
-        <SafeAreaView style={{ flex: 1, width: '100%' }}>
-          <ScrollView style={{ flex: 1 }}>
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
-            >
-              {isLoading ? (
-                <View style={styles.loadingContent}>
-                  <ActivityIndicator color={Colors.error500} size={40} />
-                </View>
-              ) : (
-                <>
-                  <Input
-                    field="anamnesisTypeDescription"
-                    label="Nome"
-                    values={inputsNew}
-                    touched={touchedNew}
-                    errors={errorsNewService}
-                    onChangeHandler={handleChange}
-                    onBlurHandler={handleBlur}
-                  />
-                  <AnamnesisGeneralForm anamnesisTypeId={editingAnamnesisTypeId!} />
-                  {/* <RichTextInput
+        <KeyboardAwareScrollView
+          enableOnAndroid={true}
+          style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
+          overScrollMode="never"
+          extraScrollHeight={150}
+          extraHeight={150}
+        >
+          {isLoading ? (
+            <View style={styles.loadingContent}>
+              <ActivityIndicator color={Colors.error500} size={40} />
+            </View>
+          ) : (
+            <>
+              <Input
+                field="anamnesisTypeDescription"
+                label="Nome"
+                values={inputsNew}
+                touched={touchedNew}
+                errors={errorsNewService}
+                onChangeHandler={handleChange}
+                onBlurHandler={handleBlur}
+              />
+              <AnamnesisGeneralForm anamnesisTypeId={editingAnamnesisTypeId!} />
+              {/* <RichTextInput
                     field="anamnesisTypeTemplate"
                     label="Ficha da Anamnese"
                     values={inputsNew}
@@ -470,11 +474,9 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
                     onChangeHandler={handleChange}
                     onBlurHandler={handleBlur}
                   /> */}
-                </>
-              )}
-            </KeyboardAvoidingView>
-          </ScrollView>
-        </SafeAreaView>
+            </>
+          )}
+        </KeyboardAwareScrollView>
       </StackSheetCustom>
 
       {mode === 'filter' && (

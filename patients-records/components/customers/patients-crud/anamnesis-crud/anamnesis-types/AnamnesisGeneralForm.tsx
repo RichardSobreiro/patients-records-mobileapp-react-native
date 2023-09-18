@@ -1,18 +1,21 @@
 import IconButton from '../../../../../components/ui/IconButton';
-import CreateInputCheckboxGroup from '../../../../../components/ui/custom-form/CreateInputCheckboxGroup';
-import EditInput from '../../../../../components/ui/custom-form/EditInput';
+import CreateEditInputCheckboxGroup, {
+  CheckboxItem
+} from '../../../../../components/ui/custom-form/CreateEditInputCheckboxGroup';
 import Input from '../../../../../components/ui/custom-form/Input';
 import InputCheckboxGroup from '../../../../../components/ui/custom-form/InputCheckboxGroup';
 import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypeById } from '../../../../../http/AnamnesisTypesApi';
 import { GetAnamnesisTypeByIdResponse } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
 import { GetAnamnesisTypeResponse } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
+import { GetQuestionItem } from '../../../../../models/customers/anamnesis/GetAnamnesisByIdResponse';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
-import { GetQuestionItem } from '/models/customers/anamnesis/GetAnamnesisByIdResponse';
+import CreateEditInput from '../../../../ui/custom-form/CreateEditInput';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
+import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
   anamnesisTypeId: string;
@@ -37,12 +40,13 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
 
   const [mode] = useState<boolean>(!!(selectedAnamnesisTypes && setSelectedAnamnesisTypes));
 
-  const [typeQuestionAdding, setTypeQuestionAdding] = useState('');
+  const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
+  const [newQuestionId, setNewQuestionId] = useState<string | undefined>(undefined);
   const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('Pergunta...');
+  const [newAnswerQuestionOptions, setNewAnswerQuestionOptions] = useState<CheckboxItem[]>([]);
 
   const getAnamnesisTypeAsync = useCallback(async () => {
-    console.log('TESTE');
     if (anamensisType === undefined) {
       setIsLoading(true);
 
@@ -136,25 +140,72 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
   };
 
   const handleChangeQuestionPhrase = (field: string, enteredValue: any) => {
-    setInputs((curInputs) => {
+    const newAnamnesisType = { ...anamensisType };
+    const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
+    if (questionChanged) {
       console.log(`CHANGE QUESTION PHRASE ${field}: ${enteredValue}`);
-      const newInputs = {
-        ...curInputs,
-        [field]: { ...curInputs[field], questionPhrase: enteredValue }
-      };
-      const questionChanged = anamensisType?.questions?.find((q) => q.questionItemId === field);
-      if (questionChanged) {
-        questionChanged.questionPhrase = enteredValue;
-        setSelectedAnamnesisTypes?.((curSelected) => {
-          const selectedType = curSelected.find((s) => s.anamnesisTypeId === anamnesisTypeId);
-          if (selectedType) {
-            console.log(`QUESTION PHRASE CHANGED FOUND ${field}: ${enteredValue}`);
-            selectedType.questions = anamensisType?.questions;
+      questionChanged.questionPhrase = enteredValue;
+      setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
+    } else {
+      console.log(`NEW QUESTION PHRASE ${field}: ${enteredValue}`);
+      setNewQuestionPhrase(enteredValue);
+    }
+  };
+
+  const handleChangeAnswerQuestionOption = (field: string, newValue: string, oldValue: string) => {
+    console.log(`CHANGE ANSWER QUESTIONS OPTIONS ${field}: NEW: ${newValue} - OLD: ${oldValue}`);
+    const newAnamnesisType = { ...anamensisType };
+    const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
+    if (questionChanged) {
+      for (let i = 0; i < questionChanged.questionAnswersOptions!.length!; i++) {
+        if (questionChanged.questionAnswersOptions![i] === oldValue) {
+          questionChanged.questionAnswersOptions![i] = questionChanged.questionAnswersOptions![
+            i
+          ].replace(oldValue, newValue);
+        }
+      }
+      setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
+    }
+  };
+
+  const handleChangeHandlerAddAnswerQuestionOption = (field: string, newAnswerValue: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newQuestions = [...curAnamnesis?.questions!];
+      const questionEdited = newQuestions?.find((q) => q.questionItemId === field);
+      if (questionEdited) {
+        questionEdited.questionAnswersOptions?.push(newAnswerValue);
+        console.log(`NEW ANSWER OPTION ADDED ${field}: VALUE: ${newAnswerValue}`);
+        curAnamnesis!.questions! = newQuestions;
+      } else {
+        setNewAnswerQuestionOptions((curValue) => {
+          if (curValue === undefined) {
+            curValue = [];
           }
-          return curSelected;
+          curValue.push({
+            label: newAnswerValue,
+            value: newAnswerValue,
+            checked: false,
+            visible: true
+          } as CheckboxItem);
+          return curValue;
         });
       }
-      return newInputs;
+      return curAnamnesis;
+    });
+  };
+
+  const handleChangeHandlerRemoveAnswerQuestionOption = (field: string, answerValue: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newQuestions = [...curAnamnesis?.questions!];
+      const questionEdited = newQuestions?.find((q) => q.questionItemId === field);
+      if (questionEdited) {
+        questionEdited.questionAnswersOptions = questionEdited.questionAnswersOptions?.filter(
+          (removedAnswerOption) => removedAnswerOption !== answerValue
+        );
+        console.log(`REMOVE ANSWER OPTION ${field}: VALUE: ${answerValue}`);
+      }
+      curAnamnesis!.questions! = newQuestions;
+      return curAnamnesis;
     });
   };
 
@@ -183,7 +234,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
         anamensisType?.questions.length > 0 &&
         anamensisType.questions.map((question, index) => {
           if (question.questionType === 'simple') {
-            console.log(`Question: ${question.questionPhrase}`);
             return mode ? (
               <Input
                 key={question.questionItemId}
@@ -197,21 +247,15 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
                 onBlurHandler={handleBlur}
               />
             ) : (
-              <EditInput
+              <CreateEditInput
                 key={question.questionItemId}
                 field={question.questionItemId}
                 label={`Pergunta ${index + 1}: `}
-                keyboardType="default"
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
+                questionPhrase={question.questionPhrase}
                 onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                onBlurHandler={handleBlur}
               />
             );
           } else if (question.questionType === 'checkbox') {
-            console.log(`Question: ${question.questionPhrase}`);
             return mode ? (
               <InputCheckboxGroup
                 key={`${question.questionType}-${question.questionItemId}`}
@@ -229,23 +273,18 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
                 })}
               />
             ) : (
-              <CreateInputCheckboxGroup
+              <CreateEditInputCheckboxGroup
                 key={`${question.questionType}-${question.questionItemId}`}
                 field={question.questionItemId}
                 label={`Pergunta ${index + 1}: `}
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
+                questionPhrase={question.questionPhrase}
                 onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                data={question.questionAnswersOptions!.map((opt) => {
-                  return {
-                    label: opt,
-                    value: opt
-                  };
-                })}
+                onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
                 anamnesisType={anamensisType}
-                setAnamnesisType={setAnamnesisType}
+                onChangeHandlerAddAnswerQuestionOption={handleChangeHandlerAddAnswerQuestionOption}
+                onChangeHandlerRemoveAnswerQuestionOption={
+                  handleChangeHandlerRemoveAnswerQuestionOption
+                }
               />
             );
           }
@@ -288,31 +327,108 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
             ]}
           />
           {typeQuestionAdding === 'simple' && (
-            <EditInput
+            <CreateEditInput
               field={'1'}
               label={`Nova Pergunta: `}
-              keyboardType="default"
-              values={inputs}
-              touched={touched}
-              errors={errors}
-              onChangeHandler={handleChange}
+              questionPhrase={newQuestionPhrase}
               onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-              onBlurHandler={handleBlur}
+            />
+          )}
+          {typeQuestionAdding === 'checkbox' && (
+            <CreateEditInputCheckboxGroup
+              key={`${typeQuestionAdding}-${newQuestionId}`}
+              field={newQuestionId!}
+              label={`Nova Pergunta: `}
+              questionPhrase={newQuestionPhrase}
+              onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+              onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
+              anamnesisType={anamensisType!}
+              onChangeHandlerAddAnswerQuestionOption={handleChangeHandlerAddAnswerQuestionOption}
+              onChangeHandlerRemoveAnswerQuestionOption={
+                handleChangeHandlerRemoveAnswerQuestionOption
+              }
             />
           )}
         </View>
       )}
-      <IconButton
-        pressable={{ paddingVertical: 5, borderColor: Colors.secondary800, marginVertical: 20 }}
-        icon={visibleAddNewQuestion ? 'close' : 'add'}
-        color={Colors.secondary500}
-        size={36}
-        onPress={() => {
-          setVisibleAddNewQuestion((curValue) => !curValue);
-        }}
-        label={visibleAddNewQuestion ? 'Cancelar' : 'Adicionar nova pergunta'}
-        labelStyle={{ color: Colors.secondary500 }}
-      />
+      {!mode &&
+        (visibleAddNewQuestion ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <IconButton
+              pressable={{
+                paddingVertical: 5,
+                paddingHorizontal: 15,
+                marginVertical: 20
+              }}
+              icon={'close'}
+              color={Colors.primary500}
+              size={36}
+              onPress={() => {
+                setVisibleAddNewQuestion((curValue) => {
+                  setNewQuestionId(undefined);
+                  return !curValue;
+                });
+              }}
+              label={'Cancelar'}
+            />
+            <IconButton
+              pressable={{
+                paddingVertical: 5,
+                paddingHorizontal: 15,
+                borderColor: Colors.secondary800,
+                marginVertical: 20
+              }}
+              icon={'save'}
+              color={Colors.secondary500}
+              size={36}
+              onPress={() => {
+                setVisibleAddNewQuestion(false);
+                setNewQuestionId(undefined);
+                console.log(
+                  `ADD QUESTIONS - TYPE: ${typeQuestionAdding} - QUESTION PHRASE: ${newQuestionPhrase}`
+                );
+                const newAnamnesisType = { ...anamensisType };
+                newAnamnesisType.questions?.push(
+                  new GetQuestionItem(
+                    newQuestionId!,
+                    typeQuestionAdding,
+                    newQuestionPhrase,
+                    newAnswerQuestionOptions?.length > 0
+                      ? newAnswerQuestionOptions.map((opt) => opt.label)
+                      : undefined,
+                    undefined
+                  )
+                );
+                setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
+                setNewAnswerQuestionOptions([]);
+                setNewQuestionId(undefined);
+                setNewQuestionPhrase('Nova Pergunta...');
+                setTypeQuestionAdding('simple');
+              }}
+              label={'Adicionar'}
+              labelStyle={{ color: Colors.secondary500 }}
+            />
+          </View>
+        ) : (
+          <IconButton
+            pressable={{
+              paddingVertical: 5,
+              borderColor: Colors.secondary800,
+              marginVertical: 20
+            }}
+            icon={'add'}
+            color={Colors.secondary500}
+            size={36}
+            onPress={() => {
+              setNewQuestionId((cur) => {
+                setVisibleAddNewQuestion(true);
+                return uuidv4();
+              });
+            }}
+            label={'Adicionar nova pergunta'}
+            labelStyle={{ color: Colors.secondary500 }}
+          />
+        ))}
     </>
   );
 };
