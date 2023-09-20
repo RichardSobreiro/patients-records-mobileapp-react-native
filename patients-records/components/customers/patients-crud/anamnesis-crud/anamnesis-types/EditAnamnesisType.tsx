@@ -5,18 +5,19 @@ import CreateEditInputCheckboxGroup, {
 } from '../../../../../components/ui/custom-form/CreateEditInputCheckboxGroup';
 import Input from '../../../../../components/ui/custom-form/Input';
 import { Colors } from '../../../../../constants/styles';
-import { getAnamnesisTypeById } from '../../../../../http/AnamnesisTypesApi';
+import { getAnamnesisTypeById, updateAnamnesisType } from '../../../../../http/AnamnesisTypesApi';
 import {
   GetAnamnesisTypeByIdResponse,
   GetQuestionItem
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
+import { UpdateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/UpdateAnamnesisTypeRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SegmentedButtons } from 'react-native-paper';
+import { SegmentedButtons, Snackbar } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
@@ -33,6 +34,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
   const [anamensisType, setAnamnesisType] = useState<GetAnamnesisTypeByIdResponse | undefined>(
     undefined
   );
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
   const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
@@ -212,7 +214,37 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     });
   };
 
-  const saveAsync = async () => {};
+  const saveAsync = useCallback(async () => {
+    if (!inputs.anamnesisTypeDescription.value || inputs.anamnesisTypeDescription.value === '') {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const request = new UpdateAnamnesisTypeRequest(
+      anamnesisTypeId,
+      inputs.anamnesisTypeDescription.value,
+      inputs.anamnesisTypeTemplate.value,
+      anamensisType?.questions
+    );
+
+    const response = await updateAnamnesisType(authCtx.token?.access_token!, request);
+
+    if (response.ok) {
+      //if (true) {
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
+    } else {
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
+    }
+
+    setIsLoading(false);
+  }, [anamnesisTypeId, inputs.anamnesisTypeDescription.value, inputs.anamnesisTypeTemplate.value]);
 
   useEffect(() => {
     getAnamnesisTypeAsync();
@@ -270,7 +302,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
         headerShown: true
       });
     };
-  }, [navigation, route]);
+  }, [navigation, route, saveAsync]);
 
   return (
     <>
@@ -281,6 +313,16 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
         extraScrollHeight={150}
         extraHeight={150}
       >
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ zIndex: 7000, top: 0 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Alterações salvas com sucesso!
+        </Snackbar>
         {isLoading ? (
           <ActivityIndicator
             color={Colors.primary800}

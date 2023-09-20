@@ -98,7 +98,7 @@ export const updateAnamnesisType = async (
   accessToken: string,
   request: UpdateAnamnesisTypeRequest
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/anamnesis/types/${request.anamnesisTypeId}`;
+  const URL = `http://10.0.2.2:3006/customers/anamnesis/types/${request.anamnesisTypeId}`;
 
   try {
     const response = await fetch(URL, {
