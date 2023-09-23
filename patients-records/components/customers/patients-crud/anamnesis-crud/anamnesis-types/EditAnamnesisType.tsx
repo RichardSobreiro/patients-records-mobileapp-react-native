@@ -3,6 +3,7 @@ import CreateEditInput from '../../../../../components/ui/custom-form/CreateEdit
 import CreateEditInputCheckboxGroup, {
   CheckboxItem
 } from '../../../../../components/ui/custom-form/CreateEditInputCheckboxGroup';
+import CreateEditRichTextInput from '../../../../../components/ui/custom-form/CreateEditRichTextInput';
 import Input from '../../../../../components/ui/custom-form/Input';
 import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypeById, updateAnamnesisType } from '../../../../../http/AnamnesisTypesApi';
@@ -39,7 +40,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
   const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
   const [newQuestionId, setNewQuestionId] = useState<string | undefined>(undefined);
-  const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('Pergunta...');
+  const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('');
   const [newAnswerQuestionOptions, setNewAnswerQuestionOptions] = useState<CheckboxItem[]>([]);
 
   const [inputs, setInputs] = useState({
@@ -91,6 +92,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
           anamnesisTypeDescription: null,
           anamnesisTypeTemplate: null
         });
+        setAnamnesisType(anamensisTypeResponse);
       } else {
         console.log(`ANAMNESIS LOADED WITH ERROR`);
         notificationCtx.showNotification({
@@ -244,7 +246,14 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     }
 
     setIsLoading(false);
-  }, [anamnesisTypeId, inputs.anamnesisTypeDescription.value, inputs.anamnesisTypeTemplate.value]);
+  }, [
+    anamensisType?.questions,
+    anamnesisTypeId,
+    authCtx.token?.access_token,
+    inputs.anamnesisTypeDescription.value,
+    inputs.anamnesisTypeTemplate.value,
+    notificationCtx
+  ]);
 
   useEffect(() => {
     getAnamnesisTypeAsync();
@@ -351,52 +360,49 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
               onChangeHandler={handleChange}
               onBlurHandler={handleBlur}
             />
-            {/* <AnamnesisGeneralForm anamnesisTypeId={anamnesisTypeId!} /> */}
-            {/* <RichTextInput
-                    field="anamnesisTypeTemplate"
-                    label="Ficha da Anamnese"
-                    values={inputs}
-                    touched={touched}
-                    errors={errors}
-                    onChangeHandler={handleChange}
-                    onBlurHandler={handleBlur}
-                  /> */}
-            {
-              //!isLoading &&
-              anamensisType?.questions &&
-                anamensisType?.questions.length > 0 &&
-                anamensisType.questions.map((question, index) => {
-                  if (question.questionType === 'simple') {
-                    return (
-                      <CreateEditInput
-                        key={question.questionItemId}
-                        field={question.questionItemId}
-                        label={`Pergunta ${index + 1}: `}
-                        questionPhrase={question.questionPhrase}
-                        onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                      />
-                    );
-                  } else if (question.questionType === 'checkbox') {
-                    return (
-                      <CreateEditInputCheckboxGroup
-                        key={`${question.questionType}-${question.questionItemId}`}
-                        field={question.questionItemId}
-                        label={`Pergunta ${index + 1}: `}
-                        questionPhrase={question.questionPhrase}
-                        onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                        onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
-                        anamnesisType={anamensisType}
-                        onChangeHandlerAddAnswerQuestionOption={
-                          handleChangeHandlerAddAnswerQuestionOption
-                        }
-                        onChangeHandlerRemoveAnswerQuestionOption={
-                          handleChangeHandlerRemoveAnswerQuestionOption
-                        }
-                      />
-                    );
-                  }
-                })
-            }
+            {anamensisType?.questions &&
+              anamensisType?.questions.length > 0 &&
+              anamensisType.questions.map((question, index) => {
+                if (question.questionType === 'simple') {
+                  return (
+                    <CreateEditInput
+                      key={question.questionItemId}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                    />
+                  );
+                } else if (question.questionType === 'checkbox') {
+                  return (
+                    <CreateEditInputCheckboxGroup
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
+                      anamnesisType={anamensisType}
+                      onChangeHandlerAddAnswerQuestionOption={
+                        handleChangeHandlerAddAnswerQuestionOption
+                      }
+                      onChangeHandlerRemoveAnswerQuestionOption={
+                        handleChangeHandlerRemoveAnswerQuestionOption
+                      }
+                    />
+                  );
+                } else if (question.questionType === 'textarea') {
+                  return (
+                    <CreateEditRichTextInput
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                    />
+                  );
+                }
+              })}
           </>
         )}
 
@@ -433,6 +439,10 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 {
                   value: 'checkbox',
                   label: 'Opções'
+                },
+                {
+                  value: 'textarea',
+                  label: 'Texto'
                 }
               ]}
             />
@@ -457,6 +467,15 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 onChangeHandlerRemoveAnswerQuestionOption={
                   handleChangeHandlerRemoveAnswerQuestionOption
                 }
+              />
+            )}
+            {typeQuestionAdding === 'textarea' && (
+              <CreateEditRichTextInput
+                key={`${typeQuestionAdding}-${newQuestionId}`}
+                field={newQuestionId!}
+                label={`Nova Pergunta: `}
+                questionPhrase={newQuestionPhrase}
+                onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
               />
             )}
           </View>
@@ -512,7 +531,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
                 setNewAnswerQuestionOptions([]);
                 setNewQuestionId(undefined);
-                setNewQuestionPhrase('Nova Pergunta...');
+                setNewQuestionPhrase('');
                 setTypeQuestionAdding('simple');
               }}
               label={'Adicionar'}

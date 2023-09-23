@@ -17,7 +17,7 @@ const CreateEditInput: React.FC<Props> = ({
   const invalid = false;
 
   return (
-    <View style={[styles.inputContainer, field === '1' ? { borderWidth: 0 } : {}]}>
+    <View style={[styles.inputContainer]}>
       <Text style={[styles.labelQuestion, invalid && styles.invalidLabel]}>{label}</Text>
 
       <TextInput
@@ -25,6 +25,7 @@ const CreateEditInput: React.FC<Props> = ({
         value={questionPhrase}
         onChangeText={(text) => onChangeHandlerQuestionPhrase(field, text)}
         returnKeyType="next"
+        placeholder={'Nova pergunta...'}
       />
 
       <TextInput

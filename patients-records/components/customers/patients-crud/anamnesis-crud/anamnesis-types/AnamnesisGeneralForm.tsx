@@ -21,12 +21,14 @@ type Props = {
   anamnesisTypeId: string;
   selectedAnamnesisTypes?: GetAnamnesisTypeResponse[];
   setSelectedAnamnesisTypes?: React.Dispatch<React.SetStateAction<GetAnamnesisTypeResponse[]>>;
+  isFocused?: boolean;
 };
 
 const AnamnesisGeneralForm: React.FC<Props> = ({
   anamnesisTypeId,
   selectedAnamnesisTypes,
-  setSelectedAnamnesisTypes
+  setSelectedAnamnesisTypes,
+  isFocused
 }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
@@ -43,67 +45,57 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
   const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
   const [newQuestionId, setNewQuestionId] = useState<string | undefined>(undefined);
-  const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('Pergunta...');
+  const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('');
   const [newAnswerQuestionOptions, setNewAnswerQuestionOptions] = useState<CheckboxItem[]>([]);
 
   const getAnamnesisTypeAsync = useCallback(async () => {
-    if (anamensisType === undefined) {
-      setIsLoading(true);
+    setIsLoading(true);
 
-      const response = await getAnamnesisTypeById(authCtx.token?.access_token!, anamnesisTypeId);
+    const response = await getAnamnesisTypeById(authCtx.token?.access_token!, anamnesisTypeId);
 
-      if (response.ok) {
-        const selectedAnamnesisType = selectedAnamnesisTypes?.find(
-          (at) => at.anamnesisTypeId === anamnesisTypeId
-        );
-        const anamensisTypeResponse = response.body as GetAnamnesisTypeByIdResponse;
-        setAnamnesisType(anamensisTypeResponse);
-        if (anamensisTypeResponse?.questions && anamensisTypeResponse?.questions.length > 0) {
-          const inputsArray: any[] = [];
-          const toucherArray: any[] = [];
-          const errorsArray: any[] = [];
-          anamensisTypeResponse.questions.map((question) => {
-            let selectedAnamnesisTypeQuestion: GetQuestionItem | undefined = undefined;
-            if (selectedAnamnesisType) {
-              selectedAnamnesisTypeQuestion = selectedAnamnesisType.questions?.find(
-                (q) => q.questionItemId === question.questionItemId
-              );
-            }
-            inputsArray[question.questionItemId] = {
-              value: selectedAnamnesisTypeQuestion
-                ? selectedAnamnesisTypeQuestion.questionValue
-                : '',
-              isValid: true,
-              questionPhrase: question.questionPhrase
-            };
-            toucherArray[question.questionItemId] = false;
-            errorsArray[question.questionItemId] = null;
-          });
-          console.log(`ANAMNESIS LOADED: ${JSON.stringify(inputsArray)}`);
-          setInputs(inputsArray);
-          setTouched(toucherArray);
-          setErrors(errorsArray);
-        }
-      } else {
-        console.log(`ANAMNESIS LOADED WITH ERROR`);
-        notificationCtx.showNotification({
-          title: 'Ops...',
-          message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+    if (response.ok) {
+      const selectedAnamnesisType = selectedAnamnesisTypes?.find(
+        (at) => at.anamnesisTypeId === anamnesisTypeId
+      );
+      const anamensisTypeResponse = response.body as GetAnamnesisTypeByIdResponse;
+
+      if (anamensisTypeResponse?.questions && anamensisTypeResponse?.questions.length > 0) {
+        const inputsArray: any[] = [];
+        const toucherArray: any[] = [];
+        const errorsArray: any[] = [];
+        anamensisTypeResponse.questions.map((question) => {
+          let selectedAnamnesisTypeQuestion: GetQuestionItem | undefined = undefined;
+          if (selectedAnamnesisType) {
+            selectedAnamnesisTypeQuestion = selectedAnamnesisType.questions?.find(
+              (q) => q.questionItemId === question.questionItemId
+            );
+          }
+          inputsArray[question.questionItemId] = {
+            value: selectedAnamnesisTypeQuestion ? selectedAnamnesisTypeQuestion.questionValue : '',
+            isValid: true,
+            questionPhrase: question.questionPhrase
+          };
+          toucherArray[question.questionItemId] = false;
+          errorsArray[question.questionItemId] = null;
         });
+        setAnamnesisType(anamensisTypeResponse);
+        setInputs(inputsArray);
+        setTouched(toucherArray);
+        setErrors(errorsArray);
       }
-      setIsLoading(false);
+    } else {
+      console.log(`ANAMNESIS LOADED WITH ERROR`);
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
     }
-  }, [
-    anamensisType,
-    anamnesisTypeId,
-    authCtx.token?.access_token,
-    notificationCtx,
-    selectedAnamnesisTypes
-  ]);
+    setIsLoading(false);
+  }, [anamnesisTypeId, authCtx.token?.access_token, notificationCtx, selectedAnamnesisTypes]);
 
   useEffect(() => {
     getAnamnesisTypeAsync();
-  }, [anamnesisTypeId, getAnamnesisTypeAsync]);
+  }, [anamnesisTypeId, getAnamnesisTypeAsync, isFocused]);
 
   const handleChange = (field: string, enteredValue: any) => {
     setTouched((curTouched) => {
@@ -143,11 +135,9 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
     const newAnamnesisType = { ...anamensisType };
     const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
     if (questionChanged) {
-      console.log(`CHANGE QUESTION PHRASE ${field}: ${enteredValue}`);
       questionChanged.questionPhrase = enteredValue;
       setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
     } else {
-      console.log(`NEW QUESTION PHRASE ${field}: ${enteredValue}`);
       setNewQuestionPhrase(enteredValue);
     }
   };
@@ -402,7 +392,7 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
                 setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
                 setNewAnswerQuestionOptions([]);
                 setNewQuestionId(undefined);
-                setNewQuestionPhrase('Nova Pergunta...');
+                setNewQuestionPhrase('');
                 setTypeQuestionAdding('simple');
               }}
               label={'Adicionar'}

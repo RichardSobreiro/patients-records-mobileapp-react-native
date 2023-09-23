@@ -33,8 +33,7 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
   const [list, setList] = useState<CheckboxItemState[]>([]);
 
   const [visibleAddCheckbox, setVisibleAddCheckbox] = useState<boolean>(false);
-  const [newCheckboxAnswerOption, setNewCheckboxAnswerOption] =
-    useState<string>('Nova opção de resposta');
+  const [newCheckboxAnswerOption, setNewCheckboxAnswerOption] = useState<string>('');
 
   useEffect(() => {
     if (anamnesisType.questions) {
@@ -106,6 +105,7 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
         value={questionPhrase}
         onChangeText={(text) => onChangeHandlerQuestionPhrase(field, text)}
         returnKeyType="next"
+        placeholder="Nova Pergunta..."
       />
 
       <View style={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}>
@@ -122,6 +122,7 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
               setNewCheckboxAnswerOption(text);
             }}
             returnKeyType="next"
+            placeholder={'Nova opção...'}
           />
         </View>
       )}
@@ -151,7 +152,7 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
                 });
                 return curList;
               });
-              setNewCheckboxAnswerOption('Nova opção de resposta');
+              setNewCheckboxAnswerOption('');
               setVisibleAddCheckbox(false);
             }}
             label="Adicionar"

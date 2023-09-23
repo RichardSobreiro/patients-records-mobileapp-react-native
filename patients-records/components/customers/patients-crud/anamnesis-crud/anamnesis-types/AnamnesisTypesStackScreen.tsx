@@ -1,6 +1,5 @@
 /* eslint-disable import/order */
 import IconButton from '../../../../../components/ui/IconButton';
-import RichTextAnamnesisInput from '../../../../../components/ui/custom-form/RichTextAnamnesisInput';
 import StackSheetCustom from '../../../../../components/ui/custom-form/StackSheetCustom';
 import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
@@ -11,7 +10,6 @@ import {
 import { AuthContext } from '../../../../../store/auth-context';
 import { ErrorType } from '../AnamnesisList';
 import { NotificationContext } from './../../../../../store/notification-context';
-import AnamnesisGeneralForm from './AnamnesisGeneralForm';
 import { RootStackAnamnesisCrudParamList } from '/App';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -29,6 +27,7 @@ type Props = {
   errors?: ErrorType;
   onChangeHandler?: (field: string, value: GetAnamnesisTypeResponse[]) => void;
   onBlurHandler?: (field: string) => void;
+  isFocused?: boolean;
 };
 
 const AnamnesisTypesStackScreen: React.FC<Props> = ({
@@ -39,7 +38,8 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   mode,
   errors,
   onChangeHandler,
-  onBlurHandler
+  onBlurHandler,
+  isFocused
 }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
@@ -81,10 +81,8 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (visible) {
-      getAnamnesisTypesAsync();
-    }
-  }, [getAnamnesisTypesAsync, visible]);
+    getAnamnesisTypesAsync();
+  }, [getAnamnesisTypesAsync, visible, isFocused]);
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
@@ -254,28 +252,17 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
         </>
       )}
 
-      {selectedAnamnesisTypes?.length > 0 &&
+      {/* {selectedAnamnesisTypes?.length > 0 &&
         selectedAnamnesisTypes.map((anamnesisType) => {
-          if (anamnesisType.anamnesisTypeDescription === 'Bioestimulador de colágeno') {
-            return (
-              <AnamnesisGeneralForm
-                anamnesisTypeId={anamnesisType.anamnesisTypeId}
-                selectedAnamnesisTypes={selectedAnamnesisTypes}
-                setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
-              />
-            );
-          } else if (anamnesisType.anamnesisTypeDescription !== 'Arquivo') {
-            return (
-              <RichTextAnamnesisInput
-                key={anamnesisType.anamnesisTypeId}
-                label={anamnesisType.anamnesisTypeDescription}
-                currentHTML={anamnesisType.template}
-                anamnesisType={anamnesisType}
-                setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
-              />
-            );
-          }
-        })}
+          return (
+            <AnamnesisGeneralForm
+              anamnesisTypeId={anamnesisType.anamnesisTypeId}
+              selectedAnamnesisTypes={selectedAnamnesisTypes}
+              setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
+              isFocused={isFocused}
+            />
+          );
+        })} */}
     </>
   );
 };

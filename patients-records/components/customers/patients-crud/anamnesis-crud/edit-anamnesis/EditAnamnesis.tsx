@@ -14,6 +14,7 @@ import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
+import RenderAnamnesisType from '../anamnesis-types/RenderAnamnesisType';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
@@ -115,13 +116,13 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
       anamnesisId,
       customerId,
       inputs.date.value,
-      selectedAnamnesisTypes.map(
+      inputs.anamnesisTypeContents.value.map(
         (selected) =>
           new UpdateAnamnesisTypeContentRequest(
             selected.anamnesisTypeId,
             selected.anamnesisTypeDescription,
             selected.isDefault,
-            selected.template,
+            selected.content,
             undefined,
             selected.questions
           )
@@ -148,9 +149,9 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
     authCtx.token?.access_token,
     customerId,
     files,
+    inputs.anamnesisTypeContents.value,
     inputs.date.value,
-    notificationCtx,
-    selectedAnamnesisTypes
+    notificationCtx
   ]);
 
   useEffect(() => {
@@ -166,7 +167,9 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
               selected.anamnesisTypeId,
               selected.anamnesisTypeDescription,
               selected.isDefault,
-              selected.template
+              selected.template,
+              undefined,
+              selected.questions
             )
         ),
         isValid: true
@@ -337,16 +340,6 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
         >
           Alterações salvas com sucesso!
         </Snackbar>
-        {/* <Snackbar
-          visible={showCreatedAnamnesisSnackbar}
-          onDismiss={() => {}}
-          wrapperStyle={{ zIndex: 7000, top: 0 }}
-          style={{
-            backgroundColor: Colors.secondary500
-          }}
-        >
-          Anamnese criada com sucesso!
-        </Snackbar> */}
         <DatePickerV2
           field="date"
           label="Data da Anamnese:"
@@ -356,13 +349,27 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
         />
+
         <AnamnesisTypesStackScreen
           visible={isVisibleAnamnesisTypesModal}
           setVisible={setIsVisibleAnamnesisTypesModal}
           selectedAnamnesisTypes={selectedAnamnesisTypes}
           setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
           mode={'crud'}
+          isFocused={isFocused}
         />
+
+        {selectedAnamnesisTypes?.length > 0 &&
+          selectedAnamnesisTypes.map((anamnesisType) => {
+            return (
+              <RenderAnamnesisType
+                selectedAnamnesis={anamnesisType}
+                inputsSelectedAnamnesis={inputs}
+                setInputsSelectedAnamnesis={setInputs}
+              />
+            );
+          })}
+
         {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >= 0 && (
           <CustomerFiles
             files={files}
