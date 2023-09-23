@@ -1,5 +1,4 @@
 import DatePickerV2 from '../../../../../components/ui/custom-form/DatePickerV2';
-import StackSheetCustom from '../../../../../components/ui/custom-form/StackSheetCustom';
 import { Colors } from '../../../../../constants/styles';
 import { createAnamnesis } from '../../../../../http/AnamnesisApi';
 import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
@@ -9,8 +8,7 @@ import {
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import {
   CreateAnamnesisRequest,
-  CreateAnamnesisTypeContentRequest,
-  CreateQuestionAnswerRequest
+  CreateAnamnesisTypeContentRequest
 } from '../../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
@@ -18,30 +16,32 @@ import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerFiles from '../../CustomerFiles';
 import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
-import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import RenderAnamnesisType from '../anamnesis-types/RenderAnamnesisType';
+import { useIsFocused } from '@react-navigation/native';
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
 type Props = {
   customerId: string;
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setCreatedAnamnesisId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setShowCreatedAnamnesisSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
+  route: any;
+  navigation: any;
 };
 
-const CreateAnamnesis: React.FC<Props> = ({
-  customerId,
-  visible,
-  setVisible,
-  setCreatedAnamnesisId,
-  setShowCreatedAnamnesisSnackbar
-}) => {
+const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
+  const [isVisibleAnamnesisTypesModal, setIsVisibleAnamnesisTypesModal] = useState<boolean>(false);
+  const [selectedAnamnesisTypes, setSelectedAnamnesisTypes] = useState<GetAnamnesisTypeResponse[]>(
+    []
+  );
+
+  const [files, setFiles] = useState<FileCustom[] | undefined>(undefined);
+
+  const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [inputs, setInputs] = useState<Inputs>({
@@ -63,12 +63,95 @@ const CreateAnamnesis: React.FC<Props> = ({
     anamnesisTypeContents: null
   });
 
-  const [isVisibleAnamnesisTypesModal, setIsVisibleAnamnesisTypesModal] = useState<boolean>(false);
-  const [selectedAnamnesisTypes, setSelectedAnamnesisTypes] = useState<GetAnamnesisTypeResponse[]>(
-    []
-  );
+  const handleChange = (field: string, enteredValue: string | Date | undefined) => {
+    setTouched((curTouched) => {
+      curTouched[field] = true;
+      return curTouched;
+    });
+    setInputs((curInputs) => {
+      const newInputs = {
+        ...curInputs,
+        [field]: { value: enteredValue, isValid: true }
+      };
+      return newInputs;
+    });
+  };
 
-  const [files, setFiles] = useState<FileCustom[] | undefined>(undefined);
+  const handleBlur = (field: string) => {
+    setTouched((curTouched) => {
+      curTouched[field] = true;
+      return curTouched;
+    });
+  };
+
+  const submitHandler = useCallback(async () => {
+    if (!authCtx.token?.access_token) return;
+
+    setIsLoading(true);
+
+    //const dateObject = new Date(inputs.date.value);
+
+    const request = new CreateAnamnesisRequest(
+      customerId,
+      //new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate()),
+      inputs.date.value,
+      inputs.anamnesisTypeContents.value.map(
+        (selected) =>
+          new CreateAnamnesisTypeContentRequest(
+            selected.anamnesisTypeId,
+            selected.anamnesisTypeDescription,
+            selected.isDefault,
+            selected.content,
+            null,
+            selected.questions
+          )
+      )
+    );
+
+    const response = await createAnamnesis(authCtx.token?.access_token, request, files);
+
+    if (response.ok) {
+      setSelectedAnamnesisTypes([]);
+      setInputs({
+        date: {
+          value: new Date(),
+          isValid: true
+        },
+        anamnesisTypeContents: {
+          value: [],
+          isValid: true
+        }
+      });
+      setErrors({
+        date: null,
+        anamnesisTypeContents: null
+      });
+      setTouched({
+        date: false,
+        anamnesisTypeContents: false
+      });
+      setFiles([]);
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
+      navigation.replace('EditAnamnesis', { customerId, anamnesisId: response.body.anamneseId });
+    } else {
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
+    }
+    setIsLoading(false);
+  }, [
+    authCtx.token?.access_token,
+    customerId,
+    files,
+    inputs.anamnesisTypeContents.value,
+    inputs.date.value,
+    navigation,
+    notificationCtx
+  ]);
 
   useEffect(() => {
     const getAnamnesisTypesAsync = async () => {
@@ -97,27 +180,6 @@ const CreateAnamnesis: React.FC<Props> = ({
     getAnamnesisTypesAsync();
   }, [authCtx.token?.access_token, notificationCtx]);
 
-  const handleChange = (field: string, enteredValue: string | Date | undefined) => {
-    setTouched((curTouched) => {
-      curTouched[field] = true;
-      return curTouched;
-    });
-    setInputs((curInputs) => {
-      const newInputs = {
-        ...curInputs,
-        [field]: { value: enteredValue, isValid: true }
-      };
-      return newInputs;
-    });
-  };
-
-  const handleBlur = (field: string) => {
-    setTouched((curTouched) => {
-      curTouched[field] = true;
-      return curTouched;
-    });
-  };
-
   useEffect(() => {
     setTouched((curTouched) => {
       curTouched.anamnesisTypeContents = true;
@@ -140,142 +202,133 @@ const CreateAnamnesis: React.FC<Props> = ({
     });
   }, [selectedAnamnesisTypes]);
 
-  const submitHandler = async () => {
-    if (!authCtx.token?.access_token) return;
+  useLayoutEffect(() => {
+    if (!navigation || !route) return;
 
-    setIsLoading(true);
-
-    const dateObject = new Date(inputs.date.value);
-
-    const request = new CreateAnamnesisRequest(
-      customerId,
-      new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate()),
-      selectedAnamnesisTypes.map(
-        (selected) =>
-          new CreateAnamnesisTypeContentRequest(
-            selected.anamnesisTypeId,
-            selected.anamnesisTypeDescription,
-            selected.isDefault,
-            selected.template,
-            null,
-            selected.questions
-          )
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            submitHandler();
+          }}
+          style={{
+            borderColor: Colors.secondary500,
+            borderWidth: 1,
+            borderRadius: 20,
+            paddingVertical: 5,
+            paddingHorizontal: 10
+          }}
+        >
+          <Text style={{ color: Colors.secondary500 }}>Salvar</Text>
+        </TouchableOpacity>
       )
-    );
+    });
 
-    const response = await createAnamnesis(authCtx.token?.access_token, request, files);
-
-    if (response.ok) {
-      setShowCreatedAnamnesisSnackbar(() => {
-        setCreatedAnamnesisId(response.body.anamneseId);
-        return true;
-      });
-      setSelectedAnamnesisTypes([]);
-      setInputs({
-        date: {
-          value: new Date(),
-          isValid: true
-        },
-        anamnesisTypeContents: {
-          value: [],
-          isValid: true
-        }
-      });
-      setErrors({
-        date: null,
-        anamnesisTypeContents: null
-      });
-      setTouched({
-        date: false,
-        anamnesisTypeContents: false
-      });
-      setFiles([]);
-      setVisibleSnackbar(true);
-      setTimeout(() => {
-        setVisibleSnackbar(false);
-      }, 5000);
-    } else {
-      notificationCtx.showNotification({
-        title: 'Ops...',
-        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
-      });
+    const patientsBottomTabNavigator = navigation.getParent('PatientsBottomTab');
+    if (patientsBottomTabNavigator) {
+      if (route.name === 'CreateAnamnesis') {
+        patientsBottomTabNavigator.setOptions({
+          tabBarStyle: { display: 'none' }
+        });
+      }
     }
-    setVisible(false);
-    setIsLoading(false);
-  };
+
+    const tabNavigator = navigation.getParent('RootStack');
+    if (tabNavigator) {
+      if (route.name === 'CreateAnamnesis') {
+        tabNavigator.setOptions({
+          headerShown: false
+        });
+      }
+    }
+
+    return () => {
+      tabNavigator.setOptions({
+        headerShown: true
+      });
+      patientsBottomTabNavigator.setOptions({
+        tabBarStyle: { display: 'absolute' }
+      });
+    };
+  }, [navigation, route, submitHandler]);
 
   return (
     <>
-      <Snackbar
-        visible={visibleSnackbar}
-        onDismiss={() => {}}
-        wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
-        style={{
-          backgroundColor: Colors.secondary500
-        }}
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
+        />
+      )}
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        style={styles.container}
+        overScrollMode="never"
+        extraScrollHeight={20}
+        extraHeight={20}
       >
-        Atendimento criado com sucesso!
-      </Snackbar>
-      <StackSheetCustom
-        visible={visible}
-        setVisible={setVisible}
-        positiveActionLabel="Salvar"
-        saveModalCallback={submitHandler}
-      >
-        {isLoading && (
-          <ActivityIndicator
-            color={Colors.primary800}
-            size={120}
-            style={{
-              flex: 1,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: Colors.tertiary900Op12,
-              zIndex: 2000
-            }}
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Anamnese criada com sucesso!
+        </Snackbar>
+
+        <DatePickerV2
+          field="date"
+          label="Data da Anamnese:"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+        />
+
+        <AnamnesisTypesStackScreen
+          visible={isVisibleAnamnesisTypesModal}
+          setVisible={setIsVisibleAnamnesisTypesModal}
+          selectedAnamnesisTypes={selectedAnamnesisTypes}
+          setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
+          mode={'crud'}
+          isFocused={isFocused}
+        />
+
+        {selectedAnamnesisTypes?.length > 0 &&
+          selectedAnamnesisTypes.map((anamnesisType) => {
+            return (
+              <RenderAnamnesisType
+                selectedAnamnesis={anamnesisType}
+                inputsSelectedAnamnesis={inputs}
+                setInputsSelectedAnamnesis={setInputs}
+              />
+            );
+          })}
+
+        {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >= 0 && (
+          <CustomerFiles
+            files={files}
+            setFiles={setFiles}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
           />
         )}
-        <KeyboardAwareScrollView
-          enableOnAndroid={true}
-          style={styles.container}
-          overScrollMode="never"
-          extraScrollHeight={20}
-          extraHeight={20}
-        >
-          <DatePickerV2
-            field="date"
-            label="Data da Anamnese:"
-            values={inputs}
-            touched={touched}
-            errors={errors}
-            onChangeHandler={handleChange}
-            onBlurHandler={handleBlur}
-          />
-
-          <AnamnesisTypesStackScreen
-            visible={isVisibleAnamnesisTypesModal}
-            setVisible={setIsVisibleAnamnesisTypesModal}
-            selectedAnamnesisTypes={selectedAnamnesisTypes}
-            setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
-            mode={'crud'}
-          />
-
-          {selectedAnamnesisTypes.findIndex((s) => s.anamnesisTypeDescription === 'Arquivo') >=
-            0 && (
-            <CustomerFiles
-              files={files}
-              setFiles={setFiles}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          )}
-        </KeyboardAwareScrollView>
-      </StackSheetCustom>
+      </KeyboardAwareScrollView>
     </>
   );
 };

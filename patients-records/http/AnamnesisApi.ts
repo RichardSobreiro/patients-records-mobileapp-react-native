@@ -143,7 +143,7 @@ export const getAnamnesis = async (
   endDate?: Date,
   anamnesisTypeIds?: string[]
 ): Promise<ApiResponse> => {
-  let URL = `${process.env.API_URL}/customers/${customerId}/anamnesis?pageNumber=${pageNumber}&limit=${limit}&customerId=${customerId}`;
+  let URL = `http://10.0.2.2:3006/customers/${customerId}/anamnesis?pageNumber=${pageNumber}&limit=${limit}&customerId=${customerId}`;
 
   if (anamnesisTypeDescription && anamnesisTypeDescription !== '') {
     URL += `&anamnesisTypeDescription=${anamnesisTypeDescription}`;

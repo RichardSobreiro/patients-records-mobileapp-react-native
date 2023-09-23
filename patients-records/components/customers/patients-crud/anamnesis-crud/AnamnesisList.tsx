@@ -8,7 +8,6 @@ import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
 import { DateParser } from '../../../../util/dateParser';
 import AnamnesisListItem from './AnamnesisListItem';
-import CreateAnamnesis from './create-anamnesis/CreateAnamnesis';
 import { RootStackAnamnesisCrudParamList } from '/App';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -58,8 +57,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   const [openDateRangeModal, setOpenDateRangeModal] = useState<boolean>(false);
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
-  const [isVisibleCreateAnamnesis, setVisibleCreateAnamnesis] = useState<boolean>(false);
-  const [editAnamnesisId, setEditAnamnesisId] = useState<string | undefined>(undefined);
   const [showCreatedAnamnesisSnackbar, setShowCreatedAnamnesisSnackbar] = useState<boolean>(false);
 
   const isFocused = useIsFocused();
@@ -121,12 +118,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
     }
   }, [getAnamnesisListAsync, isFocused]);
 
-  useEffect(() => {
-    if (editAnamnesisId && editAnamnesisId !== '') {
-      getAnamnesisListAsync(1);
-    }
-  }, [getAnamnesisListAsync, editAnamnesisId]);
-
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
       setPage((prevState) => {
@@ -176,14 +167,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
 
   return (
     <>
-      <CreateAnamnesis
-        customerId={customerId}
-        visible={isVisibleCreateAnamnesis}
-        setVisible={setVisibleCreateAnamnesis}
-        setCreatedAnamnesisId={setEditAnamnesisId}
-        setShowCreatedAnamnesisSnackbar={setShowCreatedAnamnesisSnackbar}
-      />
-
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}
@@ -194,7 +177,11 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
             {
               icon: 'plus',
               label: 'Incluir Anamnese',
-              onPress: () => setVisibleCreateAnamnesis(true),
+              onPress: () => {
+                navigation.push('CreateAnamnesis', {
+                  customerId
+                });
+              },
               labelTextColor: 'white'
             }
           ]}

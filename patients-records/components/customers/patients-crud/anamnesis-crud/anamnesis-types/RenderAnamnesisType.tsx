@@ -3,6 +3,7 @@ import { GetAnamnesisTypeResponse } from '../../../../../models/customers/anamne
 import Input from '../../../../ui/custom-form/Input';
 import InputCheckboxGroup from '../../../../ui/custom-form/InputCheckboxGroup';
 import { Inputs } from '../AnamnesisList';
+import { CreateQuestionAnswerRequest } from '/models/customers/anamnesis/CreateAnamneseRequest';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -53,19 +54,26 @@ const RenderAnamnesisType: React.FC<Props> = ({
         const newSelectedAnamnesis = { ...curInputs };
         if (questionChanged) {
           questionChanged.questionValue = enteredValue;
-          const anamnesisTypeContentToBeUpdated =
-            newSelectedAnamnesis.anamnesisTypeContents.value.find(
-              (anamnesisTypeContent) =>
-                anamnesisTypeContent.anamnesisTypeId === selectedAnamnesis.anamnesisTypeId
-            );
-          const questionToBeUpdated = anamnesisTypeContentToBeUpdated?.questions?.find(
-            (q) => q.questionItemId === field
-          );
-          if (questionToBeUpdated) {
-            questionToBeUpdated.questionValue = enteredValue;
-            console.log(`CHANGE ${field}: ${enteredValue}`);
-          }
         }
+        const anamnesisTypeContentToBeUpdated =
+          newSelectedAnamnesis.anamnesisTypeContents.value.find(
+            (anamnesisTypeContent) =>
+              anamnesisTypeContent.anamnesisTypeId === selectedAnamnesis.anamnesisTypeId
+          );
+
+        if (anamnesisTypeContentToBeUpdated?.questions === undefined) {
+          anamnesisTypeContentToBeUpdated!.questions = [
+            questionChanged as CreateQuestionAnswerRequest
+          ];
+        }
+
+        const questionToBeUpdated = anamnesisTypeContentToBeUpdated?.questions?.find(
+          (q) => q.questionItemId === field
+        );
+        if (questionToBeUpdated) {
+          questionToBeUpdated.questionValue = enteredValue;
+        }
+
         return newSelectedAnamnesis;
       });
       return newInputs;
@@ -88,7 +96,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
           if (question.questionType === 'simple') {
             return (
               <Input
-                key={question.questionItemId}
+                key={`${question.questionItemId}-${index}`}
                 field={question.questionItemId}
                 label={question.questionPhrase}
                 keyboardType="default"
@@ -102,7 +110,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
           } else if (question.questionType === 'checkbox') {
             return (
               <InputCheckboxGroup
-                key={`${question.questionType}-${question.questionItemId}`}
+                key={`${question.questionType}-${question.questionItemId}-${index}`}
                 field={question.questionItemId}
                 label={question.questionPhrase}
                 values={inputs}
@@ -120,7 +128,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
           } else if (question.questionType === 'textarea') {
             return (
               <RichTextInput
-                key={`${question.questionType}-${question.questionItemId}`}
+                key={`${question.questionType}-${question.questionItemId}-${index}`}
                 field={question.questionItemId}
                 label={question.questionPhrase}
                 values={inputs}

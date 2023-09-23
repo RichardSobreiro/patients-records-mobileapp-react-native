@@ -1,6 +1,7 @@
 import IconButton from './components/ui/IconButton';
 import { Colors } from './constants/styles';
 import AnamnesisListScreen from './screens/AnamnesisScreens/AnamnesisListScreen';
+import CreateAnamnesisScreen from './screens/AnamnesisScreens/CreateAnamnesisScreen';
 import CreateAnamnesisTypeScreen from './screens/AnamnesisScreens/CreateAnamnesisTypeScreen';
 import EditAnamnesisScreen from './screens/AnamnesisScreens/EditAnamnesisScreen';
 import EditAnamnesisTypeScreen from './screens/AnamnesisScreens/EditAnamnesisTypeScreen';
@@ -79,6 +80,34 @@ const AnamnesisCrudStackComp = ({ route, navigation }) => {
         initialParams={{ customerId }}
         options={{
           headerShown: false
+        }}
+      />
+      <StackAnamnesisCrud.Screen
+        name="CreateAnamnesis"
+        component={CreateAnamnesisScreen}
+        initialParams={{ customerId }}
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity>
+              <AntDesign
+                style={{ paddingLeft: 0, paddingRight: 30 }}
+                name="arrowleft"
+                size={24}
+                color={Colors.primary500}
+                onPress={() => {
+                  navigation.setOptions({
+                    headerShown: false
+                  });
+                  navigation.replace('AnamnesisList', { customerId });
+                }}
+              />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
         }}
       />
       <StackAnamnesisCrud.Screen

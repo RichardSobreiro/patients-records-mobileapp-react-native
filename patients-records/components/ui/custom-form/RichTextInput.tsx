@@ -1,6 +1,6 @@
 import { Colors } from '../../../constants/styles';
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text, StyleSheet, View, useWindowDimensions, ScrollView } from 'react-native';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 const handleHead = ({ tintColor }) => <Text style={{ color: tintColor }}>H1</Text>;
@@ -47,7 +47,7 @@ const RichTextInput: React.FC<Props> = ({
   return (
     <View style={{ marginHorizontal: 4 }}>
       <Text style={[styles.label, { maxWidth: dimensions.width * 1 }]}>{label}</Text>
-      <View style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 1 }]}>
+      <ScrollView style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 1 }]}>
         <RichEditor
           ref={richText}
           onChange={(descriptionText) => {
@@ -58,7 +58,7 @@ const RichTextInput: React.FC<Props> = ({
           editorStyle={styles.editorStyle}
           initialHeight={250}
         />
-      </View>
+      </ScrollView>
 
       <RichToolbar
         style={[{ maxWidth: dimensions.width * 1 }]}
