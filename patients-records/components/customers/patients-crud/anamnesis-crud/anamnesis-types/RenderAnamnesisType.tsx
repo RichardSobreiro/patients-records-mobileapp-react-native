@@ -3,7 +3,6 @@ import { GetAnamnesisTypeResponse } from '../../../../../models/customers/anamne
 import Input from '../../../../ui/custom-form/Input';
 import InputCheckboxGroup from '../../../../ui/custom-form/InputCheckboxGroup';
 import { Inputs } from '../AnamnesisList';
-import { CreateQuestionAnswerRequest } from '/models/customers/anamnesis/CreateAnamneseRequest';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -49,9 +48,8 @@ const RenderAnamnesisType: React.FC<Props> = ({
         [field]: { value: enteredValue, isValid: true }
       };
       const questionChanged = selectedAnamnesis?.questions?.find((q) => q.questionItemId === field);
-      setInputsSelectedAnamnesis((curInputs) => {
-        console.log(`CHANGE ${field}: ${enteredValue}`);
-        const newSelectedAnamnesis = { ...curInputs };
+      setInputsSelectedAnamnesis((curInputsSelectedAnamnesis) => {
+        const newSelectedAnamnesis = { ...curInputsSelectedAnamnesis };
         if (questionChanged) {
           questionChanged.questionValue = enteredValue;
         }
@@ -62,9 +60,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
           );
 
         if (anamnesisTypeContentToBeUpdated?.questions === undefined) {
-          anamnesisTypeContentToBeUpdated!.questions = [
-            questionChanged as CreateQuestionAnswerRequest
-          ];
+          anamnesisTypeContentToBeUpdated!.questions = [...selectedAnamnesis?.questions!];
         }
 
         const questionToBeUpdated = anamnesisTypeContentToBeUpdated?.questions?.find(

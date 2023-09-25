@@ -233,7 +233,6 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     const response = await updateAnamnesisType(authCtx.token?.access_token!, request);
 
     if (response.ok) {
-      //if (true) {
       setVisibleSnackbar(true);
       setTimeout(() => {
         setVisibleSnackbar(false);

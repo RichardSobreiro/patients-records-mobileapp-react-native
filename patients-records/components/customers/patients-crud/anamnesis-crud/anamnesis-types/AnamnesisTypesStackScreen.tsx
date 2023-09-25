@@ -159,6 +159,7 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
               size={48}
               onPress={() => {
                 setVisible(false);
+                navigation.push('CreateAnamnesisType');
               }}
               label="Incluir nova ficha"
             />

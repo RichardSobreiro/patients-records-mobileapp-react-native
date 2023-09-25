@@ -1,4 +1,7 @@
+import CreateEditRichTextInput from '../../../../../components/ui/custom-form/CreateEditRichTextInput';
 import { Colors } from '../../../../../constants/styles';
+import { createAnamnesisType } from '../../../../../http/AnamnesisTypesApi';
+import { CreateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/CreateAnamnesisTypeRequest';
 import {
   GetAnamnesisTypeByIdResponse,
   GetQuestionItem
@@ -11,20 +14,28 @@ import CreateEditInputCheckboxGroup, {
   CheckboxItem
 } from '../../../../ui/custom-form/CreateEditInputCheckboxGroup';
 import Input from '../../../../ui/custom-form/Input';
-import { useContext, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+import { useCallback, useContext, useLayoutEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SegmentedButtons } from 'react-native-paper';
+import { SegmentedButtons, Snackbar } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
-const CreateAnamnesisType: React.FC = () => {
+type Props = {
+  route: any;
+  navigation: any;
+};
+
+const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [anamensisType, setAnamnesisType] = useState<GetAnamnesisTypeByIdResponse | undefined>(
-    undefined
+    new GetAnamnesisTypeByIdResponse(uuidv4(), '', null, false, [])
   );
+
+  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
   const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
@@ -166,6 +177,98 @@ const CreateAnamnesisType: React.FC = () => {
     });
   };
 
+  const saveAsync = useCallback(async () => {
+    if (!inputs.anamnesisTypeDescription.value || inputs.anamnesisTypeDescription.value === '') {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const request = new CreateAnamnesisTypeRequest(
+      inputs.anamnesisTypeDescription.value,
+      inputs.anamnesisTypeTemplate.value,
+      anamensisType?.questions
+    );
+
+    const response = await createAnamnesisType(authCtx.token?.access_token!, request);
+
+    if (response.ok) {
+      setVisibleSnackbar(true);
+      setTimeout(() => {
+        setVisibleSnackbar(false);
+      }, 5000);
+      navigation.replace('EditAnamnesisType', { anamnesisTypeId: response.body.anamnesisTypeId });
+    } else {
+      notificationCtx.showNotification({
+        title: 'Ops...',
+        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+      });
+    }
+
+    setIsLoading(false);
+  }, [
+    anamensisType?.questions,
+    authCtx.token?.access_token,
+    inputs.anamnesisTypeDescription.value,
+    inputs.anamnesisTypeTemplate.value,
+    navigation,
+    notificationCtx
+  ]);
+
+  useLayoutEffect(() => {
+    if (!navigation || !route) return;
+
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity>
+          <AntDesign
+            style={{ paddingLeft: 0, paddingRight: 30 }}
+            name="arrowleft"
+            size={24}
+            color={Colors.primary500}
+            onPress={() => {
+              navigation.setOptions({
+                headerShown: false
+              });
+              navigation.goBack();
+            }}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            saveAsync();
+          }}
+          style={{
+            borderColor: Colors.secondary500,
+            borderWidth: 1,
+            borderRadius: 20,
+            paddingVertical: 5,
+            paddingHorizontal: 10
+          }}
+        >
+          <Text style={{ color: Colors.secondary500 }}>Salvar</Text>
+        </TouchableOpacity>
+      )
+    });
+
+    const tabNavigator = navigation.getParent('RootStack');
+    if (tabNavigator) {
+      if (route.name === 'CreateAnamnesisType') {
+        tabNavigator.setOptions({
+          headerShown: false
+        });
+      }
+    }
+
+    return () => {
+      tabNavigator.setOptions({
+        headerShown: true
+      });
+    };
+  }, [navigation, route, saveAsync]);
+
   return (
     <>
       <KeyboardAwareScrollView
@@ -175,10 +278,17 @@ const CreateAnamnesisType: React.FC = () => {
         extraScrollHeight={150}
         extraHeight={150}
       >
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ zIndex: 7000, top: 0 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Ficha criada com sucesso!
+        </Snackbar>
         {isLoading ? (
-          //   <View style={styles.loadingContent}>
-          //     <ActivityIndicator color={Colors.error500} size={40} />
-          //   </View>
           <ActivityIndicator
             color={Colors.primary800}
             size={120}
@@ -237,6 +347,16 @@ const CreateAnamnesisType: React.FC = () => {
                       }
                     />
                   );
+                } else if (question.questionType === 'textarea') {
+                  return (
+                    <CreateEditRichTextInput
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                    />
+                  );
                 }
               })}
           </>
@@ -275,6 +395,10 @@ const CreateAnamnesisType: React.FC = () => {
                 {
                   value: 'checkbox',
                   label: 'Opções'
+                },
+                {
+                  value: 'textarea',
+                  label: 'Texto'
                 }
               ]}
             />
@@ -299,6 +423,15 @@ const CreateAnamnesisType: React.FC = () => {
                 onChangeHandlerRemoveAnswerQuestionOption={
                   handleChangeHandlerRemoveAnswerQuestionOption
                 }
+              />
+            )}
+            {typeQuestionAdding === 'textarea' && (
+              <CreateEditRichTextInput
+                key={`${typeQuestionAdding}-${newQuestionId}`}
+                field={newQuestionId!}
+                label={`Nova Pergunta: `}
+                questionPhrase={newQuestionPhrase}
+                onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
               />
             )}
           </View>

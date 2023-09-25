@@ -154,8 +154,10 @@ const AnamnesisCrudStackComp = ({ route, navigation }) => {
         name="CreateAnamnesisType"
         component={CreateAnamnesisTypeScreen}
         options={{
-          headerShown: true,
           headerTitle: 'Nova Ficha de Anamnese',
+          headerTitleStyle: {
+            color: Colors.primary500
+          },
           headerStyle: {
             backgroundColor: 'transparent'
           },

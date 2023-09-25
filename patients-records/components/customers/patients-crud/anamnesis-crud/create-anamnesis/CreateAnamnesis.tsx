@@ -89,11 +89,8 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
 
     setIsLoading(true);
 
-    //const dateObject = new Date(inputs.date.value);
-
     const request = new CreateAnamnesisRequest(
       customerId,
-      //new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate()),
       inputs.date.value,
       inputs.anamnesisTypeContents.value.map(
         (selected) =>
@@ -107,7 +104,6 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
           )
       )
     );
-
     const response = await createAnamnesis(authCtx.token?.access_token, request, files);
 
     if (response.ok) {
@@ -160,12 +156,12 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
           const response = await getAnamnesisTypesList(authCtx.token?.access_token!);
           if (response.ok) {
             const apiResponseBody = response.body as GetAnamnesisTypesResponse;
-            const defaultSelectedAnamnesisTypes = apiResponseBody.anamnesisTypes?.filter(
-              (at) =>
-                at.anamnesisTypeDescription === 'Observações' ||
-                at.anamnesisTypeDescription === 'Arquivo'
-            );
-            setSelectedAnamnesisTypes(defaultSelectedAnamnesisTypes!);
+            // const defaultSelectedAnamnesisTypes = apiResponseBody.anamnesisTypes?.filter(
+            //   (at) =>
+            //     at.anamnesisTypeDescription === 'Observações' ||
+            //     at.anamnesisTypeDescription === 'Arquivo'
+            // );
+            // setSelectedAnamnesisTypes(defaultSelectedAnamnesisTypes!);
           }
         } catch (error: any) {
           console.log(error);
