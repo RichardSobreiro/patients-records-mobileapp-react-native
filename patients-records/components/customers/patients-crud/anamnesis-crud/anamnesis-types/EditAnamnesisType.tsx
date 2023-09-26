@@ -538,24 +538,48 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
             />
           </View>
         ) : (
-          <IconButton
-            pressable={{
-              paddingVertical: 5,
-              borderColor: Colors.secondary800,
-              marginVertical: 20
-            }}
-            icon={'add'}
-            color={Colors.secondary500}
-            size={36}
-            onPress={() => {
-              setNewQuestionId((cur) => {
-                setVisibleAddNewQuestion(true);
-                return uuidv4();
-              });
-            }}
-            label={'Adicionar nova pergunta'}
-            labelStyle={{ color: Colors.secondary500 }}
-          />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 25 }}>
+            <IconButton
+              pressable={{
+                flex: 1,
+                paddingVertical: 2,
+                paddingHorizontal: 15,
+                borderColor: Colors.secondary800,
+                marginVertical: 20
+              }}
+              icon={'add'}
+              color={Colors.secondary500}
+              size={36}
+              onPress={() => {
+                setNewQuestionId((cur) => {
+                  setVisibleAddNewQuestion(true);
+                  return uuidv4();
+                });
+              }}
+              label={'Nova pergunta'}
+              labelStyle={{ color: Colors.secondary500 }}
+            />
+            <IconButton
+              pressable={{
+                flex: 1,
+                paddingVertical: 2,
+                paddingHorizontal: 15,
+                borderColor: Colors.secondary800,
+                marginVertical: 20
+              }}
+              icon={'add'}
+              color={Colors.secondary500}
+              size={36}
+              onPress={() => {
+                setNewQuestionId((cur) => {
+                  setVisibleAddNewQuestion(true);
+                  return uuidv4();
+                });
+              }}
+              label={'Nova Seção'}
+              labelStyle={{ color: Colors.secondary500 }}
+            />
+          </View>
         )}
       </KeyboardAwareScrollView>
     </>

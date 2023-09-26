@@ -1,9 +1,14 @@
 /* eslint-disable import/order */
 import { Colors } from '../../../constants/styles';
-import { GetAnamnesisTypeByIdResponse } from '../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
+import {
+  GetAnamnesisTypeByIdResponse,
+  GetSectionItem
+} from '../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
+import Dropdown from '../Dropdown';
 import IconButton from '../IconButton';
+import { AntDesign } from '@expo/vector-icons';
 import React, { FC, useEffect, useState } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 
 export type CheckboxItem = { label: string; value: string };
@@ -18,6 +23,10 @@ interface Props {
   anamnesisType: GetAnamnesisTypeByIdResponse;
   onChangeHandlerAddAnswerQuestionOption: (field: string, newAnswerValue: string) => void;
   onChangeHandlerRemoveAnswerQuestionOption: (field: string, answerValue: string) => void;
+  onRemoveQuestionHandler?: (field: string) => void;
+  sectionOptions?: GetSectionItem[] | undefined;
+  onChangeHandlerQuestionSection?: (field: string, sectionId: string) => void;
+  sectionId?: string;
 }
 
 const CreateEditInputCheckboxGroup: FC<Props> = ({
@@ -28,12 +37,51 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
   onChangeHandlerAnswerQuestionOption,
   anamnesisType,
   onChangeHandlerAddAnswerQuestionOption,
-  onChangeHandlerRemoveAnswerQuestionOption
+  onChangeHandlerRemoveAnswerQuestionOption,
+  onRemoveQuestionHandler,
+  sectionOptions,
+  onChangeHandlerQuestionSection,
+  sectionId
 }) => {
   const [list, setList] = useState<CheckboxItemState[]>([]);
 
   const [visibleAddCheckbox, setVisibleAddCheckbox] = useState<boolean>(false);
   const [newCheckboxAnswerOption, setNewCheckboxAnswerOption] = useState<string>('');
+
+  const [inputs, setInputs] = useState<{
+    sectionId: {
+      value: string | undefined;
+      isValid: boolean;
+    };
+  }>({
+    sectionId: {
+      value: sectionId,
+      isValid: true
+    }
+  });
+
+  const [touched, setTouched] = useState<{ sectionId: boolean }>({
+    sectionId: false
+  });
+
+  const [errors] = useState<{ sectionId: string | null }>({
+    sectionId: null
+  });
+
+  const handleChange = (fieldInternal: string, enteredValue: any) => {
+    setTouched((curTouched) => {
+      curTouched[fieldInternal] = true;
+      return curTouched;
+    });
+    setInputs((curInputs) => {
+      const newInputs = {
+        ...curInputs,
+        [fieldInternal]: { value: enteredValue, isValid: true }
+      };
+      onChangeHandlerQuestionSection?.(field, enteredValue);
+      return newInputs;
+    });
+  };
 
   useEffect(() => {
     if (anamnesisType.questions) {
@@ -89,23 +137,47 @@ const CreateEditInputCheckboxGroup: FC<Props> = ({
   return (
     <View
       style={{
-        marginTop: 15,
+        marginHorizontal: 4,
+        marginVertical: 8,
         paddingHorizontal: 2,
         paddingVertical: 10,
         borderWidth: 1,
         borderStyle: 'dashed'
       }}
     >
-      <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 10 }]}>
-        <Text style={styles.labelQuestion}>{label}</Text>
-      </View>
+      {onRemoveQuestionHandler ? (
+        <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }]}>
+          <Text style={styles.labelQuestion}>{label}</Text>
+          <TouchableOpacity onPress={() => onRemoveQuestionHandler(field)}>
+            <AntDesign name="delete" size={30} color={Colors.primary500} />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 0 }]}>
+          <Text style={styles.labelQuestion}>{label}</Text>
+        </View>
+      )}
+
+      {sectionOptions && sectionOptions.length > 0 && (
+        <Dropdown
+          field="sectionId"
+          label="Seção:"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          data={sectionOptions?.map((s) => {
+            return { label: s.sectionTitle, value: s.sectionId };
+          })}
+        />
+      )}
 
       <TextInput
         style={[styles.label]}
         value={questionPhrase}
         onChangeText={(text) => onChangeHandlerQuestionPhrase(field, text)}
         returnKeyType="next"
-        placeholder="Nova Pergunta..."
+        placeholder="Nova pergunta..."
       />
 
       <View style={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}>
@@ -183,7 +255,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     color: Colors.primary500,
-    marginBottom: 4
+    marginBottom: 4,
+    marginTop: 15
   },
   button: {
     flexDirection: 'row',

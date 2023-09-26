@@ -6,8 +6,13 @@ export class GetQuestionItem {
     public questionType: string,
     public questionPhrase: string,
     public questionAnswersOptions: string[] | undefined,
-    public questionValue: string | undefined
+    public questionValue: string | undefined,
+    public sectionId?: string
   ) {}
+}
+
+export class GetSectionItem {
+  constructor(public sectionId: string, public sectionTitle: string) {}
 }
 
 export class GetAnamnesisTypeByIdResponse {
@@ -16,6 +21,7 @@ export class GetAnamnesisTypeByIdResponse {
     public anamnesisTypeDescription: string,
     public template: string | null,
     public isDefault: boolean,
-    public questions: GetQuestionItem[] | undefined
+    public questions: GetQuestionItem[] | undefined,
+    public sections: GetSectionItem[] | undefined
   ) {}
 }

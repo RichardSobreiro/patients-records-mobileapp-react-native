@@ -6,9 +6,9 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, Modal, View } from 'react
 export type DropdownData = { label: string; value: string };
 
 interface Props {
-  field?;
-  label?;
-  values?;
+  field: string;
+  label: string;
+  values: any;
   touched?;
   errors?;
   onChangeHandler: (field: string, value: any) => void;
@@ -48,7 +48,6 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
 
   const onItemPress = (item): void => {
     setSelected(item);
-    //onSelect(item);
     onChangeHandler(field, item.value);
     setVisible(false);
   };
@@ -89,7 +88,11 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
             <Text style={styles.errorText}>{errors[field]}</Text>
           </View>
         ) : null}
-        <Text style={styles.buttonText}>{selected?.label ?? label}</Text>
+        {selected ? (
+          <Text style={styles.buttonText}>{selected.label}</Text>
+        ) : (
+          <Text style={styles.buttonText}>{label}</Text>
+        )}
         <Ionicons style={styles.icon} size={25} name="chevron-down" />
         {renderDropdown()}
       </TouchableOpacity>
