@@ -152,7 +152,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
             <AccordionItem
               key={`${index}-${section.sectionId}`}
               title={section.sectionTitle}
-              initiallyExpanded={true}
+              initiallyExpanded={false}
             >
               {questionsFromSection &&
                 questionsFromSection.length > 0 &&

@@ -177,7 +177,6 @@ const EditAnamnesisType: React.FC<Props> = ({
       questionChanged.questionPhrase = enteredValue;
       setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
     } else {
-      console.log(`NEW QUESTION PHRASE ${field}: ${enteredValue}`);
       setNewQuestionPhrase(enteredValue);
     }
   };
@@ -422,8 +421,8 @@ const EditAnamnesisType: React.FC<Props> = ({
         enableOnAndroid={true}
         style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
         overScrollMode="never"
-        extraScrollHeight={150}
-        extraHeight={150}
+        extraScrollHeight={20}
+        extraHeight={20}
       >
         <Snackbar
           visible={visibleSnackbar}
@@ -527,8 +526,8 @@ const EditAnamnesisType: React.FC<Props> = ({
               return (
                 <CreateEditAccordionItem
                   key={`${index}-${section.sectionId}`}
+                  initiallyExpanded={false}
                   title={section.sectionTitle}
-                  initiallyExpanded={true}
                   sectionId={section.sectionId}
                   onRemoveSectionHandler={handleRemoveSection}
                   onChangeHandlerSectionTitle={handleChangeSectionTitle}
