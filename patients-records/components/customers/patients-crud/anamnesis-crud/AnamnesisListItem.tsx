@@ -22,9 +22,13 @@ const AnamnesisListItem: React.FC<Props> = ({ anamnesis, navigateToUpdateAnamnes
           </View>
 
           <View style={{ flex: 1 }}>
-            {anamnesis.anamnesisTypeDescriptions.map((item) => {
+            {anamnesis.anamnesisTypeDescriptions.map((item, index) => {
               return (
-                <Text style={styles.anamnesisText} numberOfLines={3}>
+                <Text
+                  key={`${index}-${anamnesis.anamneseId}-${item}`}
+                  style={styles.anamnesisText}
+                  numberOfLines={3}
+                >
                   {item}
                 </Text>
               );

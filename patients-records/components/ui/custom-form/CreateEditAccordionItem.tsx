@@ -3,13 +3,14 @@ import { Colors } from '../../../constants/styles';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import type { PropsWithChildren } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 type AccordionItemPros = PropsWithChildren<{
   title: string;
   initiallyExpanded: boolean;
   sectionId: string;
   onRemoveSectionHandler: (sectionId: string) => void;
+  onChangeHandlerSectionTitle: (sectionId: string, sectionTitle: string) => void;
 }>;
 
 const CreateEditAccordionItem: React.FC<AccordionItemPros> = ({
@@ -17,7 +18,8 @@ const CreateEditAccordionItem: React.FC<AccordionItemPros> = ({
   title,
   initiallyExpanded,
   sectionId,
-  onRemoveSectionHandler
+  onRemoveSectionHandler,
+  onChangeHandlerSectionTitle
 }: AccordionItemPros) => {
   const [expanded, setExpanded] = useState(initiallyExpanded);
 
@@ -31,11 +33,17 @@ const CreateEditAccordionItem: React.FC<AccordionItemPros> = ({
     <View style={styles.accordContainer}>
       <TouchableOpacity style={styles.accordHeader} onPress={toggleItem}>
         <View style={{ flexDirection: 'row', gap: 5 }}>
-          <Text style={styles.accordTitle}>{title}</Text>
-
           <TouchableOpacity onPress={() => onRemoveSectionHandler(sectionId)}>
             <AntDesign name="delete" size={30} color={Colors.primary500} />
           </TouchableOpacity>
+
+          <TextInput
+            style={styles.accordTitle}
+            value={title}
+            onChangeText={(text) => onChangeHandlerSectionTitle(sectionId, text)}
+            returnKeyType="next"
+            placeholder={'Nome da seção...'}
+          />
         </View>
         <Entypo
           name={expanded ? 'chevron-up' : 'chevron-down'}

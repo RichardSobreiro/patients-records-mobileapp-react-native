@@ -9,7 +9,8 @@ import {
   View,
   useWindowDimensions,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
@@ -126,7 +127,7 @@ const CreateEditRichTextInput: React.FC<Props> = ({
         placeholder={'Nova pergunta...'}
       />
 
-      <View style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 1 }]}>
+      <ScrollView style={[styles.editorStyleContainer, { maxWidth: dimensions.width * 1 }]}>
         <RichEditor
           ref={richText}
           onChange={(descriptionText) => {}}
@@ -134,7 +135,7 @@ const CreateEditRichTextInput: React.FC<Props> = ({
           initialHeight={250}
           disabled={true}
         />
-      </View>
+      </ScrollView>
 
       <RichToolbar
         style={[{ maxWidth: dimensions.width * 1 }]}

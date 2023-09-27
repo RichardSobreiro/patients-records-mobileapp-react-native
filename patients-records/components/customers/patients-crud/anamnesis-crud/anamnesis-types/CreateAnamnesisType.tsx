@@ -228,6 +228,20 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
     });
   };
 
+  const handleChangeSectionTitle = (sectionId: string, sectionTitle: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newAnamnesisType = { ...curAnamnesis } as GetAnamnesisTypeByIdResponse;
+
+      newAnamnesisType.sections!.forEach((s) => {
+        if (s.sectionId === sectionId) {
+          s.sectionTitle = sectionTitle;
+        }
+      });
+
+      return newAnamnesisType;
+    });
+  };
+
   const saveAsync = useCallback(async () => {
     if (!inputs.anamnesisTypeDescription.value || inputs.anamnesisTypeDescription.value === '') {
       return;
@@ -238,7 +252,8 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
     const request = new CreateAnamnesisTypeRequest(
       inputs.anamnesisTypeDescription.value,
       inputs.anamnesisTypeTemplate.value,
-      anamensisType?.questions
+      anamensisType!.questions,
+      anamensisType!.sections
     );
 
     const response = await createAnamnesisType(authCtx.token?.access_token!, request);
@@ -248,7 +263,10 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
       setTimeout(() => {
         setVisibleSnackbar(false);
       }, 5000);
-      navigation.replace('EditAnamnesisType', { anamnesisTypeId: response.body.anamnesisTypeId });
+      navigation.replace('EditAnamnesisType', {
+        anamnesisTypeId: response.body.anamnesisTypeId,
+        showCreatedSnackbar: true
+      });
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
@@ -258,7 +276,7 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
 
     setIsLoading(false);
   }, [
-    anamensisType?.questions,
+    anamensisType,
     authCtx.token?.access_token,
     inputs.anamnesisTypeDescription.value,
     inputs.anamnesisTypeTemplate.value,
@@ -315,13 +333,31 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
 
     return () => {
       tabNavigator.setOptions({
-        headerShown: true
+        headerShown: false
       });
     };
   }, [navigation, route, saveAsync]);
 
   return (
     <>
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
+        />
+      )}
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
@@ -339,167 +375,152 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
         >
           Ficha criada com sucesso!
         </Snackbar>
-        {isLoading ? (
-          <ActivityIndicator
-            color={Colors.primary800}
-            size={120}
-            style={{
-              flex: 1,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: Colors.tertiary900Op12,
-              zIndex: 2000
-            }}
+        <>
+          <Input
+            field="anamnesisTypeDescription"
+            label="Nome"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
           />
-        ) : (
-          <>
-            <Input
-              field="anamnesisTypeDescription"
-              label="Nome"
-              values={inputs}
-              touched={touched}
-              errors={errors}
-              onChangeHandler={handleChange}
-              onBlurHandler={handleBlur}
-            />
-            {/* Questions without section */}
-            {anamensisType?.questions &&
-              anamensisType?.questions.length > 0 &&
-              anamensisType.questions.map((question, index) => {
-                if (!question.sectionId) {
-                  if (question.questionType === 'simple') {
-                    return (
-                      <CreateEditInput
-                        key={question.questionItemId}
-                        field={question.questionItemId}
-                        label={`Pergunta ${index + 1}: `}
-                        questionPhrase={question.questionPhrase}
-                        onRemoveQuestionHandler={handleRemoveQuestion}
-                        onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                        sectionOptions={anamensisType.sections}
-                        onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                        sectionId={question.sectionId}
-                      />
-                    );
-                  } else if (question.questionType === 'checkbox') {
-                    return (
-                      <CreateEditInputCheckboxGroup
-                        key={`${question.questionType}-${question.questionItemId}`}
-                        field={question.questionItemId}
-                        label={`Pergunta ${index + 1}: `}
-                        questionPhrase={question.questionPhrase}
-                        onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                        onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
-                        anamnesisType={anamensisType}
-                        onChangeHandlerAddAnswerQuestionOption={
-                          handleChangeHandlerAddAnswerQuestionOption
-                        }
-                        onChangeHandlerRemoveAnswerQuestionOption={
-                          handleChangeHandlerRemoveAnswerQuestionOption
-                        }
-                        onRemoveQuestionHandler={handleRemoveQuestion}
-                        sectionOptions={anamensisType.sections}
-                        onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                        sectionId={question.sectionId}
-                      />
-                    );
-                  } else if (question.questionType === 'textarea') {
-                    return (
-                      <CreateEditRichTextInput
-                        key={`${question.questionType}-${question.questionItemId}`}
-                        field={question.questionItemId}
-                        label={`Pergunta ${index + 1}: `}
-                        questionPhrase={question.questionPhrase}
-                        onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                        onRemoveQuestionHandler={handleRemoveQuestion}
-                        sectionOptions={anamensisType.sections}
-                        onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                        sectionId={question.sectionId}
-                      />
-                    );
-                  }
-                }
-              })}
 
-            {/* Questions with section defined*/}
-            {anamensisType?.sections &&
-              anamensisType.sections.length > 0 &&
-              anamensisType.sections.map((section, index) => {
-                const questionsFromSection = anamensisType?.questions?.filter(
-                  (q) => q.sectionId === section.sectionId
-                );
-                return (
-                  <CreateEditAccordionItem
-                    title={section.sectionTitle}
-                    initiallyExpanded={true}
-                    sectionId={section.sectionId}
-                    onRemoveSectionHandler={handleRemoveSection}
-                  >
-                    {questionsFromSection &&
-                      questionsFromSection.length > 0 &&
-                      questionsFromSection.map((question, index) => {
-                        if (question.questionType === 'simple') {
-                          return (
-                            <CreateEditInput
-                              key={question.questionItemId}
-                              field={question.questionItemId}
-                              label={`Pergunta ${index + 1}: `}
-                              questionPhrase={question.questionPhrase}
-                              onRemoveQuestionHandler={handleRemoveQuestion}
-                              onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                              sectionOptions={anamensisType.sections}
-                              onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                              sectionId={question.sectionId}
-                            />
-                          );
-                        } else if (question.questionType === 'checkbox') {
-                          return (
-                            <CreateEditInputCheckboxGroup
-                              key={`${question.questionType}-${question.questionItemId}`}
-                              field={question.questionItemId}
-                              label={`Pergunta ${index + 1}: `}
-                              questionPhrase={question.questionPhrase}
-                              onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                              onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
-                              anamnesisType={anamensisType}
-                              onChangeHandlerAddAnswerQuestionOption={
-                                handleChangeHandlerAddAnswerQuestionOption
-                              }
-                              onChangeHandlerRemoveAnswerQuestionOption={
-                                handleChangeHandlerRemoveAnswerQuestionOption
-                              }
-                              onRemoveQuestionHandler={handleRemoveQuestion}
-                              sectionOptions={anamensisType.sections}
-                              onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                              sectionId={question.sectionId}
-                            />
-                          );
-                        } else if (question.questionType === 'textarea') {
-                          return (
-                            <CreateEditRichTextInput
-                              key={`${question.questionType}-${question.questionItemId}`}
-                              field={question.questionItemId}
-                              label={`Pergunta ${index + 1}: `}
-                              questionPhrase={question.questionPhrase}
-                              onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
-                              onRemoveQuestionHandler={handleRemoveQuestion}
-                              sectionOptions={anamensisType.sections}
-                              onChangeHandlerQuestionSection={handleChangeQuestionSection}
-                              sectionId={question.sectionId}
-                            />
-                          );
-                        }
-                      })}
-                  </CreateEditAccordionItem>
-                );
-              })}
-          </>
-        )}
+          {/* Questions without section */}
+          {anamensisType?.questions &&
+            anamensisType?.questions.length > 0 &&
+            anamensisType.questions.map((question, index) => {
+              if (!question.sectionId) {
+                if (question.questionType === 'simple') {
+                  return (
+                    <CreateEditInput
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
+                    />
+                  );
+                } else if (question.questionType === 'checkbox') {
+                  return (
+                    <CreateEditInputCheckboxGroup
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
+                      anamnesisType={anamensisType}
+                      onChangeHandlerAddAnswerQuestionOption={
+                        handleChangeHandlerAddAnswerQuestionOption
+                      }
+                      onChangeHandlerRemoveAnswerQuestionOption={
+                        handleChangeHandlerRemoveAnswerQuestionOption
+                      }
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
+                    />
+                  );
+                } else if (question.questionType === 'textarea') {
+                  return (
+                    <CreateEditRichTextInput
+                      key={`${question.questionType}-${question.questionItemId}`}
+                      field={question.questionItemId}
+                      label={`Pergunta ${index + 1}: `}
+                      questionPhrase={question.questionPhrase}
+                      onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
+                    />
+                  );
+                }
+              }
+            })}
+
+          {/* Questions with section defined*/}
+          {anamensisType?.sections &&
+            anamensisType.sections.length > 0 &&
+            anamensisType.sections.map((section, index) => {
+              const questionsFromSection = anamensisType?.questions?.filter(
+                (q) => q.sectionId === section.sectionId
+              );
+              return (
+                <CreateEditAccordionItem
+                  key={`${index}-${section.sectionId}`}
+                  title={section.sectionTitle}
+                  initiallyExpanded={true}
+                  sectionId={section.sectionId}
+                  onRemoveSectionHandler={handleRemoveSection}
+                  onChangeHandlerSectionTitle={handleChangeSectionTitle}
+                >
+                  {questionsFromSection &&
+                    questionsFromSection.length > 0 &&
+                    questionsFromSection.map((question, index) => {
+                      if (question.questionType === 'simple') {
+                        return (
+                          <CreateEditInput
+                            key={`${question.questionType}-${question.questionItemId}`}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      } else if (question.questionType === 'checkbox') {
+                        return (
+                          <CreateEditInputCheckboxGroup
+                            key={`${question.questionType}-${question.questionItemId}`}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
+                            anamnesisType={anamensisType}
+                            onChangeHandlerAddAnswerQuestionOption={
+                              handleChangeHandlerAddAnswerQuestionOption
+                            }
+                            onChangeHandlerRemoveAnswerQuestionOption={
+                              handleChangeHandlerRemoveAnswerQuestionOption
+                            }
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      } else if (question.questionType === 'textarea') {
+                        return (
+                          <CreateEditRichTextInput
+                            key={`${question.questionType}-${question.questionItemId}`}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      }
+                    })}
+                </CreateEditAccordionItem>
+              );
+            })}
+        </>
+
         {/* New Question */}
         {visibleAddNewQuestion && (
           <View
@@ -637,6 +658,7 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
             </View>
           </View>
         )}
+
         {/* New Section */}
         {visibleAddNewSection && (
           <View

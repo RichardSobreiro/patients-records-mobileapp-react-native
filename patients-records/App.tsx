@@ -57,9 +57,9 @@ export type RootStackParamList = {
 
 export type RootStackAnamnesisCrudParamList = {
   AnamnesisList: { customerId: string; updateList?: boolean };
-  EditAnamnesis: { customerId: string; anamnesisId: string };
+  EditAnamnesis: { customerId: string; anamnesisId: string; showCreatedSnackbar?: boolean };
   CreateAnamnesis: { customerId: string };
-  EditAnamnesisType: { anamnesisTypeId: string };
+  EditAnamnesisType: { anamnesisTypeId: string; showCreatedSnackbar?: boolean };
   CreateAnamnesisType;
 };
 

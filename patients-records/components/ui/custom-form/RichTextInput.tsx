@@ -31,11 +31,11 @@ const RichTextInput: React.FC<Props> = ({
   const richText = useRef<any>(undefined);
   const dimensions = useWindowDimensions();
   const [firstRender, setFirstRender] = useState<boolean>(false);
-  const [editorAttached, setEditorAttached] = useState<boolean>(false);
+  const [, setEditorAttached] = useState<boolean>(false);
 
   useEffect(() => {
     if (values[field].value !== '' && !firstRender) {
-      richText?.current.setContentHTML(values[field].value);
+      richText?.current.setContentHTML(values[field].value ? values[field].value : '');
       setFirstRender(true);
     }
   }, [values[field].value]);

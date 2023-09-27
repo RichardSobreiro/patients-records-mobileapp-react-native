@@ -1,4 +1,5 @@
 import IconButton from '../../../../../components/ui/IconButton';
+import CreateEditAccordionItem from '../../../../../components/ui/custom-form/CreateEditAccordionItem';
 import CreateEditInput from '../../../../../components/ui/custom-form/CreateEditInput';
 import CreateEditInputCheckboxGroup, {
   CheckboxItem
@@ -9,14 +10,22 @@ import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypeById, updateAnamnesisType } from '../../../../../http/AnamnesisTypesApi';
 import {
   GetAnamnesisTypeByIdResponse,
-  GetQuestionItem
+  GetQuestionItem,
+  GetSectionItem
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
 import { UpdateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/UpdateAnamnesisTypeRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SegmentedButtons, Snackbar } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,9 +34,15 @@ type Props = {
   anamnesisTypeId: string;
   route: any;
   navigation: any;
+  showCreatedSnackbar?: boolean;
 };
 
-const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation }) => {
+const EditAnamnesisType: React.FC<Props> = ({
+  anamnesisTypeId,
+  showCreatedSnackbar,
+  route,
+  navigation
+}) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
 
@@ -36,12 +51,20 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     undefined
   );
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+  const [visibleCreatedSnackbar, setVisibleCreatedSnackbar] = useState<boolean>(
+    !!showCreatedSnackbar
+  );
 
   const [typeQuestionAdding, setTypeQuestionAdding] = useState('simple');
   const [visibleAddNewQuestion, setVisibleAddNewQuestion] = useState<boolean>(false);
   const [newQuestionId, setNewQuestionId] = useState<string | undefined>(undefined);
   const [newQuestionPhrase, setNewQuestionPhrase] = useState<string>('');
   const [newAnswerQuestionOptions, setNewAnswerQuestionOptions] = useState<CheckboxItem[]>([]);
+  const [newQuestionSectionId, setNewQuestionSectionId] = useState<string | undefined>(undefined);
+
+  const [visibleAddNewSection, setVisibleAddNewSection] = useState<boolean>(false);
+  const [newSectionId, setNewSectionId] = useState<string | undefined>(undefined);
+  const [newSectionName, setNewSectionName] = useState<string>('');
 
   const [inputs, setInputs] = useState({
     anamnesisTypeDescription: {
@@ -159,6 +182,17 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     }
   };
 
+  const handleChangeQuestionSection = (field: string, sectionId: string) => {
+    const newAnamnesisType = { ...anamensisType };
+    const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
+    if (questionChanged) {
+      questionChanged.sectionId = sectionId;
+      setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
+    } else {
+      setNewQuestionSectionId(sectionId);
+    }
+  };
+
   const handleChangeAnswerQuestionOption = (field: string, newValue: string, oldValue: string) => {
     console.log(`CHANGE ANSWER QUESTIONS OPTIONS ${field}: NEW: ${newValue} - OLD: ${oldValue}`);
     const newAnamnesisType = { ...anamensisType };
@@ -216,6 +250,49 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
     });
   };
 
+  const handleRemoveQuestion = (questionItemId: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newAnamnesisType = { ...curAnamnesis } as GetAnamnesisTypeByIdResponse;
+      const newQuestions = [...newAnamnesisType!.questions!];
+      newAnamnesisType!.questions = newQuestions.filter((q) => q.questionItemId !== questionItemId);
+      return newAnamnesisType;
+    });
+  };
+
+  const handleRemoveSection = (sectionId: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newAnamnesisType = { ...curAnamnesis } as GetAnamnesisTypeByIdResponse;
+
+      const newQuestions = [...newAnamnesisType!.questions!];
+      for (const question of newQuestions) {
+        if (question.sectionId === sectionId) {
+          question.sectionId = undefined;
+        }
+      }
+      newAnamnesisType!.questions = newQuestions;
+
+      newAnamnesisType.sections = newAnamnesisType.sections!.filter(
+        (s) => s.sectionId !== sectionId
+      );
+
+      return newAnamnesisType;
+    });
+  };
+
+  const handleChangeSectionTitle = (sectionId: string, sectionTitle: string) => {
+    setAnamnesisType((curAnamnesis) => {
+      const newAnamnesisType = { ...curAnamnesis } as GetAnamnesisTypeByIdResponse;
+
+      newAnamnesisType.sections!.forEach((s) => {
+        if (s.sectionId === sectionId) {
+          s.sectionTitle = sectionTitle;
+        }
+      });
+
+      return newAnamnesisType;
+    });
+  };
+
   const saveAsync = useCallback(async () => {
     if (!inputs.anamnesisTypeDescription.value || inputs.anamnesisTypeDescription.value === '') {
       return;
@@ -227,7 +304,8 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
       anamnesisTypeId,
       inputs.anamnesisTypeDescription.value,
       inputs.anamnesisTypeTemplate.value,
-      anamensisType?.questions
+      anamensisType?.questions,
+      anamensisType?.sections
     );
 
     const response = await updateAnamnesisType(authCtx.token?.access_token!, request);
@@ -246,7 +324,7 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
 
     setIsLoading(false);
   }, [
-    anamensisType?.questions,
+    anamensisType,
     anamnesisTypeId,
     authCtx.token?.access_token,
     inputs.anamnesisTypeDescription.value,
@@ -307,13 +385,39 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
 
     return () => {
       tabNavigator.setOptions({
-        headerShown: true
+        headerShown: false
       });
     };
   }, [navigation, route, saveAsync]);
 
+  useEffect(() => {
+    if (visibleCreatedSnackbar) {
+      setTimeout(() => {
+        setVisibleCreatedSnackbar(false);
+      }, 5000);
+    }
+  }, [visibleCreatedSnackbar]);
+
   return (
     <>
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
+        />
+      )}
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         style={{ flex: 1, marginHorizontal: 20, marginVertical: 8 }}
@@ -331,37 +435,34 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
         >
           Alterações salvas com sucesso!
         </Snackbar>
-        {isLoading ? (
-          <ActivityIndicator
-            color={Colors.primary800}
-            size={120}
-            style={{
-              flex: 1,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: Colors.tertiary900Op12,
-              zIndex: 2000
-            }}
+
+        <Snackbar
+          visible={visibleCreatedSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ zIndex: 7000, top: 0 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Anamnese criada com sucesso!
+        </Snackbar>
+
+        <>
+          <Input
+            field="anamnesisTypeDescription"
+            label="Nome"
+            values={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={handleChange}
+            onBlurHandler={handleBlur}
           />
-        ) : (
-          <>
-            <Input
-              field="anamnesisTypeDescription"
-              label="Nome"
-              values={inputs}
-              touched={touched}
-              errors={errors}
-              onChangeHandler={handleChange}
-              onBlurHandler={handleBlur}
-            />
-            {anamensisType?.questions &&
-              anamensisType?.questions.length > 0 &&
-              anamensisType.questions.map((question, index) => {
+
+          {/* Questions without section */}
+          {anamensisType?.questions &&
+            anamensisType?.questions.length > 0 &&
+            anamensisType.questions.map((question, index) => {
+              if (!question.sectionId) {
                 if (question.questionType === 'simple') {
                   return (
                     <CreateEditInput
@@ -370,6 +471,10 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                       label={`Pergunta ${index + 1}: `}
                       questionPhrase={question.questionPhrase}
                       onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
                     />
                   );
                 } else if (question.questionType === 'checkbox') {
@@ -388,6 +493,10 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                       onChangeHandlerRemoveAnswerQuestionOption={
                         handleChangeHandlerRemoveAnswerQuestionOption
                       }
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
                     />
                   );
                 } else if (question.questionType === 'textarea') {
@@ -398,13 +507,93 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                       label={`Pergunta ${index + 1}: `}
                       questionPhrase={question.questionPhrase}
                       onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                      onRemoveQuestionHandler={handleRemoveQuestion}
+                      sectionOptions={anamensisType.sections}
+                      onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                      sectionId={question.sectionId}
                     />
                   );
                 }
-              })}
-          </>
-        )}
+              }
+            })}
 
+          {/* Questions with section defined*/}
+          {anamensisType?.sections &&
+            anamensisType.sections.length > 0 &&
+            anamensisType.sections.map((section, index) => {
+              const questionsFromSection = anamensisType?.questions?.filter(
+                (q) => q.sectionId === section.sectionId
+              );
+              return (
+                <CreateEditAccordionItem
+                  key={`${index}-${section.sectionId}`}
+                  title={section.sectionTitle}
+                  initiallyExpanded={true}
+                  sectionId={section.sectionId}
+                  onRemoveSectionHandler={handleRemoveSection}
+                  onChangeHandlerSectionTitle={handleChangeSectionTitle}
+                >
+                  {questionsFromSection &&
+                    questionsFromSection.length > 0 &&
+                    questionsFromSection.map((question, index) => {
+                      if (question.questionType === 'simple') {
+                        return (
+                          <CreateEditInput
+                            key={question.questionItemId}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      } else if (question.questionType === 'checkbox') {
+                        return (
+                          <CreateEditInputCheckboxGroup
+                            key={`${question.questionType}-${question.questionItemId}`}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            onChangeHandlerAnswerQuestionOption={handleChangeAnswerQuestionOption}
+                            anamnesisType={anamensisType}
+                            onChangeHandlerAddAnswerQuestionOption={
+                              handleChangeHandlerAddAnswerQuestionOption
+                            }
+                            onChangeHandlerRemoveAnswerQuestionOption={
+                              handleChangeHandlerRemoveAnswerQuestionOption
+                            }
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      } else if (question.questionType === 'textarea') {
+                        return (
+                          <CreateEditRichTextInput
+                            key={`${question.questionType}-${question.questionItemId}`}
+                            field={question.questionItemId}
+                            label={`Pergunta ${index + 1}: `}
+                            questionPhrase={question.questionPhrase}
+                            onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                            onRemoveQuestionHandler={handleRemoveQuestion}
+                            sectionOptions={anamensisType.sections}
+                            onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                            sectionId={question.sectionId}
+                          />
+                        );
+                      }
+                    })}
+                </CreateEditAccordionItem>
+              );
+            })}
+        </>
+
+        {/* New Question */}
         {visibleAddNewQuestion && (
           <View
             style={{
@@ -451,6 +640,9 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 label={`Nova Pergunta: `}
                 questionPhrase={newQuestionPhrase}
                 onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                sectionOptions={anamensisType?.sections}
+                onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                sectionId={newQuestionSectionId}
               />
             )}
             {typeQuestionAdding === 'checkbox' && (
@@ -466,6 +658,9 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 onChangeHandlerRemoveAnswerQuestionOption={
                   handleChangeHandlerRemoveAnswerQuestionOption
                 }
+                sectionOptions={anamensisType!.sections}
+                onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                sectionId={newQuestionSectionId}
               />
             )}
             {typeQuestionAdding === 'textarea' && (
@@ -475,69 +670,140 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
                 label={`Nova Pergunta: `}
                 questionPhrase={newQuestionPhrase}
                 onChangeHandlerQuestionPhrase={handleChangeQuestionPhrase}
+                sectionOptions={anamensisType!.sections}
+                onChangeHandlerQuestionSection={handleChangeQuestionSection}
+                sectionId={newQuestionSectionId}
               />
             )}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <IconButton
+                pressable={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 15,
+                  marginVertical: 20
+                }}
+                icon={'close'}
+                color={Colors.primary500}
+                size={36}
+                onPress={() => {
+                  setVisibleAddNewQuestion((curValue) => {
+                    setNewQuestionId(undefined);
+                    return !curValue;
+                  });
+                }}
+                label={'Cancelar'}
+              />
+              <IconButton
+                pressable={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 15,
+                  borderColor: Colors.secondary800,
+                  marginVertical: 20
+                }}
+                icon={'save'}
+                color={Colors.secondary500}
+                size={36}
+                onPress={() => {
+                  setVisibleAddNewQuestion(false);
+                  const newAnamnesisType = { ...anamensisType };
+                  newAnamnesisType.questions?.push(
+                    new GetQuestionItem(
+                      newQuestionId!,
+                      typeQuestionAdding,
+                      newQuestionPhrase,
+                      newAnswerQuestionOptions?.length > 0
+                        ? newAnswerQuestionOptions.map((opt) => opt.label)
+                        : undefined,
+                      undefined,
+                      newQuestionSectionId
+                    )
+                  );
+                  setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
+                  setNewAnswerQuestionOptions([]);
+                  setNewQuestionId(undefined);
+                  setNewQuestionPhrase('');
+                  setTypeQuestionAdding('simple');
+                }}
+                label={'Adicionar'}
+                labelStyle={{ color: Colors.secondary500 }}
+              />
+            </View>
           </View>
         )}
 
-        {visibleAddNewQuestion ? (
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <IconButton
-              pressable={{
-                paddingVertical: 5,
-                paddingHorizontal: 15,
-                marginVertical: 20
+        {/* New Section */}
+        {visibleAddNewSection && (
+          <View
+            style={{
+              marginVertical: 10,
+              paddingVertical: 10,
+              borderWidth: 1,
+              borderStyle: 'dashed',
+              borderColor: Colors.primary500
+            }}
+          >
+            <Text style={[styles.label]}>Nome da seção:</Text>
+            <TextInput
+              style={[styles.input]}
+              value={newSectionName}
+              onChangeText={(text) => {
+                setNewSectionName(text);
               }}
-              icon={'close'}
-              color={Colors.primary500}
-              size={36}
-              onPress={() => {
-                setVisibleAddNewQuestion((curValue) => {
-                  setNewQuestionId(undefined);
-                  return !curValue;
-                });
-              }}
-              label={'Cancelar'}
+              returnKeyType="next"
             />
-            <IconButton
-              pressable={{
-                paddingVertical: 5,
-                paddingHorizontal: 15,
-                borderColor: Colors.secondary800,
-                marginVertical: 20
-              }}
-              icon={'save'}
-              color={Colors.secondary500}
-              size={36}
-              onPress={() => {
-                setVisibleAddNewQuestion(false);
-                setNewQuestionId(undefined);
-                console.log(
-                  `ADD QUESTIONS - TYPE: ${typeQuestionAdding} - QUESTION PHRASE: ${newQuestionPhrase}`
-                );
-                const newAnamnesisType = { ...anamensisType };
-                newAnamnesisType.questions?.push(
-                  new GetQuestionItem(
-                    newQuestionId!,
-                    typeQuestionAdding,
-                    newQuestionPhrase,
-                    newAnswerQuestionOptions?.length > 0
-                      ? newAnswerQuestionOptions.map((opt) => opt.label)
-                      : undefined,
-                    undefined
-                  )
-                );
-                setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
-                setNewAnswerQuestionOptions([]);
-                setNewQuestionId(undefined);
-                setNewQuestionPhrase('');
-                setTypeQuestionAdding('simple');
-              }}
-              label={'Adicionar'}
-              labelStyle={{ color: Colors.secondary500 }}
-            />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <IconButton
+                pressable={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 15,
+                  marginVertical: 20
+                }}
+                icon={'close'}
+                color={Colors.primary500}
+                size={36}
+                onPress={() => {
+                  setVisibleAddNewSection((curValue) => {
+                    setNewSectionId(undefined);
+                    return !curValue;
+                  });
+                }}
+                label={'Cancelar'}
+              />
+              <IconButton
+                pressable={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 15,
+                  marginVertical: 20,
+                  borderColor: Colors.secondary800
+                }}
+                icon={'save'}
+                color={Colors.secondary500}
+                size={36}
+                onPress={() => {
+                  setAnamnesisType((curValue) => {
+                    const newValue =
+                      curValue?.sections && curValue.sections.length > 0
+                        ? [...curValue.sections]
+                        : [];
+                    newValue.push(new GetSectionItem(newSectionId!, newSectionName));
+                    curValue!.sections = newValue;
+
+                    setVisibleAddNewSection((curValueVisibleAddNewSection) => {
+                      setNewSectionId(undefined);
+                      setNewSectionName('');
+                      return !curValueVisibleAddNewSection;
+                    });
+
+                    return curValue;
+                  });
+                }}
+                label={'Adicionar'}
+              />
+            </View>
           </View>
-        ) : (
+        )}
+
+        {!visibleAddNewQuestion && !visibleAddNewSection && (
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 25 }}>
             <IconButton
               pressable={{
@@ -571,8 +837,8 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
               color={Colors.secondary500}
               size={36}
               onPress={() => {
-                setNewQuestionId((cur) => {
-                  setVisibleAddNewQuestion(true);
+                setNewSectionId((cur) => {
+                  setVisibleAddNewSection(true);
                   return uuidv4();
                 });
               }}
@@ -587,3 +853,21 @@ const EditAnamnesisType: React.FC<Props> = ({ anamnesisTypeId, route, navigation
 };
 
 export default EditAnamnesisType;
+
+const styles = StyleSheet.create({
+  label: {
+    fontSize: 18,
+    color: Colors.primary500,
+    marginBottom: 4
+  },
+  input: {
+    backgroundColor: Colors.primary100,
+    color: Colors.primary800,
+    minHeight: 50,
+    padding: 6,
+    fontSize: 18,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: Colors.primary500
+  }
+});

@@ -26,12 +26,22 @@ type Props = {
   anamnesisId: string;
   route: any;
   navigation: any;
+  showCreatedSnackbar?: boolean;
 };
 
-const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, navigation }) => {
+const EditAnamnesis: React.FC<Props> = ({
+  customerId,
+  anamnesisId,
+  route,
+  navigation,
+  showCreatedSnackbar
+}) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+  const [visibleCreatedSnackbar, setVisibleCreatedSnackbar] = useState<boolean>(
+    !!showCreatedSnackbar
+  );
 
   const [isVisibleAnamnesisTypesModal, setIsVisibleAnamnesisTypesModal] = useState<boolean>(false);
   const [selectedAnamnesisTypes, setSelectedAnamnesisTypes] = useState<GetAnamnesisTypeResponse[]>(
@@ -116,17 +126,17 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
       anamnesisId,
       customerId,
       inputs.date.value,
-      inputs.anamnesisTypeContents.value.map(
-        (selected) =>
-          new UpdateAnamnesisTypeContentRequest(
-            selected.anamnesisTypeId,
-            selected.anamnesisTypeDescription,
-            selected.isDefault,
-            selected.content,
-            undefined,
-            selected.questions
-          )
-      )
+      inputs.anamnesisTypeContents.value.map((selected) => {
+        return new UpdateAnamnesisTypeContentRequest(
+          selected.anamnesisTypeId,
+          selected.anamnesisTypeDescription,
+          selected.isDefault,
+          selected.content,
+          undefined,
+          selected.questions,
+          selected.sections
+        );
+      })
     );
 
     const response = await updateAnamnesis(authCtx.token?.access_token, request, files);
@@ -161,17 +171,17 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
     });
     setInputs((curInputs) => {
       curInputs.anamnesisTypeContents = {
-        value: selectedAnamnesisTypes.map(
-          (selected) =>
-            new CreateAnamnesisTypeContentRequest(
-              selected.anamnesisTypeId,
-              selected.anamnesisTypeDescription,
-              selected.isDefault,
-              selected.template,
-              undefined,
-              selected.questions
-            )
-        ),
+        value: selectedAnamnesisTypes.map((selected) => {
+          return new CreateAnamnesisTypeContentRequest(
+            selected.anamnesisTypeId,
+            selected.anamnesisTypeDescription,
+            selected.isDefault,
+            selected.template,
+            undefined,
+            selected.questions,
+            selected.sections
+          );
+        }),
         isValid: true
       };
       return curInputs;
@@ -210,7 +220,8 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
                 selected.anamnesisTypeDescription,
                 selected.content,
                 selected.isDefault,
-                selected.questions
+                selected.questions,
+                selected.sections
               );
             })
           );
@@ -303,6 +314,14 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
     };
   }, [navigation, route, submitHandler]);
 
+  useEffect(() => {
+    if (visibleCreatedSnackbar) {
+      setTimeout(() => {
+        setVisibleCreatedSnackbar(false);
+      }, 5000);
+    }
+  }, [visibleCreatedSnackbar]);
+
   return (
     <>
       {isLoading && (
@@ -340,6 +359,18 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
         >
           Alterações salvas com sucesso!
         </Snackbar>
+
+        <Snackbar
+          visible={visibleCreatedSnackbar}
+          onDismiss={() => {}}
+          wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
+          style={{
+            backgroundColor: Colors.secondary500
+          }}
+        >
+          Anamnese criada com sucesso!
+        </Snackbar>
+
         <DatePickerV2
           field="date"
           label="Data da Anamnese:"
@@ -360,9 +391,10 @@ const EditAnamnesis: React.FC<Props> = ({ customerId, anamnesisId, route, naviga
         />
 
         {selectedAnamnesisTypes?.length > 0 &&
-          selectedAnamnesisTypes.map((anamnesisType) => {
+          selectedAnamnesisTypes.map((anamnesisType, index) => {
             return (
               <RenderAnamnesisType
+                key={`${index}-${anamnesisType.anamnesisTypeId}`}
                 selectedAnamnesis={anamnesisType}
                 inputsSelectedAnamnesis={inputs}
                 setInputsSelectedAnamnesis={setInputs}

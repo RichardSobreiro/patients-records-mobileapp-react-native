@@ -6,7 +6,8 @@ export class GetQuestionItem {
     public questionType: string,
     public questionPhrase: string,
     public questionAnswersOptions: string[] | undefined,
-    public questionValue: string | undefined
+    public questionValue: string | undefined,
+    public sectionId?: string
   ) {}
 }
 
@@ -25,6 +26,10 @@ export class GetAnamnesisByIdTypeFileResponse {
   ) {}
 }
 
+export class CreateSectionItem {
+  constructor(public sectionId: string, public sectionTitle: string) {}
+}
+
 export class GetAnamnesisTypeContentResponse {
   constructor(
     public anamnesisTypeId: string,
@@ -32,7 +37,8 @@ export class GetAnamnesisTypeContentResponse {
     public isDefault: boolean,
     public content?: string | undefined,
     public files?: GetAnamnesisByIdTypeFileResponse[] | null,
-    public questions?: GetQuestionItem[] | undefined
+    public questions?: GetQuestionItem[] | undefined,
+    public sections?: CreateSectionItem[] | undefined
   ) {}
 }
 
@@ -42,12 +48,6 @@ export class GetAnamnesisByIdResponse {
     public customerId: string,
     public creationDate: Date,
     public date: Date,
-    public anamnesisTypesContent: GetAnamnesisTypeContentResponse[],
-    public freeTypeText?: string,
-    public gender?: string,
-    public ethnicity?: string,
-    public maritalStatus?: string,
-    public employmentStatus?: string,
-    public comments?: string
+    public anamnesisTypesContent: GetAnamnesisTypeContentResponse[]
   ) {}
 }

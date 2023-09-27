@@ -5,14 +5,20 @@ export class CreateQuestionItem {
     public questionType: string,
     public questionPhrase: string,
     public questionAnswersOptions: string[] | undefined,
-    public questionValue: string | undefined
+    public questionValue: string | undefined,
+    public sectionId?: string
   ) {}
+}
+
+export class CreateSectionItem {
+  constructor(public sectionId: string, public sectionTitle: string) {}
 }
 
 export class CreateAnamnesisTypeRequest {
   constructor(
     public anamnesisTypeDescription: string,
     public template: string | null,
-    public questions: CreateQuestionItem[] | undefined
+    public questions: CreateQuestionItem[] | undefined,
+    public sections: CreateSectionItem[] | undefined
   ) {}
 }

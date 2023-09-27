@@ -6,7 +6,7 @@ type Props = {
 };
 
 const EditAnamnesisScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { customerId, anamnesisId } = route.params;
+  const { customerId, anamnesisId, showCreatedSnackbar } = route.params;
 
   return (
     <EditAnamnesis
@@ -14,6 +14,7 @@ const EditAnamnesisScreen: React.FC<Props> = ({ route, navigation }) => {
       anamnesisId={anamnesisId}
       route={route}
       navigation={navigation}
+      showCreatedSnackbar={showCreatedSnackbar}
     />
   );
 };

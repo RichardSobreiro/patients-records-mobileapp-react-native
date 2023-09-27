@@ -6,10 +6,15 @@ type Props = {
 };
 
 const EditAnamnesisTypeScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { anamnesisTypeId } = route.params;
+  const { anamnesisTypeId, showCreatedSnackbar } = route.params;
 
   return (
-    <EditAnamnesisType anamnesisTypeId={anamnesisTypeId} route={route} navigation={navigation} />
+    <EditAnamnesisType
+      anamnesisTypeId={anamnesisTypeId}
+      showCreatedSnackbar={showCreatedSnackbar}
+      route={route}
+      navigation={navigation}
+    />
   );
 };
 

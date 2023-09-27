@@ -1,10 +1,9 @@
 import DatePickerV2 from '../../../../../components/ui/custom-form/DatePickerV2';
 import { Colors } from '../../../../../constants/styles';
 import { createAnamnesis } from '../../../../../http/AnamnesisApi';
-import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
+//import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
 import {
-  GetAnamnesisTypeResponse,
-  GetAnamnesisTypesResponse
+  GetAnamnesisTypeResponse //GetAnamnesisTypesResponse
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import {
   CreateAnamnesisRequest,
@@ -21,7 +20,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Snackbar } from 'react-native-paper';
 
 type Props = {
   customerId: string;
@@ -32,7 +30,6 @@ type Props = {
 const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
-  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
   const [isVisibleAnamnesisTypesModal, setIsVisibleAnamnesisTypesModal] = useState<boolean>(false);
   const [selectedAnamnesisTypes, setSelectedAnamnesisTypes] = useState<GetAnamnesisTypeResponse[]>(
@@ -100,7 +97,8 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
             selected.isDefault,
             selected.content,
             null,
-            selected.questions
+            selected.questions,
+            selected.sections
           )
       )
     );
@@ -127,11 +125,12 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
         anamnesisTypeContents: false
       });
       setFiles([]);
-      setVisibleSnackbar(true);
-      setTimeout(() => {
-        setVisibleSnackbar(false);
-      }, 5000);
-      navigation.replace('EditAnamnesis', { customerId, anamnesisId: response.body.anamneseId });
+
+      navigation.replace('EditAnamnesis', {
+        customerId,
+        anamnesisId: response.body.anamneseId,
+        showCreatedSnackbar: true
+      });
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
@@ -150,33 +149,6 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
   ]);
 
   useEffect(() => {
-    const getAnamnesisTypesAsync = async () => {
-      if (authCtx.token?.access_token) {
-        try {
-          const response = await getAnamnesisTypesList(authCtx.token?.access_token!);
-          if (response.ok) {
-            const apiResponseBody = response.body as GetAnamnesisTypesResponse;
-            // const defaultSelectedAnamnesisTypes = apiResponseBody.anamnesisTypes?.filter(
-            //   (at) =>
-            //     at.anamnesisTypeDescription === 'Observações' ||
-            //     at.anamnesisTypeDescription === 'Arquivo'
-            // );
-            // setSelectedAnamnesisTypes(defaultSelectedAnamnesisTypes!);
-          }
-        } catch (error: any) {
-          console.log(error);
-          notificationCtx.showNotification({
-            title: 'Ops...',
-            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
-          });
-        } finally {
-        }
-      }
-    };
-    getAnamnesisTypesAsync();
-  }, [authCtx.token?.access_token, notificationCtx]);
-
-  useEffect(() => {
     setTouched((curTouched) => {
       curTouched.anamnesisTypeContents = true;
       return curTouched;
@@ -189,7 +161,10 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
               selected.anamnesisTypeId,
               selected.anamnesisTypeDescription,
               selected.isDefault,
-              selected.template
+              selected.template,
+              null,
+              selected.questions,
+              selected.sections
             )
         ),
         isValid: true
@@ -275,17 +250,6 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
         extraScrollHeight={20}
         extraHeight={20}
       >
-        <Snackbar
-          visible={visibleSnackbar}
-          onDismiss={() => {}}
-          wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
-          style={{
-            backgroundColor: Colors.secondary500
-          }}
-        >
-          Anamnese criada com sucesso!
-        </Snackbar>
-
         <DatePickerV2
           field="date"
           label="Data da Anamnese:"
@@ -306,9 +270,10 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
         />
 
         {selectedAnamnesisTypes?.length > 0 &&
-          selectedAnamnesisTypes.map((anamnesisType) => {
+          selectedAnamnesisTypes.map((anamnesisType, index) => {
             return (
               <RenderAnamnesisType
+                key={`${index}-${anamnesisType.anamnesisTypeId}`}
                 selectedAnamnesis={anamnesisType}
                 inputsSelectedAnamnesis={inputs}
                 setInputsSelectedAnamnesis={setInputs}

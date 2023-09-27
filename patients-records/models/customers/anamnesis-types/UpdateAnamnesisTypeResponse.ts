@@ -5,8 +5,13 @@ export class UpdateQuestionItem {
     public questionType: string,
     public questionPhrase: string,
     public questionAnswersOptions: string[] | undefined,
-    public questionValue: string | undefined
+    public questionValue: string | undefined,
+    public sectionId?: string
   ) {}
+}
+
+export class UpdateSectionItem {
+  constructor(public sectionId: string, public sectionTitle: string) {}
 }
 
 export class UpdateAnamnesisTypeResponse {
@@ -15,6 +20,7 @@ export class UpdateAnamnesisTypeResponse {
     public isDefault: boolean,
     public anamnesisTypeDescription: string,
     public template: string | null,
-    public questions: UpdateQuestionItem[] | undefined
+    public questions: UpdateQuestionItem[] | undefined,
+    public sections: UpdateSectionItem[] | undefined
   ) {}
 }

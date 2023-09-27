@@ -131,7 +131,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   const renderItem = ({ item }) => {
     return (
       <AnamnesisListItem
-        key={item.anamneseId}
         anamnesis={item}
         navigateToUpdateAnamnesis={() => {
           navigation.push('EditAnamnesis', {

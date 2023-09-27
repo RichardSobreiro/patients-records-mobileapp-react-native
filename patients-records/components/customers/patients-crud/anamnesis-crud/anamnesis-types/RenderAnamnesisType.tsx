@@ -1,3 +1,4 @@
+import AccordionItem from '../../../../../components/ui/AccordionItem';
 import RichTextInput from '../../../../../components/ui/custom-form/RichTextInput';
 import { GetAnamnesisTypeResponse } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';
 import Input from '../../../../ui/custom-form/Input';
@@ -26,7 +27,7 @@ const RenderAnamnesisType: React.FC<Props> = ({
     const errorsArray: any[] = [];
     selectedAnamnesis.questions?.forEach((question) => {
       inputsArray[question.questionItemId] = {
-        value: question.questionValue,
+        value: question.questionValue ? question.questionValue : '',
         isValid: true
       };
       toucherArray[question.questionItemId] = false;
@@ -85,55 +86,125 @@ const RenderAnamnesisType: React.FC<Props> = ({
 
   return (
     <>
+      {/* Questions without section */}
       {inputs &&
         selectedAnamnesis?.questions &&
         selectedAnamnesis?.questions.length > 0 &&
         selectedAnamnesis.questions.map((question, index) => {
-          if (question.questionType === 'simple') {
-            return (
-              <Input
-                key={`${question.questionItemId}-${index}`}
-                field={question.questionItemId}
-                label={question.questionPhrase}
-                keyboardType="default"
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
-                onBlurHandler={handleBlur}
-              />
-            );
-          } else if (question.questionType === 'checkbox') {
-            return (
-              <InputCheckboxGroup
-                key={`${question.questionType}-${question.questionItemId}-${index}`}
-                field={question.questionItemId}
-                label={question.questionPhrase}
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
-                data={question.questionAnswersOptions!.map((opt) => {
-                  return {
-                    label: opt,
-                    value: opt
-                  };
-                })}
-              />
-            );
-          } else if (question.questionType === 'textarea') {
-            return (
-              <RichTextInput
-                key={`${question.questionType}-${question.questionItemId}-${index}`}
-                field={question.questionItemId}
-                label={question.questionPhrase}
-                values={inputs}
-                touched={touched}
-                errors={errors}
-                onChangeHandler={handleChange}
-              />
-            );
+          if (!question.sectionId) {
+            if (question.questionType === 'simple') {
+              return (
+                <Input
+                  key={`${question.questionItemId}-${index}`}
+                  field={question.questionItemId}
+                  label={question.questionPhrase}
+                  keyboardType="default"
+                  values={inputs}
+                  touched={touched}
+                  errors={errors}
+                  onChangeHandler={handleChange}
+                  onBlurHandler={handleBlur}
+                />
+              );
+            } else if (question.questionType === 'checkbox') {
+              return (
+                <InputCheckboxGroup
+                  key={`${question.questionType}-${question.questionItemId}-${index}`}
+                  field={question.questionItemId}
+                  label={question.questionPhrase}
+                  values={inputs}
+                  touched={touched}
+                  errors={errors}
+                  onChangeHandler={handleChange}
+                  data={question.questionAnswersOptions!.map((opt) => {
+                    return {
+                      label: opt,
+                      value: opt
+                    };
+                  })}
+                />
+              );
+            } else if (question.questionType === 'textarea') {
+              return (
+                <RichTextInput
+                  key={`${question.questionType}-${question.questionItemId}-${index}`}
+                  field={question.questionItemId}
+                  label={question.questionPhrase}
+                  values={inputs}
+                  touched={touched}
+                  errors={errors}
+                  onChangeHandler={handleChange}
+                />
+              );
+            }
           }
+        })}
+
+      {/* Questions with section */}
+      {inputs &&
+        selectedAnamnesis?.sections &&
+        selectedAnamnesis?.sections.length > 0 &&
+        selectedAnamnesis.sections.map((section, index) => {
+          const questionsFromSection = selectedAnamnesis?.questions?.filter(
+            (q) => q.sectionId === section.sectionId
+          );
+          return (
+            <AccordionItem
+              key={`${index}-${section.sectionId}`}
+              title={section.sectionTitle}
+              initiallyExpanded={true}
+            >
+              {questionsFromSection &&
+                questionsFromSection.length > 0 &&
+                questionsFromSection.map((question, index) => {
+                  if (question.questionType === 'simple') {
+                    return (
+                      <Input
+                        key={`${question.questionItemId}-${index}`}
+                        field={question.questionItemId}
+                        label={question.questionPhrase}
+                        keyboardType="default"
+                        values={inputs}
+                        touched={touched}
+                        errors={errors}
+                        onChangeHandler={handleChange}
+                        onBlurHandler={handleBlur}
+                      />
+                    );
+                  } else if (question.questionType === 'checkbox') {
+                    return (
+                      <InputCheckboxGroup
+                        key={`${question.questionType}-${question.questionItemId}-${index}`}
+                        field={question.questionItemId}
+                        label={question.questionPhrase}
+                        values={inputs}
+                        touched={touched}
+                        errors={errors}
+                        onChangeHandler={handleChange}
+                        data={question.questionAnswersOptions!.map((opt) => {
+                          return {
+                            label: opt,
+                            value: opt
+                          };
+                        })}
+                      />
+                    );
+                  } else if (question.questionType === 'textarea') {
+                    return (
+                      <RichTextInput
+                        key={`${question.questionType}-${question.questionItemId}-${index}`}
+                        field={question.questionItemId}
+                        label={question.questionPhrase}
+                        values={inputs}
+                        touched={touched}
+                        errors={errors}
+                        onChangeHandler={handleChange}
+                      />
+                    );
+                  }
+                })}
+            </AccordionItem>
+          );
         })}
     </>
   );
