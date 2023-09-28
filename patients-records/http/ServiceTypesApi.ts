@@ -42,7 +42,7 @@ export const getServiceTypesById = async (
   accessToken: string,
   serviceTypeId?: string
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/services/types/${serviceTypeId}`;
+  const URL = `${process.env.API_URL}/customers/services/types/${serviceTypeId}`;
 
   try {
     const response = await fetch(URL, {

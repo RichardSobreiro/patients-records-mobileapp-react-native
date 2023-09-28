@@ -14,7 +14,7 @@ export const createAnamnesis = async (
   request: CreateAnamnesisRequest,
   files?: FileCustom[] | undefined
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${request.customerId}/anamnesis`;
+  const URL = `${process.env.API_URL}/customers/${request.customerId}/anamnesis`;
 
   const formData = new FormData();
 
@@ -59,7 +59,7 @@ export const getAnamnesisById = async (
   customerId: string,
   anamnesisId: string
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${customerId}/anamnesis/${anamnesisId}`;
+  const URL = `${process.env.API_URL}/customers/${customerId}/anamnesis/${anamnesisId}`;
 
   try {
     const response = await fetch(URL, {
@@ -87,7 +87,7 @@ export const updateAnamnesis = async (
   request: UpdateAnamnesisRequest,
   files?: FileCustom[] | undefined
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${request.customerId}/anamnesis/${request.anamneseId}`;
+  const URL = `${process.env.API_URL}/customers/${request.customerId}/anamnesis/${request.anamneseId}`;
 
   const formData = new FormData();
 
@@ -143,7 +143,7 @@ export const getAnamnesis = async (
   endDate?: Date,
   anamnesisTypeIds?: string[]
 ): Promise<ApiResponse> => {
-  let URL = `http://10.0.2.2:3006/customers/${customerId}/anamnesis?pageNumber=${pageNumber}&limit=${limit}&customerId=${customerId}`;
+  let URL = `${process.env.API_URL}/customers/${customerId}/anamnesis?pageNumber=${pageNumber}&limit=${limit}&customerId=${customerId}`;
 
   if (anamnesisTypeDescription && anamnesisTypeDescription !== '') {
     URL += `&anamnesisTypeDescription=${anamnesisTypeDescription}`;
