@@ -258,7 +258,13 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   const renderArticle = ({ item }) => {
     return (
-      <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
+      <ServicesListItem
+        key={item.serviceId}
+        service={item}
+        navigateToUpdateProceeding={(customerId, serviceId) => {
+          navigation.push('EditService', { customerId, serviceId });
+        }}
+      />
     );
   };
 

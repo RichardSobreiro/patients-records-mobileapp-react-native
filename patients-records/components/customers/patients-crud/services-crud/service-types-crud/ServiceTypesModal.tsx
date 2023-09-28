@@ -10,6 +10,7 @@ import IconButton from '../../../../ui/IconButton';
 import StackSheetCustom from '../../../../ui/custom-form/StackSheetCustom';
 import { ErrorType } from '../ServicesList';
 import { RootStackServicesCrudParamList } from '/App';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useContext, useEffect, useState } from 'react';
@@ -72,31 +73,48 @@ const ServiceTypesModal: React.FC<Props> = ({
     const serviceType = item as GetServiceTypeResponse;
     return (
       <View key={serviceType.serviceTypeId} style={styles.listItemContent}>
-        <Switch
-          value={!!selectedServiceTypes.find((s) => s.serviceTypeId === serviceType.serviceTypeId)}
-          onValueChange={() => {
-            const existingItem = selectedServiceTypes.filter(
-              (s) => s.serviceTypeId === serviceType.serviceTypeId
-            );
-            if (existingItem && existingItem.length === 1) {
-              const newSelectedServiceTypes = selectedServiceTypes.filter(
-                (s) => s.serviceTypeId !== serviceType.serviceTypeId
+        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center' }}>
+          <Switch
+            value={
+              !!selectedServiceTypes.find((s) => s.serviceTypeId === serviceType.serviceTypeId)
+            }
+            onValueChange={() => {
+              const existingItem = selectedServiceTypes.filter(
+                (s) => s.serviceTypeId === serviceType.serviceTypeId
               );
-              setSelectedServiceTypes(newSelectedServiceTypes);
-              onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
-            } else {
-              if (selectedServiceTypes && selectedServiceTypes.length > 0) {
-                const newSelectedServiceTypes = [...selectedServiceTypes, serviceType];
+              if (existingItem && existingItem.length === 1) {
+                const newSelectedServiceTypes = selectedServiceTypes.filter(
+                  (s) => s.serviceTypeId !== serviceType.serviceTypeId
+                );
                 setSelectedServiceTypes(newSelectedServiceTypes);
                 onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
               } else {
-                setSelectedServiceTypes([serviceType]);
-                onChangeHandler?.('selectedServiceTypes', [serviceType]);
+                if (selectedServiceTypes && selectedServiceTypes.length > 0) {
+                  const newSelectedServiceTypes = [...selectedServiceTypes, serviceType];
+                  setSelectedServiceTypes(newSelectedServiceTypes);
+                  onChangeHandler?.('selectedServiceTypes', newSelectedServiceTypes);
+                } else {
+                  setSelectedServiceTypes([serviceType]);
+                  onChangeHandler?.('selectedServiceTypes', [serviceType]);
+                }
               }
-            }
-          }}
-        />
-        <Text>{serviceType.serviceTypeDescription}</Text>
+            }}
+          />
+          <Text>{serviceType.serviceTypeDescription}</Text>
+        </View>
+        {!serviceType.isDefault && (
+          <AntDesign
+            onPress={() => {
+              setVisible(false);
+              navigation.push('EditServiceType', {
+                serviceTypeId: serviceType.serviceTypeId
+              });
+            }}
+            name="edit"
+            size={32}
+            color={Colors.primary500}
+          />
+        )}
       </View>
     );
   };
@@ -271,8 +289,8 @@ const styles = StyleSheet.create({
   },
   listItemContent: {
     flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   seletedChipsList: {
     flexDirection: 'row',

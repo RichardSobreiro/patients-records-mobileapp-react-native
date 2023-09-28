@@ -364,8 +364,6 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
         enableOnAndroid={true}
         style={styles.container}
         overScrollMode="never"
-        // extraScrollHeight={200}
-        // extraHeight={200}
       >
         <Step1ServiceInfo
           inputs={inputs}

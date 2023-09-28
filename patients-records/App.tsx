@@ -10,6 +10,7 @@ import EditCustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
 import CreateServiceScreen from './screens/ServicesScreens/CreateServiceScreen';
 import CreateServiceTypeScreen from './screens/ServicesScreens/CreateServiceTypeScreen';
+import EditServiceScreen from './screens/ServicesScreens/EditServiceScreen';
 import EditServiceTypeScreen from './screens/ServicesScreens/EditServiceTypeScreen';
 import ServicesListScreen from './screens/ServicesScreens/ServicesListScreen';
 import SignupScreen from './screens/SignupScreen';
@@ -138,6 +139,34 @@ const ServicesCrudStackComp = ({ route, navigation }) => {
         initialParams={{ serviceTypeId }}
         options={{
           headerTitle: '',
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+      <StackServicesCrud.Screen
+        name="EditService"
+        component={EditServiceScreen}
+        initialParams={{ customerId, serviceId }}
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity>
+              <AntDesign
+                style={{ paddingLeft: 0, paddingRight: 30 }}
+                name="arrowleft"
+                size={24}
+                color={Colors.primary500}
+                onPress={() => {
+                  navigation.setOptions({
+                    headerShown: false
+                  });
+                  navigation.replace('ServicesList', { customerId });
+                }}
+              />
+            </TouchableOpacity>
+          ),
           headerStyle: {
             backgroundColor: 'transparent'
           },

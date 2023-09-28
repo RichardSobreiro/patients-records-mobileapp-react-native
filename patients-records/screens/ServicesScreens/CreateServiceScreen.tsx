@@ -5,7 +5,7 @@ type Props = {
   navigation: any;
 };
 
-const CreateCustomerScreen: React.FC<Props> = ({ route, navigation }) => {
+const CreateServiceScreen: React.FC<Props> = ({ route, navigation }) => {
   const { customerId } = route.params;
 
   return (
@@ -15,4 +15,4 @@ const CreateCustomerScreen: React.FC<Props> = ({ route, navigation }) => {
   );
 };
 
-export default CreateCustomerScreen;
+export default CreateServiceScreen;

@@ -3,8 +3,6 @@ import { GetServiceTypeResponse } from '../../../../../models/customers/service-
 import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
-import { StyleSheet } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
   inputs: Inputs;
@@ -25,29 +23,16 @@ const Step4AfterService: React.FC<Props> = ({
   blurHandler
 }) => {
   return (
-    <KeyboardAwareScrollView
-      style={styles.content}
-      showsVerticalScrollIndicator={true}
-      keyboardShouldPersistTaps="handled"
-    >
-      <RichTextInput
-        field="afterComments"
-        label="Observações após o atendimento:"
-        values={inputs}
-        touched={touched}
-        errors={errors}
-        onChangeHandler={changeHandler}
-        onBlurHandler={blurHandler}
-      />
-    </KeyboardAwareScrollView>
+    <RichTextInput
+      field="afterComments"
+      label="Observações após o atendimento:"
+      values={inputs}
+      touched={touched}
+      errors={errors}
+      onChangeHandler={changeHandler}
+      onBlurHandler={blurHandler}
+    />
   );
 };
 
 export default Step4AfterService;
-
-const styles = StyleSheet.create({
-  content: {
-    backgroundColor: 'transparent',
-    marginBottom: 20
-  }
-});
