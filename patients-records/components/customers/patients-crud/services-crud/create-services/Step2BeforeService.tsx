@@ -3,7 +3,6 @@ import { GetServiceTypeResponse } from '../../../../../models/customers/service-
 import FileCustom from '../../../../../util/types/FileCustom';
 import RichTextInput from '../../../../ui/custom-form/RichTextInput';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
-import { StyleSheet, View } from 'react-native';
 
 type Props = {
   inputs: Inputs;
@@ -24,29 +23,16 @@ const Step2BeforeService: React.FC<Props> = ({
   blurHandler
 }) => {
   return (
-    <View style={styles.content}>
-      <>
-        <RichTextInput
-          field="beforeComments"
-          label="Observações antes do atendimento:"
-          values={inputs}
-          touched={touched}
-          errors={errors}
-          onChangeHandler={changeHandler}
-          onBlurHandler={blurHandler}
-        />
-      </>
-    </View>
+    <RichTextInput
+      field="beforeComments"
+      label="Observações:"
+      values={inputs}
+      touched={touched}
+      errors={errors}
+      onChangeHandler={changeHandler}
+      onBlurHandler={blurHandler}
+    />
   );
 };
 
 export default Step2BeforeService;
-
-const styles = StyleSheet.create({
-  content: {
-    backgroundColor: 'transparent',
-    marginBottom: 15,
-    justifyContent: 'center',
-    alignItems: 'flex-start'
-  }
-});

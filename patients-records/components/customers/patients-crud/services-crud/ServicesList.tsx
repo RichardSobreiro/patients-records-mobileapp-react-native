@@ -9,9 +9,9 @@ import { DateParser } from '../../../../util/dateParser';
 import FileCustom from '../../../../util/types/FileCustom';
 import DateRangePicker from '../../../ui/custom-form/DateRangePicker';
 import ServicesListItem from './ServicesListItem';
-import CreateService from './create-services/CreateService';
-import EditService from './edit-services/EditService';
-import { useIsFocused } from '@react-navigation/native';
+import { RootStackServicesCrudParamList } from '/App';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
@@ -80,6 +80,7 @@ type Props = {
 const ServicesList: React.FC<Props> = ({ customerId }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackServicesCrudParamList>>();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,11 +89,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
   const [hasMoreData, setHasMoreData] = useState(true);
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
-
-  const [isVisibleCreateService, setVisibleCreateService] = useState<boolean>(false);
-  const [isVisibleEditService, setVisibleEditService] = useState<boolean>(false);
-  const [editServiceId, setEditServiceId] = useState<string | undefined>(undefined);
-  const [showCreatedServiceSnackbar, setShowCreatedServiceSnackbar] = useState<boolean>(false);
 
   const [searchServiceTypeDescription, setSearchServiceTypeDescription] = useState<string>('');
   const [searchStartDate, setSearchStartDate] = useState<Date | undefined>(undefined);
@@ -117,11 +113,52 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         );
 
         if (response.ok) {
-          if (servicesList.length > 0 && nextPage > 1) {
+          if (response.body.previous && response.body.previous.pageNumber >= 0) {
             setServicesList((prevValue) => [...prevValue, ...response.body.servicesList]);
           } else {
             setServicesList([...response.body.servicesList]);
           }
+        } else {
+          const notification = {
+            status: 'error',
+            title: 'Opsss...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          };
+          notificationCtx.showNotification(notification);
+        }
+        if (response.body.next) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
+
+        setIsLoading(false);
+      }
+    },
+    [
+      authCtx.token?.access_token,
+      customerId,
+      notificationCtx,
+      searchEndDate,
+      searchServiceTypeDescription,
+      searchStartDate
+    ]
+  );
+
+  useEffect(() => {
+    const getServicesIsFocusedAsync = async (nextPage: number) => {
+      if (authCtx.token?.access_token) {
+        setIsLoading(true);
+
+        const response = await getServices(
+          authCtx.token.access_token,
+          nextPage as unknown as string,
+          PAGE_SIZE as unknown as string,
+          customerId as string
+        );
+
+        if (response.ok) {
+          setServicesList([...response.body.servicesList]);
         } else {
           const notification = {
             status: 'error',
@@ -139,35 +176,56 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
         setIsLoading(false);
       }
-    },
-    [
-      authCtx.token?.access_token,
-      customerId,
-      notificationCtx,
-      searchEndDate,
-      searchServiceTypeDescription,
-      searchStartDate,
-      servicesList.length
-    ]
-  );
+    };
 
-  useEffect(() => {
     if (isFocused) {
-      getServiceListAsync(1);
+      setPage(1);
+      getServicesIsFocusedAsync(1);
     }
-  }, [getServiceListAsync, isFocused]);
+  }, [authCtx.token?.access_token, customerId, isFocused, notificationCtx]);
 
   useEffect(() => {
-    if (editServiceId && editServiceId !== '') {
-      setVisibleEditService(true);
-    }
-  }, [editServiceId]);
+    const getServicesFetchMoreDataAsync = async (nextPage: number) => {
+      if (authCtx.token?.access_token) {
+        setIsLoading(true);
 
-  useEffect(() => {
+        const response = await getServices(
+          authCtx.token.access_token,
+          nextPage as unknown as string,
+          PAGE_SIZE as unknown as string,
+          customerId as string,
+          searchServiceTypeDescription,
+          searchStartDate,
+          searchEndDate
+        );
+
+        if (response.ok) {
+          if (response.body.previous && response.body.previous.pageNumber >= 1) {
+            setServicesList((prevValue) => [...prevValue, ...response.body.servicesList]);
+          } else {
+            setServicesList([...response.body.servicesList]);
+          }
+        } else {
+          const notification = {
+            status: 'error',
+            title: 'Opsss...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          };
+          notificationCtx.showNotification(notification);
+        }
+        if (response.body.next) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
+
+        setIsLoading(false);
+      }
+    };
     const refreshData = () => {
       setPage((prevState) => {
         const nextPage = 1;
-        getServiceListAsync(nextPage);
+        getServicesFetchMoreDataAsync(nextPage);
         return nextPage;
       });
     };
@@ -179,7 +237,14 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
       clearTimeout(timer);
       unsubscribe();
     };
-  }, [searchServiceTypeDescription, searchStartDate, searchEndDate]);
+  }, [
+    searchServiceTypeDescription,
+    searchStartDate,
+    searchEndDate,
+    authCtx.token?.access_token,
+    customerId,
+    notificationCtx
+  ]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
@@ -193,16 +258,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   const renderArticle = ({ item }) => {
     return (
-      <ServicesListItem
-        key={item.serviceId}
-        service={item}
-        navigateToUpdateProceeding={() => {
-          setVisibleEditService((curState) => {
-            setEditServiceId(item.serviceId);
-            return true;
-          });
-        }}
-      />
+      <ServicesListItem key={item.serviceId} service={item} navigateToUpdateProceeding={() => {}} />
     );
   };
 
@@ -222,14 +278,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   return (
     <>
-      <CreateService
-        customerId={customerId}
-        visible={isVisibleCreateService}
-        setVisible={setVisibleCreateService}
-        setNewServiceId={setEditServiceId}
-        setShowCreatedServiceSnackbar={setShowCreatedServiceSnackbar}
-      />
-      <EditService
+      {/* <EditService
         customerId={customerId}
         visible={isVisibleEditService}
         setVisible={setVisibleEditService}
@@ -237,7 +286,7 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
         setServiceId={setEditServiceId}
         showCreatedServiceSnackbar={showCreatedServiceSnackbar}
         updateList={getServiceListAsync}
-      />
+      /> */}
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}
@@ -248,7 +297,11 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
             {
               icon: 'plus',
               label: 'Incluir Atendimento',
-              onPress: () => setVisibleCreateService(true),
+              onPress: () => {
+                navigation.push('CreateService', {
+                  customerId
+                });
+              },
               labelTextColor: 'white'
             }
           ]}

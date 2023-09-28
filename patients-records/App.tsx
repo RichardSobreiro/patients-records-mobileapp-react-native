@@ -8,7 +8,10 @@ import EditAnamnesisTypeScreen from './screens/AnamnesisScreens/EditAnamnesisTyp
 import CreateCustomerScreen from './screens/CreateCustomerScreen';
 import EditCustomerScreen from './screens/EditCustomerScreen';
 import LoginScreen from './screens/LoginScreen';
-import ServicesListScreen from './screens/ServicesListScreen';
+import CreateServiceScreen from './screens/ServicesScreens/CreateServiceScreen';
+import CreateServiceTypeScreen from './screens/ServicesScreens/CreateServiceTypeScreen';
+import EditServiceTypeScreen from './screens/ServicesScreens/EditServiceTypeScreen';
+import ServicesListScreen from './screens/ServicesScreens/ServicesListScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
@@ -21,7 +24,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
-import { GetProceedingResponse } from 'models/proceedings/GetProceedingResponse';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -39,14 +41,6 @@ LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']
 
 WebBrowser.maybeCompleteAuthSession();
 
-export type EditPatientStackParamList = {
-  PatientInfo: { customerId: string };
-  ServicesList: { customerId: string };
-  AnamnesisCrud: { customerId: string };
-  CreateProceeding: { patient: GetCustomer };
-  EditProceeding: { patient: GetCustomer; proceeding: GetProceedingResponse };
-};
-
 export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
@@ -55,12 +49,103 @@ export type RootStackParamList = {
   EditPatient: { customerId: string; customerName: string; shouldUpdatePatientsList?: boolean };
 };
 
+export type EditPatientStackParamList = {
+  PatientInfo: { customerId: string };
+  ServicesCrud: { customerId: string };
+  AnamnesisCrud: { customerId: string };
+};
+
+export type RootStackServicesCrudParamList = {
+  ServicesList: { customerId: string; updateList?: boolean };
+  CreateService: { customerId: string };
+  EditService: { customerId: string; serviceId: string; showCreatedSnackbar?: boolean };
+  EditServiceType: { serviceTypeId: string; showCreatedSnackbar?: boolean };
+  CreateServiceType;
+};
+
 export type RootStackAnamnesisCrudParamList = {
   AnamnesisList: { customerId: string; updateList?: boolean };
   EditAnamnesis: { customerId: string; anamnesisId: string; showCreatedSnackbar?: boolean };
   CreateAnamnesis: { customerId: string };
   EditAnamnesisType: { anamnesisTypeId: string; showCreatedSnackbar?: boolean };
   CreateAnamnesisType;
+};
+
+const StackServicesCrud = createNativeStackNavigator<RootStackServicesCrudParamList>();
+
+const ServicesCrudStackComp = ({ route, navigation }) => {
+  const { customerId, serviceId, serviceTypeId } = route.params;
+
+  return (
+    <StackServicesCrud.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: Colors.primary100 }
+      }}
+    >
+      <StackServicesCrud.Screen
+        name="ServicesList"
+        component={ServicesListScreen}
+        initialParams={{ customerId }}
+        options={{
+          headerShown: false
+        }}
+      />
+      <StackServicesCrud.Screen
+        name="CreateService"
+        component={CreateServiceScreen}
+        initialParams={{ customerId }}
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity>
+              <AntDesign
+                style={{ paddingLeft: 0, paddingRight: 30 }}
+                name="arrowleft"
+                size={24}
+                color={Colors.primary500}
+                onPress={() => {
+                  navigation.setOptions({
+                    headerShown: false
+                  });
+                  navigation.replace('ServicesList', { customerId });
+                }}
+              />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+      <StackServicesCrud.Screen
+        name="CreateServiceType"
+        component={CreateServiceTypeScreen}
+        options={{
+          headerTitle: '',
+          headerTitleStyle: {
+            color: Colors.primary500
+          },
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+      <StackServicesCrud.Screen
+        name="EditServiceType"
+        component={EditServiceTypeScreen}
+        initialParams={{ serviceTypeId }}
+        options={{
+          headerTitle: '',
+          headerStyle: {
+            backgroundColor: 'transparent'
+          },
+          headerShadowVisible: false
+        }}
+      />
+    </StackServicesCrud.Navigator>
+  );
 };
 
 const StackAnamnesisCrud = createNativeStackNavigator<RootStackAnamnesisCrudParamList>();
@@ -154,7 +239,7 @@ const AnamnesisCrudStackComp = ({ route, navigation }) => {
         name="CreateAnamnesisType"
         component={CreateAnamnesisTypeScreen}
         options={{
-          headerTitle: 'Nova Ficha de Anamnese',
+          headerTitle: '',
           headerTitleStyle: {
             color: Colors.primary500
           },
@@ -198,8 +283,8 @@ const EditPatientBottomTabs = ({ route, navigation }) => {
         }}
       />
       <Tab.Screen
-        name="ServicesList"
-        component={ServicesListScreen}
+        name="ServicesCrud"
+        component={ServicesCrudStackComp}
         initialParams={{ customerId }}
         options={{
           tabBarLabel: 'Atendimentos',

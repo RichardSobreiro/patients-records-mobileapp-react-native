@@ -178,7 +178,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
           sliderWidth={width * 1}
           itemWidth={width}
           renderItem={({ item, index }) => (
-            <View>
+            <View key={index}>
               <Image
                 key={index}
                 style={{ width: '100%', height: '90%' }}
@@ -241,7 +241,7 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
         contentContainerStyle={{
           paddingHorizontal: SPACING
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({ item, index }) => (
           <TouchableOpacity onPress={() => onTouchThumbnail(index)} activeOpacity={0.9}>
             <Image

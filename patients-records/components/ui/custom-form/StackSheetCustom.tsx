@@ -45,7 +45,7 @@ const StackSheetCustom: React.FC<Props> = ({
   return (
     <>
       {/* <Portal> */}
-      <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
+      <View style={[StyleSheet.absoluteFill, { flex: 1 }]} pointerEvents="box-none">
         <Modal
           animationType={'slide'}
           transparent={true}
@@ -54,6 +54,7 @@ const StackSheetCustom: React.FC<Props> = ({
           presentationStyle="overFullScreen"
           supportedOrientations={supportedOrientations}
           statusBarTranslucent={true}
+          style={{ flex: 1 }}
         >
           <>
             <TouchableWithoutFeedback onPress={hideModal}>

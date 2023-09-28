@@ -157,7 +157,7 @@ export const getServices = async (
   endDate?: Date,
   serviceTypeIds?: string[]
 ): Promise<ApiResponse> => {
-  let URL = `${process.env.API_URL}/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
+  let URL = `http://10.0.2.2:3006/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
 
   if (startDate && endDate) {
     URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;

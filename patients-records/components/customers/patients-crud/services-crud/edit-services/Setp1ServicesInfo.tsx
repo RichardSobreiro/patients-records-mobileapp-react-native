@@ -1,8 +1,8 @@
 /* eslint-disable import/order */
-import ServiceTypesModal from '../../../../ui/ServiceTypesModal';
 import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
 import TimerPicker from '../../../../ui/custom-form/TimerPicker';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
+import ServiceTypesModal from '../service-types-crud/ServiceTypesModal';
 import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';

@@ -77,13 +77,12 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
         );
 
         if (response.ok) {
-          if (anamnesisList.length > 0 && nextPage > 1) {
+          if (response.body.previous && response.body.previous.pageNumber >= 0) {
             setAnamnesisList((prevValue) => [...prevValue, ...response.body.anamnesis]);
           } else {
             setAnamnesisList([...response.body.anamnesis]);
           }
         } else {
-          console.log(`ANAMNESIS LIST - ERROR - PAGE: ${nextPage}`);
           const notification = {
             status: 'error',
             title: 'Opsss...',
@@ -102,7 +101,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
       }
     },
     [
-      anamnesisList.length,
       authCtx.token?.access_token,
       customerId,
       notificationCtx,
@@ -113,15 +111,113 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   );
 
   useEffect(() => {
+    const getAnamnesisListIsFocused = async (nextPage: number) => {
+      if (authCtx.token?.access_token) {
+        setIsLoading(true);
+
+        const response = await getAnamnesis(
+          authCtx.token.access_token,
+          nextPage as unknown as string,
+          PAGE_SIZE as unknown as string,
+          customerId as string
+        );
+
+        if (response.ok) {
+          setAnamnesisList([...response.body.anamnesis]);
+        } else {
+          const notification = {
+            status: 'error',
+            title: 'Opsss...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          };
+          notificationCtx.showNotification(notification);
+        }
+
+        if (response.body.next) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
+
+        setIsLoading(false);
+      }
+    };
+
     if (isFocused) {
-      getAnamnesisListAsync(1);
+      setPage(1);
+      getAnamnesisListIsFocused(1);
     }
-  }, [getAnamnesisListAsync, isFocused]);
+  }, [authCtx.token?.access_token, customerId, isFocused, notificationCtx]);
+
+  useEffect(() => {
+    const getAnamnesisFetchMoreDataAsync = async (nextPage: number) => {
+      if (authCtx.token?.access_token) {
+        setIsLoading(true);
+
+        const response = await getAnamnesis(
+          authCtx.token.access_token,
+          nextPage as unknown as string,
+          PAGE_SIZE as unknown as string,
+          customerId as string,
+          searchAnamnesisTypeDescription,
+          searchStartDate,
+          searchEndDate
+        );
+
+        if (response.ok) {
+          if (response.body.previous && response.body.previous.pageNumber >= 0) {
+            setAnamnesisList((prevValue) => [...prevValue, ...response.body.anamnesis]);
+          } else {
+            setAnamnesisList([...response.body.anamnesis]);
+          }
+        } else {
+          console.log(`ANAMNESIS LIST - ERROR - PAGE: ${nextPage}`);
+          const notification = {
+            status: 'error',
+            title: 'Opsss...',
+            message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+          };
+          notificationCtx.showNotification(notification);
+        }
+        console.log(`NEXT: ${JSON.stringify(response.body.next)}`);
+        if (response.body.next) {
+          setHasMoreData(true);
+        } else {
+          setHasMoreData(false);
+        }
+
+        setIsLoading(false);
+      }
+    };
+
+    const refreshData = () => {
+      setPage((prevState) => {
+        getAnamnesisFetchMoreDataAsync(1);
+        return 1;
+      });
+    };
+    const unsubscribe = refreshData;
+    const timer = setTimeout(() => {
+      refreshData();
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [
+    searchStartDate,
+    searchEndDate,
+    authCtx.token?.access_token,
+    customerId,
+    notificationCtx,
+    searchAnamnesisTypeDescription
+  ]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
       setPage((prevState) => {
         const nextPage = prevState + 1;
+        console.log(`FETCH MORE DATA - nextPage: ${nextPage}`);
         getAnamnesisListAsync(nextPage);
         return nextPage;
       });

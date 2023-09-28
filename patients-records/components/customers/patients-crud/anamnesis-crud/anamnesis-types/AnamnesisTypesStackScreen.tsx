@@ -252,18 +252,6 @@ const AnamnesisTypesStackScreen: React.FC<Props> = ({
           </View>
         </>
       )}
-
-      {/* {selectedAnamnesisTypes?.length > 0 &&
-        selectedAnamnesisTypes.map((anamnesisType) => {
-          return (
-            <AnamnesisGeneralForm
-              anamnesisTypeId={anamnesisType.anamnesisTypeId}
-              selectedAnamnesisTypes={selectedAnamnesisTypes}
-              setSelectedAnamnesisTypes={setSelectedAnamnesisTypes}
-              isFocused={isFocused}
-            />
-          );
-        })} */}
     </>
   );
 };

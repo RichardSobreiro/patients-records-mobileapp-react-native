@@ -5,9 +5,9 @@ import { GetCustomer } from '../../models/customers/GetCustomersResponse';
 import { GetServiceTypeResponse } from '../../models/customers/service-types/GetServiceTypesResponse';
 import { AuthContext } from '../../store/auth-context';
 import { DateParser } from '../../util/dateParser';
-import ServiceTypesModal from '../ui/ServiceTypesModal';
 import DateRangePicker from '../ui/custom-form/DateRangePicker';
 import CustomerListItem from './CustomerListItem';
+import ServiceTypesModal from './patients-crud/services-crud/service-types-crud/ServiceTypesModal';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {

@@ -1,7 +1,6 @@
 import DatePickerV2 from '../../../../../components/ui/custom-form/DatePickerV2';
 import { Colors } from '../../../../../constants/styles';
 import { createAnamnesis } from '../../../../../http/AnamnesisApi';
-//import { getAnamnesisTypesList } from '../../../../../http/AnamnesisTypesApi';
 import {
   GetAnamnesisTypeResponse //GetAnamnesisTypesResponse
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypesResponse';

@@ -25,7 +25,7 @@ const Step4AfterService: React.FC<Props> = ({
   return (
     <RichTextInput
       field="afterComments"
-      label="Observações após o atendimento:"
+      label="Observações:"
       values={inputs}
       touched={touched}
       errors={errors}

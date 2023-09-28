@@ -25,9 +25,13 @@ const ServicesListItem: React.FC<Props> = ({ service, navigateToUpdateProceeding
           </View>
 
           <View style={{ flex: 1 }}>
-            {service.serviceTypes.map((item) => {
+            {service.serviceTypes.map((item, index) => {
               return (
-                <Text style={styles.serviceText} numberOfLines={3}>
+                <Text
+                  key={`${index}-${item.serviceTypeId}`}
+                  style={styles.serviceText}
+                  numberOfLines={3}
+                >
                   {item.serviceTypeDescription}
                 </Text>
               );

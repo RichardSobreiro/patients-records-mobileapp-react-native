@@ -1,4 +1,5 @@
 /* eslint-disable import/order */
+import AccordionItem from '../../../../../components/ui/AccordionItem';
 import { Colors } from '../../../../../constants/styles';
 import { createService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
@@ -7,36 +8,25 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import { isValidDate } from '../../../../../util/date-helpers';
 import FileCustom from '../../../../../util/types/FileCustom';
-import StackSheetCustom from '../../../../ui/custom-form/StackSheetCustom';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 import Step1ServiceInfo from './Setp1ServicesInfo';
 import Step2BeforeService from './Step2BeforeService';
 import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
-import { useContext, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { useCallback, useContext, useLayoutEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Snackbar } from 'react-native-paper';
 
 type Props = {
   customerId: string;
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setNewServiceId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setShowCreatedServiceSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
+  route: any;
+  navigation: any;
 };
 
-const CreateService: React.FC<Props> = ({
-  customerId,
-  visible,
-  setVisible,
-  setNewServiceId,
-  setShowCreatedServiceSnackbar
-}) => {
+const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
-  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -93,52 +83,61 @@ const CreateService: React.FC<Props> = ({
     afterPhotos: null
   });
 
-  const validateDate = (inputs: Inputs): boolean => {
-    const newErrors = { ...errors };
-    if (isValidDate(inputs.date.value)) {
-      inputs.date.isValid = true;
-      newErrors.date = null;
-      setErrors(newErrors);
-      return true;
-    } else {
-      inputs.date.isValid = false;
-      newErrors.date = 'Data inválida';
-      setErrors(newErrors);
-      return false;
-    }
-  };
+  const validateDate = useCallback(
+    (inputs: Inputs): boolean => {
+      const newErrors = { ...errors };
+      if (isValidDate(inputs.date.value)) {
+        inputs.date.isValid = true;
+        newErrors.date = null;
+        setErrors(newErrors);
+        return true;
+      } else {
+        inputs.date.isValid = false;
+        newErrors.date = 'Data inválida';
+        setErrors(newErrors);
+        return false;
+      }
+    },
+    [errors]
+  );
 
-  const validateTime = (inputs: Inputs): boolean => {
-    const newErrors = { ...errors };
-    if (inputs.hour.value !== undefined && inputs.minutes.value !== undefined) {
-      inputs.hour.isValid = true;
-      inputs.minutes.isValid = true;
-      newErrors.time = null;
-      setErrors(newErrors);
-      return true;
-    } else {
-      inputs.hour.isValid = false;
-      inputs.minutes.isValid = false;
-      newErrors.time = 'Horário inválido';
-      setErrors(newErrors);
-      return false;
-    }
-  };
+  const validateTime = useCallback(
+    (inputs: Inputs): boolean => {
+      const newErrors = { ...errors };
+      if (inputs.hour.value !== undefined && inputs.minutes.value !== undefined) {
+        inputs.hour.isValid = true;
+        inputs.minutes.isValid = true;
+        newErrors.time = null;
+        setErrors(newErrors);
+        return true;
+      } else {
+        inputs.hour.isValid = false;
+        inputs.minutes.isValid = false;
+        newErrors.time = 'Horário inválido';
+        setErrors(newErrors);
+        return false;
+      }
+    },
+    [errors]
+  );
 
-  const validateServiceTypes = (inputs: Inputs): boolean => {
-    const newErrors = { ...errors };
-    if (inputs.selectedServiceTypes.value.length > 0) {
-      inputs.selectedServiceTypes.isValid = true;
-      newErrors.selectedServiceTypes = null;
-      setErrors(newErrors);
-      return true;
-    } else {
-      inputs.selectedServiceTypes.isValid = false;
-      newErrors.selectedServiceTypes = 'Tipo do atendimento deve ser selecionado';
-      setErrors(newErrors);
-      return false;
-    }
-  };
+  const validateServiceTypes = useCallback(
+    (inputs: Inputs): boolean => {
+      const newErrors = { ...errors };
+      if (inputs.selectedServiceTypes.value.length > 0) {
+        inputs.selectedServiceTypes.isValid = true;
+        newErrors.selectedServiceTypes = null;
+        setErrors(newErrors);
+        return true;
+      } else {
+        inputs.selectedServiceTypes.isValid = false;
+        newErrors.selectedServiceTypes = 'Tipo do atendimento deve ser selecionado';
+        setErrors(newErrors);
+        return false;
+      }
+    },
+    [errors]
+  );
 
   const handleChange = (
     field: string,
@@ -177,7 +176,7 @@ const CreateService: React.FC<Props> = ({
     });
   };
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newInputs = { ...inputs };
     newInputs.date.isValid = validateDate(inputs);
     newInputs.minutes.isValid = validateTime(inputs);
@@ -190,9 +189,9 @@ const CreateService: React.FC<Props> = ({
       newInputs.minutes &&
       newInputs.selectedServiceTypes.isValid
     );
-  };
+  }, [inputs, validateDate, validateServiceTypes, validateTime]);
 
-  const submitHandler = async () => {
+  const submitHandler = useCallback(async () => {
     if (!validateForm() || !authCtx.token?.access_token) return;
 
     setIsLoading(true);
@@ -217,8 +216,6 @@ const CreateService: React.FC<Props> = ({
     const response = await createService(authCtx.token?.access_token, customerId, request);
 
     if (response.ok) {
-      setNewServiceId(response.body.serviceId);
-      setShowCreatedServiceSnackbar(true);
       setInputs({
         date: {
           value: new Date(),
@@ -271,71 +268,114 @@ const CreateService: React.FC<Props> = ({
         afterComments: false,
         afterPhotos: false
       });
-      setVisibleSnackbar(true);
-      setTimeout(() => {
-        setVisibleSnackbar(false);
-      }, 5000);
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
       });
     }
-    setVisible(false);
     setIsLoading(false);
-  };
+  }, [
+    authCtx.token?.access_token,
+    customerId,
+    inputs.afterComments.value,
+    inputs.afterPhotos.value,
+    inputs.beforeComments.value,
+    inputs.beforePhotos.value,
+    inputs.date.value,
+    inputs.hour.value,
+    inputs.minutes.value,
+    inputs.selectedServiceTypes.value,
+    notificationCtx,
+    validateForm
+  ]);
+
+  useLayoutEffect(() => {
+    if (!navigation || !route) return;
+
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            submitHandler();
+          }}
+          style={{
+            borderColor: Colors.secondary500,
+            borderWidth: 1,
+            borderRadius: 20,
+            paddingVertical: 5,
+            paddingHorizontal: 10
+          }}
+        >
+          <Text style={{ color: Colors.secondary500 }}>Salvar</Text>
+        </TouchableOpacity>
+      )
+    });
+
+    const patientsBottomTabNavigator = navigation.getParent('PatientsBottomTab');
+    if (patientsBottomTabNavigator) {
+      if (route.name === 'CreateService') {
+        patientsBottomTabNavigator.setOptions({
+          tabBarStyle: { display: 'none' }
+        });
+      }
+    }
+
+    const tabNavigator = navigation.getParent('RootStack');
+    if (tabNavigator) {
+      if (route.name === 'CreateService') {
+        tabNavigator.setOptions({
+          headerShown: false
+        });
+      }
+    }
+
+    return () => {
+      tabNavigator.setOptions({
+        headerShown: true
+      });
+      patientsBottomTabNavigator.setOptions({
+        tabBarStyle: { display: 'absolute' }
+      });
+    };
+  }, [navigation, route, submitHandler]);
 
   return (
     <>
-      <Snackbar
-        visible={visibleSnackbar}
-        onDismiss={() => {}}
-        wrapperStyle={{ position: 'absolute', top: 0, zIndex: 2000 }}
-        style={{
-          backgroundColor: Colors.secondary500
-        }}
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
+        />
+      )}
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        style={styles.container}
+        overScrollMode="never"
+        // extraScrollHeight={200}
+        // extraHeight={200}
       >
-        Atendimento criado com sucesso!
-      </Snackbar>
-      <StackSheetCustom
-        visible={visible}
-        setVisible={setVisible}
-        positiveActionLabel="Salvar"
-        saveModalCallback={submitHandler}
-      >
-        {isLoading && (
-          <ActivityIndicator
-            color={Colors.primary800}
-            size={120}
-            style={{
-              flex: 1,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: Colors.tertiary900Op12,
-              zIndex: 2000
-            }}
-          />
-        )}
-        <KeyboardAwareScrollView
-          enableOnAndroid={true}
-          style={styles.container}
-          overScrollMode="never"
-          extraScrollHeight={200}
-          extraHeight={200}
-        >
-          <Step1ServiceInfo
-            inputs={inputs}
-            touched={touched}
-            errors={errors}
-            changeHandler={handleChange}
-            blurHandler={handleBlur}
-          />
+        <Step1ServiceInfo
+          inputs={inputs}
+          touched={touched}
+          errors={errors}
+          changeHandler={handleChange}
+          blurHandler={handleBlur}
+        />
 
+        <AccordionItem title={'Antes do procedimento'} initiallyExpanded={false}>
           <Step3BeforeServicePhotos
             inputs={inputs}
             touched={touched}
@@ -351,7 +391,9 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
+        </AccordionItem>
 
+        <AccordionItem title={'Depois do procedimento'} initiallyExpanded={false}>
           <Step5AfterServicePhotos
             inputs={inputs}
             touched={touched}
@@ -367,8 +409,8 @@ const CreateService: React.FC<Props> = ({
             changeHandler={handleChange}
             blurHandler={handleBlur}
           />
-        </KeyboardAwareScrollView>
-      </StackSheetCustom>
+        </AccordionItem>
+      </KeyboardAwareScrollView>
     </>
   );
 };
