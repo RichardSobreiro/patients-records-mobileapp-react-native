@@ -18,7 +18,6 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
-import { GetCustomer } from '/models/customers/GetCustomersResponse';
 import { FontAwesome, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';

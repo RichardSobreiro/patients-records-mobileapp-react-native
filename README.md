@@ -1,15 +1,4 @@
 <!-- @format -->
-<!-- ----------------------------------------------------------------------------- -->
-
-# Bugs
-
-## 999 - Proceedings filters
-
-# Improvements
-
-## 999 - Add Social Login with Google Credentials
-
-## 1000 - Add patients photos using device camera
 
 <!-- ----------------------------------------------------------------------------- -->
 

@@ -113,7 +113,6 @@ const CustomerPhotos: React.FC<Props> = ({ title, field, handleChange, values })
   };
 
   const onRemoveImage = (indexSelected) => {
-    console.log('IMAGE REMOVED: ' + indexSelected);
     setImagesGalery((curImages) => {
       const currentPhotosArray = [...values[field]?.value];
       currentPhotosArray.splice(indexSelected, 1);

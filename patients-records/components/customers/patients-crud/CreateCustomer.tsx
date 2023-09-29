@@ -213,8 +213,8 @@ const CreateCustomer: React.FC<Props> = () => {
     });
     setInputs((curInputs) => {
       if (field === 'cep') {
-        if (enteredValue.length === 9) {
-          const unmaskedCep = enteredValue.replace('-', '');
+        const unmaskedCep = enteredValue.replace('-', '');
+        if (unmaskedCep.length === 8) {
           getAddressInfoByCEP(unmaskedCep);
         }
         enteredValue = maskCEP(enteredValue);

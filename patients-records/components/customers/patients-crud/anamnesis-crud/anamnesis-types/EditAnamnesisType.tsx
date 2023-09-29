@@ -173,7 +173,6 @@ const EditAnamnesisType: React.FC<Props> = ({
     const newAnamnesisType = { ...anamensisType };
     const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
     if (questionChanged) {
-      console.log(`CHANGE QUESTION PHRASE ${field}: ${enteredValue}`);
       questionChanged.questionPhrase = enteredValue;
       setAnamnesisType(newAnamnesisType as GetAnamnesisTypeByIdResponse);
     } else {
@@ -193,7 +192,6 @@ const EditAnamnesisType: React.FC<Props> = ({
   };
 
   const handleChangeAnswerQuestionOption = (field: string, newValue: string, oldValue: string) => {
-    console.log(`CHANGE ANSWER QUESTIONS OPTIONS ${field}: NEW: ${newValue} - OLD: ${oldValue}`);
     const newAnamnesisType = { ...anamensisType };
     const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
     if (questionChanged) {
@@ -214,7 +212,6 @@ const EditAnamnesisType: React.FC<Props> = ({
       const questionEdited = newQuestions?.find((q) => q.questionItemId === field);
       if (questionEdited) {
         questionEdited.questionAnswersOptions?.push(newAnswerValue);
-        console.log(`NEW ANSWER OPTION ADDED ${field}: VALUE: ${newAnswerValue}`);
         curAnamnesis!.questions! = newQuestions;
       } else {
         setNewAnswerQuestionOptions((curValue) => {
@@ -242,7 +239,6 @@ const EditAnamnesisType: React.FC<Props> = ({
         questionEdited.questionAnswersOptions = questionEdited.questionAnswersOptions?.filter(
           (removedAnswerOption) => removedAnswerOption !== answerValue
         );
-        console.log(`REMOVE ANSWER OPTION ${field}: VALUE: ${answerValue}`);
       }
       curAnamnesis!.questions! = newQuestions;
       return curAnamnesis;

@@ -37,6 +37,7 @@ const DatePickerV2: React.FC<Props> = ({
     const test = new Date(values[field]?.value.toISOString());
     const newDate = new Date();
     newDate.setFullYear(test.getFullYear(), test.getMonth(), test.getDate());
+    newDate.setHours(0, 0, 0);
     setDate(newDate);
   }, [field, values]);
 

@@ -268,6 +268,11 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
         afterComments: false,
         afterPhotos: false
       });
+      navigation.replace('EditService', {
+        customerId,
+        serviceId: response.body.serviceId,
+        showCreatedSnackbar: true
+      });
     } else {
       notificationCtx.showNotification({
         title: 'Ops...',
@@ -286,6 +291,7 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     inputs.hour.value,
     inputs.minutes.value,
     inputs.selectedServiceTypes.value,
+    navigation,
     notificationCtx,
     validateForm
   ]);

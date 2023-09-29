@@ -248,9 +248,7 @@ const EditService: React.FC<Props> = ({
         inputs.hour.isValid = false;
         inputs.minutes.isValid = false;
         newErrors.time = 'Horário inválido';
-        console.log(newErrors.time);
         setErrors(newErrors);
-        console.log(`Errors: ${JSON.stringify(errors)}`);
         return false;
       }
     },

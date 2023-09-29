@@ -106,7 +106,6 @@ const CreateServiceType: React.FC<Props> = ({ route, navigation }) => {
         showCreatedSnackbar: true
       });
     } else {
-      console.log(apiResponse.error);
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'

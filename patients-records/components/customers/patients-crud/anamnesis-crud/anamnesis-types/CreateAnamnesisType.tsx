@@ -144,7 +144,6 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleChangeAnswerQuestionOption = (field: string, newValue: string, oldValue: string) => {
-    console.log(`CHANGE ANSWER QUESTIONS OPTIONS ${field}: NEW: ${newValue} - OLD: ${oldValue}`);
     const newAnamnesisType = { ...anamensisType };
     const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
     if (questionChanged) {
@@ -165,7 +164,6 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
       const questionEdited = newQuestions?.find((q) => q.questionItemId === field);
       if (questionEdited) {
         questionEdited.questionAnswersOptions?.push(newAnswerValue);
-        console.log(`NEW ANSWER OPTION ADDED ${field}: VALUE: ${newAnswerValue}`);
         curAnamnesis!.questions! = newQuestions;
       } else {
         setNewAnswerQuestionOptions((curValue) => {

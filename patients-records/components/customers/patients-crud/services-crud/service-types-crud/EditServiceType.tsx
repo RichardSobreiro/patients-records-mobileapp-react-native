@@ -117,7 +117,6 @@ const EditServiceType: React.FC<Props> = ({
         setVisibleUpdatedSnackbar(false);
       }, 5000);
     } else {
-      console.log(apiResponse.error);
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'

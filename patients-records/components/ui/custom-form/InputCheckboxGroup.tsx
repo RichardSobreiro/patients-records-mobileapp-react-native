@@ -75,7 +75,7 @@ const InputCheckboxGroup: FC<Props> = ({
 
   return (
     <View style={{ marginTop: 15 }}>
-      <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 10 }]}>
+      <View style={[{ flex: 1, alignItems: 'flex-start', marginBottom: 10, marginHorizontal: 5 }]}>
         <Text style={styles.label}>{label}</Text>
       </View>
       <View style={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}>

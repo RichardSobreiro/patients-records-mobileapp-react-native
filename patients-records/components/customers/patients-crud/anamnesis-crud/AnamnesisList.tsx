@@ -179,7 +179,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
           };
           notificationCtx.showNotification(notification);
         }
-        console.log(`NEXT: ${JSON.stringify(response.body.next)}`);
         if (response.body.next) {
           setHasMoreData(true);
         } else {
@@ -217,7 +216,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
     if (hasMoreData && !isLoading) {
       setPage((prevState) => {
         const nextPage = prevState + 1;
-        console.log(`FETCH MORE DATA - nextPage: ${nextPage}`);
         getAnamnesisListAsync(nextPage);
         return nextPage;
       });

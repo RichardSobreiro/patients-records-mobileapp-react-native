@@ -103,7 +103,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
       return curTouched;
     });
     setInputs((curInputs) => {
-      console.log(`CHANGE ${field}: ${enteredValue}`);
       const newInputs = {
         ...curInputs,
         [field]: { value: enteredValue, isValid: true }
@@ -114,7 +113,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
         setSelectedAnamnesisTypes?.((curSelected) => {
           const selectedType = curSelected.find((s) => s.anamnesisTypeId === anamnesisTypeId);
           if (selectedType) {
-            console.log(`QUESTIONCHANGED FOUND ${field}: ${enteredValue}`);
             selectedType.questions = anamensisType?.questions;
           }
           return curSelected;
@@ -143,7 +141,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
   };
 
   const handleChangeAnswerQuestionOption = (field: string, newValue: string, oldValue: string) => {
-    console.log(`CHANGE ANSWER QUESTIONS OPTIONS ${field}: NEW: ${newValue} - OLD: ${oldValue}`);
     const newAnamnesisType = { ...anamensisType };
     const questionChanged = newAnamnesisType?.questions?.find((q) => q.questionItemId === field);
     if (questionChanged) {
@@ -164,7 +161,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
       const questionEdited = newQuestions?.find((q) => q.questionItemId === field);
       if (questionEdited) {
         questionEdited.questionAnswersOptions?.push(newAnswerValue);
-        console.log(`NEW ANSWER OPTION ADDED ${field}: VALUE: ${newAnswerValue}`);
         curAnamnesis!.questions! = newQuestions;
       } else {
         setNewAnswerQuestionOptions((curValue) => {
@@ -192,7 +188,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
         questionEdited.questionAnswersOptions = questionEdited.questionAnswersOptions?.filter(
           (removedAnswerOption) => removedAnswerOption !== answerValue
         );
-        console.log(`REMOVE ANSWER OPTION ${field}: VALUE: ${answerValue}`);
       }
       curAnamnesis!.questions! = newQuestions;
       return curAnamnesis;
@@ -374,9 +369,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
               onPress={() => {
                 setVisibleAddNewQuestion(false);
                 setNewQuestionId(undefined);
-                console.log(
-                  `ADD QUESTIONS - TYPE: ${typeQuestionAdding} - QUESTION PHRASE: ${newQuestionPhrase}`
-                );
                 const newAnamnesisType = { ...anamensisType };
                 newAnamnesisType.questions?.push(
                   new GetQuestionItem(
