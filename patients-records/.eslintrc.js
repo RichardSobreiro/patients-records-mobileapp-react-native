@@ -9,9 +9,9 @@ module.exports = {
     }
   ],
   settings: {
-    'import/resolver': {
-      typescript: {} // this loads <rootdir>/tsconfig.json to ESLint
-    }
+    // 'import/resolver': {
+    //   typescript: {} // this loads <rootdir>/tsconfig.json to ESLint
+    // }
   },
   /* for lint-staged */
   globals: {
@@ -19,11 +19,14 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': ['off', { singleQuote: true }],
-    'import/order': [
-      'error',
-      {
-        groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin', 'object', 'type']
-      }
-    ]
+    'simple-import-sort/imports': 'off',
+    'simple-import-sort/exports': 'off',
+    'import/order': 'off'
+    // 'import/order': [
+    //   'error',
+    //   {
+    //     groups: ['index', 'sibling', 'parent', 'internal', 'external', 'builtin', 'object', 'type']
+    //   }
+    // ]
   }
 };

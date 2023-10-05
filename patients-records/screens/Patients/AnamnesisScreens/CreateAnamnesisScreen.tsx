@@ -1,4 +1,4 @@
-import CreateAnamnesis from '../../components/customers/patients-crud/anamnesis-crud/create-anamnesis/CreateAnamnesis';
+import CreateAnamnesis from '../../../components/customers/patients-crud/anamnesis-crud/create-anamnesis/CreateAnamnesis';
 
 type Props = {
   route: any;

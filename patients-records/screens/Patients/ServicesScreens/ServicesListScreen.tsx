@@ -1,4 +1,4 @@
-import ServicesList from '../../components/customers/patients-crud/services-crud/ServicesList';
+import ServicesList from '../../../components/customers/patients-crud/services-crud/ServicesList';
 
 type Props = {
   route: any;

@@ -1,4 +1,4 @@
-import CreateServiceType from '../../components/customers/patients-crud/services-crud/service-types-crud/CreateServiceType';
+import CreateServiceType from '../../../components/customers/patients-crud/services-crud/service-types-crud/CreateServiceType';
 
 type Props = {
   route: any;

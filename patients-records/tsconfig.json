@@ -6,5 +6,8 @@
       "/*": ["./*"]
     }
   },
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "rules": {
+    "ordered-imports": false
+  }
 }

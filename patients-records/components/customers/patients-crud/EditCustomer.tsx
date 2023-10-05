@@ -1,8 +1,8 @@
 /* eslint-disable import/order */
 import AccordionItem from '../../../components/ui/AccordionItem';
+import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
 import Dropdown from '../../../components/ui/Dropdown';
 import DropdownModal from '../../../components/ui/DropdownModal';
-import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
 import { Colors } from '../../../constants/styles';
 import { getCustomerById, updateCustomer } from '../../../http/CustomersApi';
 import { getCepInfo } from '../../../http/PostalService';
@@ -14,12 +14,13 @@ import { NotificationContext } from '../../../store/notification-context';
 import { maskCEP, maskCPF } from '../../../util/mask-functions';
 import Button, { ButtonTypes } from '../../ui/Button';
 import Input from '../../ui/custom-form/Input';
+
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EditPatientStackParamList, RootStackParamList } from 'App';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, BackHandler, ActivityIndicator, Keyboard } from 'react-native';
+import { ActivityIndicator, BackHandler, Keyboard, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
@@ -50,7 +51,7 @@ type Props = {
 };
 
 type HomeScreenNavigationProp = CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, 'Welcome'>,
+  NativeStackScreenProps<RootStackParamList, 'PatientsList'>,
   BottomTabScreenProps<EditPatientStackParamList>
 >;
 
@@ -71,7 +72,7 @@ const EditCustomer: React.FC<Props> = ({ customerId }) => {
   const [yPosition, setYPosition] = useState<number>(0);
 
   const handleCancel = useCallback(() => {
-    navigation.navigate('Welcome', { shouldUpdatePatientsList: false });
+    navigation.navigate('PatientsList', { shouldUpdatePatientsList: false });
   }, [navigation]);
 
   useEffect(() => {

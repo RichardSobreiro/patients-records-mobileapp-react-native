@@ -1,17 +1,20 @@
-import CustomersList from '../components/customers/CustomersList';
-import { AuthContext } from '../store/auth-context';
+/* eslint-disable import/order */
+import CustomersList from '../../components/customers/CustomersList';
+import { AuthContext } from '../../store/auth-context';
+import { EditPatientStackParamList } from '../navigators/EditPatientsBottomTabsNavigator';
+import { RootStackParamList } from './PatientsHomeScreen';
+
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { EditPatientStackParamList, RootStackParamList } from 'App';
 import { useContext, useEffect } from 'react';
 
 export type HomeScreenNavigationProp = CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, 'Welcome'>,
+  NativeStackScreenProps<RootStackParamList, 'PatientsList'>,
   BottomTabScreenProps<EditPatientStackParamList>
 >;
 
-const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
+const PatientsListScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
@@ -25,4 +28,4 @@ const WelcomeScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
   );
 };
 
-export default WelcomeScreen;
+export default PatientsListScreen;

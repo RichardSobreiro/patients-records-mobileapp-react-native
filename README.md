@@ -215,7 +215,7 @@ eas build -p all --profile preview
 - **production** Profile
 
 ```
-eas build -p android --profile production
+eas build -p all --profile production
 ```
 
 ## Apple Production Build Release ([How to publish Expo React Native App to Apple App Store (step-by-step tutorial)

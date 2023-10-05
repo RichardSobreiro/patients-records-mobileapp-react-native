@@ -35,10 +35,10 @@ const RichTextInput: React.FC<Props> = ({
 
   useEffect(() => {
     if (values[field].value !== '' && !firstRender) {
-      richText?.current.setContentHTML(values[field].value ? values[field].value : '');
+      richText?.current.setContentHTML(values[field].value);
       setFirstRender(true);
     }
-  }, [values[field].value]);
+  }, [field, firstRender, onChangeHandler, values]);
 
   richText.current?.registerToolbar(function (items) {
     setEditorAttached(true);
@@ -57,6 +57,7 @@ const RichTextInput: React.FC<Props> = ({
             setFirstRender(true);
             onChangeHandler?.(field, descriptionText);
           }}
+          initialContentHTML={values[field].value}
           onBlur={() => {
             //richText.blurContentEditor();
             Keyboard.dismiss();

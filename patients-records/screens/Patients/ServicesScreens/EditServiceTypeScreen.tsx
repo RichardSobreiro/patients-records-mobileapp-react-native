@@ -1,4 +1,4 @@
-import EditServiceType from '../../components/customers/patients-crud/services-crud/service-types-crud/EditServiceType';
+import EditServiceType from '../../../components/customers/patients-crud/services-crud/service-types-crud/EditServiceType';
 
 type Props = {
   route: any;

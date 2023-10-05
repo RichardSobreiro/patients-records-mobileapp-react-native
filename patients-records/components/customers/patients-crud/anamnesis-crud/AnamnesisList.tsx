@@ -318,7 +318,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
                 inputStyle={{ color: Colors.primary500 }}
                 style={{ width: '100%' }}
               />
-              <Pressable
+              {/* <Pressable
                 onPress={() => setOpenDateRangeModal(true)}
                 style={{
                   height: 25,
@@ -343,7 +343,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
                   endDate={searchEndDate}
                   setEndDate={setSearchEndDate}
                 />
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>
           {anamnesisList?.length === 0 && !hasMoreData ? (

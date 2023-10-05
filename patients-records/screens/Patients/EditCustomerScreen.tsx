@@ -1,4 +1,4 @@
-import EditCustomer from '../components/customers/patients-crud/EditCustomer';
+import EditCustomer from '../../components/customers/patients-crud/EditCustomer';
 
 type Props = {
   route: any;
