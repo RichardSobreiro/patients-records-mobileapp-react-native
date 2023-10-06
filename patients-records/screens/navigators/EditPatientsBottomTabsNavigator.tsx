@@ -6,7 +6,7 @@ import ServicesCrudStackComp from './ServicesStackNavigator';
 
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 
 export type EditPatientStackParamList = {
   PatientInfo: { customerId: string };
@@ -19,12 +19,28 @@ const Tab = createBottomTabNavigator<EditPatientStackParamList>();
 const EditPatientBottomTabs = ({ route, navigation }) => {
   const { customerId, customerName } = route.params;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!navigation || !route) return;
+
     navigation.setOptions({
-      title: `Paciente: ${customerName}`,
-      headerShown: true
+      title: `Paciente: ${customerName}`
     });
-  }, [customerName, navigation]);
+
+    const mainDrawer = navigation.getParent('MainDrawerNavigator');
+    if (mainDrawer) {
+      mainDrawer.setOptions({
+        headerShown: false
+      });
+    }
+
+    return () => {
+      if (mainDrawer) {
+        mainDrawer.setOptions({
+          headerShown: true
+        });
+      }
+    };
+  }, [customerName, navigation, route]);
 
   return (
     <Tab.Navigator

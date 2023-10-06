@@ -25,6 +25,7 @@ const ServicesCrudStackComp = ({ route, navigation }) => {
 
   return (
     <StackServicesCrud.Navigator
+      id="ServicesCrudNavigator"
       screenOptions={{
         contentStyle: { backgroundColor: Colors.primary100 }
       }}

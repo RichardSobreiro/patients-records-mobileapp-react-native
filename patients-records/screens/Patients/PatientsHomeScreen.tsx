@@ -1,4 +1,5 @@
 import IconButton from '../../components/ui/IconButton';
+import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
 import EditPatientBottomTabs from '../navigators/EditPatientsBottomTabsNavigator';
 import CreateCustomerScreen from './CreateCustomerScreen';
@@ -6,8 +7,6 @@ import PatientsListScreen from './PatientsListScreen';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useContext } from 'react';
-
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export type RootStackParamList = {
   PatientsList: { shouldUpdatePatientsList?: boolean };
@@ -17,11 +16,12 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const PatientsHomeScreen = () => {
+const PatientsHomeScreen = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
+
   return (
     <Stack.Navigator
-      id="RootStack"
+      id="PatientsHomeScreenStack"
       screenOptions={{
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: '#ffffff',

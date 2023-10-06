@@ -5,15 +5,16 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import Input from '../../../../ui/custom-form/Input';
 import { GetServiceTypeResponse } from '/models/customers/service-types/GetServiceTypesResponse';
+
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text
+  Text,
+  TouchableOpacity
 } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -209,7 +210,7 @@ const EditServiceType: React.FC<Props> = ({
       )
     });
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'EditServiceType') {
         tabNavigator.setOptions({

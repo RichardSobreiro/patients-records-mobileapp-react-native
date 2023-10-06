@@ -1,9 +1,8 @@
+import { Colors } from '../../constants/styles';
 import LoginScreen from '../LoginScreen';
 import SignupScreen from '../SignupScreen';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export type LogintStackParamList = {
   Login: undefined;

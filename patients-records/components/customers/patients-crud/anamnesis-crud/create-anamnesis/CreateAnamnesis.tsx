@@ -12,12 +12,13 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerFiles from '../../CustomerFiles';
-import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
 import RenderAnamnesisType from '../anamnesis-types/RenderAnamnesisType';
+import { ErrorType, Inputs, Touched } from '../AnamnesisList';
+
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
@@ -203,7 +204,7 @@ const CreateAnamnesis: React.FC<Props> = ({ customerId, route, navigation }) => 
       }
     }
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'CreateAnamnesis') {
         tabNavigator.setOptions({

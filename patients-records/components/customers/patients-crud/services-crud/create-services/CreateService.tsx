@@ -14,8 +14,9 @@ import Step2BeforeService from './Step2BeforeService';
 import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
+
 import { useCallback, useContext, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = {
@@ -327,7 +328,7 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       }
     }
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'CreateService') {
         tabNavigator.setOptions({

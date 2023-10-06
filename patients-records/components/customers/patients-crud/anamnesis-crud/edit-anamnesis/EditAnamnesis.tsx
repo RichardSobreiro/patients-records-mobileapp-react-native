@@ -12,12 +12,13 @@ import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import FileCustom from '../../../../../util/types/FileCustom';
 import CustomerFiles from '../../CustomerFiles';
-import { ErrorType, Inputs, Touched } from '../AnamnesisList';
 import AnamnesisTypesStackScreen from '../anamnesis-types/AnamnesisTypesStackScreen';
 import RenderAnamnesisType from '../anamnesis-types/RenderAnamnesisType';
+import { ErrorType, Inputs, Touched } from '../AnamnesisList';
+
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
 
@@ -295,7 +296,7 @@ const EditAnamnesis: React.FC<Props> = ({
       }
     }
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'EditAnamnesis') {
         tabNavigator.setOptions({

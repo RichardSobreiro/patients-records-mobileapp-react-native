@@ -5,15 +5,16 @@ import { CreateServiceTypeRequest } from '../../../../../models/customers/servic
 import { CreateServiceTypeResponse } from '../../../../../models/customers/service-types/CreateServiceTypeResponse';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
+
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useLayoutEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text
+  Text,
+  TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -159,7 +160,7 @@ const CreateServiceType: React.FC<Props> = ({ route, navigation }) => {
       )
     });
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'CreateServiceType') {
         tabNavigator.setOptions({

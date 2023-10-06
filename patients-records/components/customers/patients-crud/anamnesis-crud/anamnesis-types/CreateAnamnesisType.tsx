@@ -10,21 +10,22 @@ import {
 } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
-import IconButton from '../../../../ui/IconButton';
 import CreateEditInput from '../../../../ui/custom-form/CreateEditInput';
 import CreateEditInputCheckboxGroup, {
   CheckboxItem
 } from '../../../../ui/custom-form/CreateEditInputCheckboxGroup';
 import Input from '../../../../ui/custom-form/Input';
+import IconButton from '../../../../ui/IconButton';
+
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useLayoutEffect, useState } from 'react';
 import {
-  View,
-  Text,
   ActivityIndicator,
-  TouchableOpacity,
+  StyleSheet,
+  Text,
   TextInput,
-  StyleSheet
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SegmentedButtons, Snackbar } from 'react-native-paper';
@@ -320,7 +321,7 @@ const CreateAnamnesisType: React.FC<Props> = ({ route, navigation }) => {
       )
     });
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'CreateAnamnesisType') {
         tabNavigator.setOptions({

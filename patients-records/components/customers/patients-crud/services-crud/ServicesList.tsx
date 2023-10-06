@@ -3,17 +3,18 @@ import { Colors } from '../../../../constants/styles';
 import { getServices } from '../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
 import { GetServiceResponse } from '../../../../models/customers/services/GetServicesResponse';
+import { RootStackServicesCrudParamList } from '../../../../screens/navigators/ServicesStackNavigator';
 import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
 import { DateParser } from '../../../../util/dateParser';
 import FileCustom from '../../../../util/types/FileCustom';
 import DateRangePicker from '../../../ui/custom-form/DateRangePicker';
 import ServicesListItem from './ServicesListItem';
-import { RootStackServicesCrudParamList } from '/App';
+
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, FlatList, Pressable } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
 
 export type ErrorType = {
@@ -304,6 +305,9 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
               icon: 'plus',
               label: 'Incluir Atendimento',
               onPress: () => {
+                navigation.setOptions({
+                  headerShown: false
+                });
                 navigation.push('CreateService', {
                   customerId
                 });

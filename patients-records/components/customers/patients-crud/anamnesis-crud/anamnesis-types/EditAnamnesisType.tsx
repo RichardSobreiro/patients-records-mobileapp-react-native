@@ -1,4 +1,3 @@
-import IconButton from '../../../../../components/ui/IconButton';
 import CreateEditAccordionItem from '../../../../../components/ui/custom-form/CreateEditAccordionItem';
 import CreateEditInput from '../../../../../components/ui/custom-form/CreateEditInput';
 import CreateEditInputCheckboxGroup, {
@@ -6,6 +5,7 @@ import CreateEditInputCheckboxGroup, {
 } from '../../../../../components/ui/custom-form/CreateEditInputCheckboxGroup';
 import CreateEditRichTextInput from '../../../../../components/ui/custom-form/CreateEditRichTextInput';
 import Input from '../../../../../components/ui/custom-form/Input';
+import IconButton from '../../../../../components/ui/IconButton';
 import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypeById, updateAnamnesisType } from '../../../../../http/AnamnesisTypesApi';
 import {
@@ -16,15 +16,16 @@ import {
 import { UpdateAnamnesisTypeRequest } from '../../../../../models/customers/anamnesis-types/UpdateAnamnesisTypeRequest';
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
+
 import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import {
-  View,
-  Text,
   ActivityIndicator,
-  TouchableOpacity,
+  StyleSheet,
+  Text,
   TextInput,
-  StyleSheet
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SegmentedButtons, Snackbar } from 'react-native-paper';
@@ -369,7 +370,7 @@ const EditAnamnesisType: React.FC<Props> = ({
       )
     });
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'EditAnamnesisType') {
         tabNavigator.setOptions({

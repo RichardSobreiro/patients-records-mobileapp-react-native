@@ -1,25 +1,32 @@
 /* eslint-disable import/order */
 import CustomersList from '../../components/customers/CustomersList';
 import { AuthContext } from '../../store/auth-context';
-import { EditPatientStackParamList } from '../navigators/EditPatientsBottomTabsNavigator';
-import { RootStackParamList } from './PatientsHomeScreen';
 
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useContext, useEffect } from 'react';
+import { useContext, useLayoutEffect } from 'react';
 
-export type HomeScreenNavigationProp = CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, 'PatientsList'>,
-  BottomTabScreenProps<EditPatientStackParamList>
->;
-
-const PatientsListScreen: React.FC = ({ navigation }: HomeScreenNavigationProp) => {
+const PatientsListScreen = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!navigation || !route) return;
+
     navigation.setOptions({ title: authCtx.userInfo?.username });
-  }, [authCtx.userInfo?.username, navigation]);
+
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
+    if (tabNavigator) {
+      tabNavigator.setOptions({
+        headerShown: false
+      });
+    }
+
+    return () => {
+      if (tabNavigator) {
+        tabNavigator.setOptions({
+          headerShown: true
+        });
+      }
+    };
+  }, [authCtx.userInfo?.username, navigation, route]);
 
   return (
     <>

@@ -15,8 +15,9 @@ import Step2BeforeService from './Step2BeforeService';
 import Step3BeforeServicePhotos from './Step3BeforeServicePhotos';
 import Step4AfterService from './Step4AfterService';
 import Step5AfterServicePhotos from './Step5AfterServicePhotos';
+
 import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
@@ -413,7 +414,7 @@ const EditService: React.FC<Props> = ({
       }
     }
 
-    const tabNavigator = navigation.getParent('RootStack');
+    const tabNavigator = navigation.getParent('PatientsHomeScreenStack');
     if (tabNavigator) {
       if (route.name === 'EditService') {
         tabNavigator.setOptions({
