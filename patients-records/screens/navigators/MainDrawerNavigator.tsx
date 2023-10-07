@@ -29,7 +29,7 @@ const MainDrawerNavigatorComp = () => {
           />
         )
       }}
-      initialRouteName="PatientsHome"
+      initialRouteName="Agenda"
     >
       <Drawer.Screen name="Agenda" component={AgendaHomeScreen} />
       <Drawer.Screen

@@ -1,18 +1,17 @@
 /* eslint-disable import/order */
-import DateRangePicker from '../../../../components/ui/custom-form/DateRangePicker';
 import { Colors } from '../../../../constants/styles';
 import { getAnamnesis } from '../../../../http/AnamnesisApi';
 import { CreateAnamnesisTypeContentRequest } from '../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { GetAnamnesis } from '../../../../models/customers/anamnesis/GetAnamnesisResponse';
+import { RootStackAnamnesisCrudParamList } from '../../../../screens/navigators/AnamnesisStackNavigator';
 import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
-import { DateParser } from '../../../../util/dateParser';
 import AnamnesisListItem from './AnamnesisListItem';
-import { RootStackAnamnesisCrudParamList } from '/App';
+
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Pressable, Text, FlatList } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
 
 export type ErrorType = {
@@ -52,9 +51,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
   const [hasMoreData, setHasMoreData] = useState(true);
 
   const [searchAnamnesisTypeDescription, setSearchAnamnesisTypeDescription] = useState<string>('');
-  const [searchStartDate, setSearchStartDate] = useState<Date | undefined>(undefined);
-  const [searchEndDate, setSearchEndDate] = useState<Date | undefined>(undefined);
-  const [openDateRangeModal, setOpenDateRangeModal] = useState<boolean>(false);
 
   const [isOpenFabGroup, setIsOpenFabGroup] = useState(false);
   const [showCreatedAnamnesisSnackbar, setShowCreatedAnamnesisSnackbar] = useState<boolean>(false);
@@ -71,9 +67,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
           nextPage as unknown as string,
           PAGE_SIZE as unknown as string,
           customerId as string,
-          searchAnamnesisTypeDescription,
-          searchStartDate,
-          searchEndDate
+          searchAnamnesisTypeDescription
         );
 
         if (response.ok) {
@@ -100,14 +94,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
         setIsLoading(false);
       }
     },
-    [
-      authCtx.token?.access_token,
-      customerId,
-      notificationCtx,
-      searchAnamnesisTypeDescription,
-      searchEndDate,
-      searchStartDate
-    ]
+    [authCtx.token?.access_token, customerId, notificationCtx, searchAnamnesisTypeDescription]
   );
 
   useEffect(() => {
@@ -159,9 +146,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
           nextPage as unknown as string,
           PAGE_SIZE as unknown as string,
           customerId as string,
-          searchAnamnesisTypeDescription,
-          searchStartDate,
-          searchEndDate
+          searchAnamnesisTypeDescription
         );
 
         if (response.ok) {
@@ -203,14 +188,7 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
       clearTimeout(timer);
       unsubscribe();
     };
-  }, [
-    searchStartDate,
-    searchEndDate,
-    authCtx.token?.access_token,
-    customerId,
-    notificationCtx,
-    searchAnamnesisTypeDescription
-  ]);
+  }, [authCtx.token?.access_token, customerId, notificationCtx, searchAnamnesisTypeDescription]);
 
   const fetchMoreData = () => {
     if (hasMoreData && !isLoading) {
