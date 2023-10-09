@@ -193,3 +193,35 @@ export const getServices = async (
     return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
   }
 };
+
+export const getServicesAgenda = async (
+  accessToken: string,
+  startDate?: Date,
+  endDate?: Date
+): Promise<ApiResponse> => {
+  let URL = `${process.env.API_URL}/customers/services`;
+
+  if (startDate && endDate) {
+    URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
+  }
+
+  try {
+    const response = await fetch(URL, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const responseBody: GetServicesResponse = await response.json();
+      return new ApiResponse(true, response.status, responseBody);
+    } else {
+      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
+    }
+  } catch (error: any) {
+    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  }
+};

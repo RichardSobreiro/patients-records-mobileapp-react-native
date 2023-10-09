@@ -1,9 +1,30 @@
 import { Colors } from '../../constants/styles';
+import { getServicesAgenda } from '../../http/ServicesApi';
+import { GetServicesAgendaResponse } from '../../models/customers/services/GetServicesAgendaResponse';
+import { AuthContext } from '../../store/auth-context';
+import AgendaItem from './mocks/AgendaItem';
+import { agendaItems, getMarkedDates } from './mocks/agendaItems';
+import { getTheme } from './mocks/theme';
+import { getDate, timelineEvents } from './mocks/timelineEvents';
 
-import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Agenda, LocaleConfig } from 'react-native-calendars';
-import { Card } from 'react-native-paper';
+import groupBy from 'lodash/groupBy';
+import { useCallback, useContext, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  AgendaList,
+  CalendarProvider,
+  CalendarUtils,
+  ExpandableCalendar,
+  LocaleConfig,
+  Timeline,
+  TimelineEventProps,
+  TimelineList,
+  TimelineProps
+} from 'react-native-calendars';
+import { FAB, Portal, SegmentedButtons } from 'react-native-paper';
+
+const ITEMS: any[] = agendaItems;
+const INITIAL_TIME = { hour: 9, minutes: 0 };
 
 LocaleConfig.locales['pt'] = {
   monthNames: [
@@ -49,108 +70,185 @@ LocaleConfig.locales['pt'] = {
 
 LocaleConfig.defaultLocale = 'pt';
 
-const timeToString = (time) => {
-  const date = new Date(time);
-  return date.toISOString().split('T')[0];
-};
+const EVENTS: TimelineEventProps[] = timelineEvents;
 
 const AgendaHomeScreen = ({ route, navigation }) => {
-  const [items, setItems] = useState({});
+  const authCtx = useContext(AuthContext);
 
-  const loadItems = (day) => {
-    //setTimeout(() => {
-    for (let i = -15; i < 15; i++) {
-      const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = timeToString(time);
+  const [services, setServices] = useState<
+    | {
+        year: string;
+        month: string;
+        servicesList: GetServicesAgendaResponse[];
+      }[]
+    | undefined
+  >(undefined);
 
-      if (!items[strTime]) {
-        items[strTime] = [];
-
-        const numItems = Math.floor(Math.random() * 3 + 1);
-        for (let j = 0; j < numItems; j++) {
-          items[strTime].push({
-            //name: 'Paciente: ' + strTime + ' #' + j,
-            name: 'Teste da Silva',
-            time: '09:00',
-            profissionalName: 'Ana Maria',
-            serviceType: 'Botox',
-            height: Math.max(10, Math.floor(Math.random() * 150)),
-            day: strTime
-          });
-        }
-      }
+  const [fabOpen, setFabOpen] = useState<boolean>(false);
+  const [calendarMode, setCalendarMode] = useState<string>('daily');
+  const marked = useRef(getMarkedDates());
+  const theme = useRef(getTheme());
+  const todayBtnTheme = useRef({
+    todayButtonTextColor: Colors.primary500
+  });
+  const [state, setState] = useState({
+    currentDate: getDate(),
+    events: EVENTS,
+    eventsByDate: groupBy(EVENTS, (e) => CalendarUtils.getCalendarDateString(e.start)) as {
+      [key: string]: TimelineEventProps[];
     }
-    const newItems = {};
-    Object.keys(items).forEach((key) => {
-      newItems[key] = items[key];
-    });
-    setItems(newItems);
-    //}, 1000);
-  };
+  });
 
-  const renderItem = (item) => {
+  const getServicesAgendaAsync = useCallback(async (year: string, month: string) => {
+    const startDate = new Date(+year, +month, 1, 0, 0, 0);
+    const endDate = new Date(
+      +year,
+      +month,
+      new Date(+month === 11 ? +year + 1 : +year, +month + 1, 0).getDate(),
+      23,
+      59,
+      0
+    );
+
+    const response = await getServicesAgenda('', startDate, endDate);
+  }, []);
+
+  const renderItem = useCallback(({ item }: any) => {
+    return <AgendaItem item={item} />;
+  }, []);
+
+  const renderItemTimeline = (timelineProps, info) => {
     return (
-      <TouchableOpacity style={styles.item}>
-        <Card style={{ backgroundColor: Colors.primary100 }}>
-          <Card.Content>
+      <Timeline
+        {...timelineProps}
+        renderEvent={(item) => {
+          return (
             <View>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ fontWeight: 'bold', color: Colors.primary500 }}>Paciente: </Text>
-                <Text style={{ color: Colors.primary500 }}>{item.name}</Text>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ fontWeight: 'bold', color: Colors.primary500 }}>Horário: </Text>
-                <Text style={{ color: Colors.primary500 }}>{item.time}</Text>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ fontWeight: 'bold', color: Colors.primary500 }}>Procedimento: </Text>
-                <Text style={{ color: Colors.primary500 }}>{item.serviceType}</Text>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ fontWeight: 'bold', color: Colors.primary500 }}>Profissional: </Text>
-                <Text style={{ color: Colors.primary500 }}>{item.profissionalName}</Text>
-              </View>
+              <Text style={{ color: Colors.primary500, fontSize: 17 }}>{item.title}</Text>
+              <Text style={{ color: Colors.primary500, fontSize: 14 }}>{item.summary}</Text>
             </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
+          );
+        }}
+      />
     );
   };
 
+  const onDateChanged = (date: string, source: string) => {
+    console.log('TimelineCalendarScreen onDateChanged: ', date, source);
+    setState((prevState) => {
+      return { ...prevState, currentDate: date };
+    });
+  };
+
+  const onMonthChange = (month: any, updateSource: any) => {
+    console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
+  };
+
+  const timelineProps: Partial<TimelineProps> = {
+    format24h: true,
+    // scrollToFirst: true,
+    // start: 0,
+    // end: 24,
+    unavailableHours: [
+      { start: 0, end: 6 },
+      { start: 22, end: 24 }
+    ],
+    overlapEventsSpacing: 8,
+    rightEdgeSpacing: 24,
+    theme: {
+      timeLabel: {
+        color: Colors.primary500,
+        fontSize: 20
+      }
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Agenda
-        items={items}
-        loadItemsForMonth={loadItems}
-        selected={'2022-10-07'}
-        //refreshControl={null}
-        hideExtraDays={false}
-        showsHorizontalScrollIndicator={true}
-        showWeekNumbers={true}
-        showScrollIndicator={true}
-        hideKnob={false}
-        showClosingKnob={true}
-        refreshing={true}
-        renderItem={renderItem}
-        theme={{
-          // 'stylesheet.agenda.main': {
-          //   reservations: {
-          //     backgroundColor: Colors.primary100
-          //   }
-          // },
-          agendaTodayColor: Colors.secondary500,
-          backgroundColor: Colors.primary500,
-          agendaDayTextColor: Colors.primary500,
-          agendaDayNumColor: Colors.primary500,
-          agendaKnobColor: Colors.secondary500,
-          todayDotColor: Colors.secondary500,
-          todayBackgroundColor: Colors.primary500,
-          calendarBackground: Colors.primary500,
-          monthTextColor: 'white',
-          dayTextColor: 'white'
-        }}
+    <CalendarProvider
+      date={ITEMS[1]?.title}
+      onDateChanged={onDateChanged}
+      onMonthChange={onMonthChange}
+      showTodayButton
+      theme={{
+        ...todayBtnTheme.current
+      }}
+    >
+      <Portal>
+        <FAB.Group
+          open={fabOpen}
+          visible
+          icon={fabOpen ? 'minus' : 'plus'}
+          actions={[
+            { icon: 'minus', onPress: () => console.log('Pressed add') },
+            {
+              icon: 'email',
+              label: 'Enviar Mensagem',
+              onPress: () => console.log('Pressed email'),
+              labelTextColor: 'white'
+            },
+            {
+              icon: 'bell',
+              label: 'Novo Agendamento',
+              onPress: () => {
+                navigation.push('CreateService', { customerId: '' });
+              },
+              labelTextColor: 'white'
+            }
+          ]}
+          onStateChange={({ open }) => setFabOpen(open)}
+          onPress={() => {
+            if (fabOpen) {
+              // do something if the speed dial is open
+            }
+          }}
+          backdropColor={'rgba(25, 25, 25, 0.8)'}
+          rippleColor={Colors.primary100}
+          style={[styles.fabGroupStyle]}
+          fabStyle={styles.fabStyle}
+          color={Colors.primary100}
+        />
+      </Portal>
+      <SegmentedButtons
+        style={{ marginTop: 10 }}
+        theme={{ colors: { secondaryContainer: Colors.primary100 } }}
+        value={calendarMode}
+        onValueChange={setCalendarMode}
+        buttons={[
+          {
+            value: 'daily',
+            label: 'Dia',
+            showSelectedCheck: true
+          },
+          {
+            value: 'list',
+            label: 'Lista',
+            showSelectedCheck: true
+          }
+        ]}
       />
-    </View>
+      <ExpandableCalendar
+        theme={{
+          ...theme.current
+        }}
+        // disableAllTouchEventsForDisabledDays
+        firstDay={1}
+        markedDates={marked.current}
+      />
+      {calendarMode === 'list' && (
+        <AgendaList sections={ITEMS} renderItem={renderItem} sectionStyle={styles.section} />
+      )}
+      {calendarMode === 'daily' && (
+        <TimelineList
+          events={state.eventsByDate}
+          timelineProps={timelineProps}
+          showNowIndicator
+          scrollToNow
+          scrollToFirst
+          initialTime={INITIAL_TIME}
+          renderItem={renderItemTimeline}
+        />
+      )}
+    </CalendarProvider>
   );
 };
 
@@ -167,5 +265,17 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17
+  },
+  section: {
+    backgroundColor: Colors.primary100,
+    color: Colors.primary500,
+    textTransform: 'capitalize'
+  },
+  fabGroupStyle: {
+    bottom: 0,
+    right: 0
+  },
+  fabStyle: {
+    backgroundColor: Colors.primary800
   }
 });
