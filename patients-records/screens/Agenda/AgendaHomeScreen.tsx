@@ -2,14 +2,16 @@ import { Colors } from '../../constants/styles';
 import { getServicesAgenda } from '../../http/ServicesApi';
 import { GetServicesAgendaResponse } from '../../models/customers/services/GetServicesAgendaResponse';
 import { AuthContext } from '../../store/auth-context';
+import { NotificationContext } from '../../store/notification-context';
+import { formatDateTimeUTCFormat } from '../../util/date-helpers';
 import AgendaItem from './mocks/AgendaItem';
 import { agendaItems, getMarkedDates } from './mocks/agendaItems';
 import { getTheme } from './mocks/theme';
-import { getDate, timelineEvents } from './mocks/timelineEvents';
+import { getDate } from './mocks/timelineEvents';
 
 import groupBy from 'lodash/groupBy';
-import { useCallback, useContext, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import {
   AgendaList,
   CalendarProvider,
@@ -70,19 +72,13 @@ LocaleConfig.locales['pt'] = {
 
 LocaleConfig.defaultLocale = 'pt';
 
-const EVENTS: TimelineEventProps[] = timelineEvents;
-
 const AgendaHomeScreen = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
+  const notificationCtx = useContext(NotificationContext);
 
-  const [services, setServices] = useState<
-    | {
-        year: string;
-        month: string;
-        servicesList: GetServicesAgendaResponse[];
-      }[]
-    | undefined
-  >(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [events, setEvents] = useState<TimelineEventProps[]>();
 
   const [fabOpen, setFabOpen] = useState<boolean>(false);
   const [calendarMode, setCalendarMode] = useState<string>('daily');
@@ -91,27 +87,75 @@ const AgendaHomeScreen = ({ route, navigation }) => {
   const todayBtnTheme = useRef({
     todayButtonTextColor: Colors.primary500
   });
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    currentDate: any;
+    events: any;
+    eventsByDate: any;
+  }>({
     currentDate: getDate(),
-    events: EVENTS,
-    eventsByDate: groupBy(EVENTS, (e) => CalendarUtils.getCalendarDateString(e.start)) as {
+    events,
+    eventsByDate: groupBy(events, (e) => CalendarUtils.getCalendarDateString(e.start)) as {
       [key: string]: TimelineEventProps[];
     }
   });
 
-  const getServicesAgendaAsync = useCallback(async (year: string, month: string) => {
-    const startDate = new Date(+year, +month, 1, 0, 0, 0);
-    const endDate = new Date(
-      +year,
-      +month,
-      new Date(+month === 11 ? +year + 1 : +year, +month + 1, 0).getDate(),
-      23,
-      59,
-      0
-    );
+  const getServicesAgendaAsync = useCallback(
+    async (year: number, month: number) => {
+      setIsLoading(true);
+      const startDate = new Date(year, month, 1, 0, 0, 0);
+      const endDate = new Date(
+        year,
+        month,
+        new Date(month === 11 ? year + 1 : year, month + 1, 0).getDate(),
+        23,
+        59,
+        0
+      );
 
-    const response = await getServicesAgenda('', startDate, endDate);
-  }, []);
+      const response = await getServicesAgenda(authCtx.token?.access_token!, startDate, endDate);
+
+      if (response.ok) {
+        const servicesAgendaResponse = response.body as GetServicesAgendaResponse;
+        const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
+          s.date = new Date(s.date);
+          console.log(formatDateTimeUTCFormat(s.date));
+          const start = new Date(s.date);
+          s.date.setHours(s.date.getHours() + 1);
+          const end = new Date(s.date);
+          return {
+            start: `${formatDateTimeUTCFormat(start)}`,
+            end: `${formatDateTimeUTCFormat(end)}`,
+            title: s.customerName,
+            summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - ')
+          };
+        });
+        console.log(JSON.stringify(newEvents));
+        setEvents((curEvents) => {
+          setState({
+            currentDate: getDate(),
+            events: newEvents,
+            eventsByDate: groupBy(newEvents, (e) =>
+              CalendarUtils.getCalendarDateString(e.start)
+            ) as {
+              [key: string]: TimelineEventProps[];
+            }
+          });
+          return newEvents;
+        });
+      } else {
+        notificationCtx.showNotification({
+          title: 'Ops...',
+          message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
+        });
+      }
+      setIsLoading(false);
+    },
+    [authCtx.token?.access_token, notificationCtx]
+  );
+
+  useEffect(() => {
+    getServicesAgendaAsync(2023, 9);
+  }, [getServicesAgendaAsync]);
 
   const renderItem = useCallback(({ item }: any) => {
     return <AgendaItem item={item} />;
@@ -142,6 +186,7 @@ const AgendaHomeScreen = ({ route, navigation }) => {
 
   const onMonthChange = (month: any, updateSource: any) => {
     console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
+    getServicesAgendaAsync(2023, 9);
   };
 
   const timelineProps: Partial<TimelineProps> = {
@@ -158,7 +203,7 @@ const AgendaHomeScreen = ({ route, navigation }) => {
     theme: {
       timeLabel: {
         color: Colors.primary500,
-        fontSize: 20
+        fontSize: 16
       }
     }
   };
@@ -173,6 +218,24 @@ const AgendaHomeScreen = ({ route, navigation }) => {
         ...todayBtnTheme.current
       }}
     >
+      {isLoading && (
+        <ActivityIndicator
+          color={Colors.primary800}
+          size={120}
+          style={{
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: Colors.tertiary900Op12,
+            zIndex: 2000
+          }}
+        />
+      )}
       <Portal>
         <FAB.Group
           open={fabOpen}

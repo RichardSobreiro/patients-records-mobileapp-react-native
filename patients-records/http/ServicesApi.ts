@@ -199,10 +199,10 @@ export const getServicesAgenda = async (
   startDate?: Date,
   endDate?: Date
 ): Promise<ApiResponse> => {
-  let URL = `${process.env.API_URL}/customers/services`;
+  let URL = `http://10.0.2.2:3006/services`;
 
   if (startDate && endDate) {
-    URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
+    URL += `?startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
   }
 
   try {
@@ -222,6 +222,7 @@ export const getServicesAgenda = async (
       return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
     }
   } catch (error: any) {
+    console.log(`Error: ${JSON.stringify(error)}`);
     return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
   }
 };
