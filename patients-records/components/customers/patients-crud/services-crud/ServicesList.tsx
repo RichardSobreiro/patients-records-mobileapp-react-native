@@ -285,15 +285,6 @@ const ServicesList: React.FC<Props> = ({ customerId }) => {
 
   return (
     <>
-      {/* <EditService
-        customerId={customerId}
-        visible={isVisibleEditService}
-        setVisible={setVisibleEditService}
-        serviceId={editServiceId}
-        setServiceId={setEditServiceId}
-        showCreatedServiceSnackbar={showCreatedServiceSnackbar}
-        updateList={getServiceListAsync}
-      /> */}
       <Portal>
         <FAB.Group
           open={isOpenFabGroup}

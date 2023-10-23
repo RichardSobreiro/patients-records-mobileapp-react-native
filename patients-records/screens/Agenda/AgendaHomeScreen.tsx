@@ -1,3 +1,5 @@
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 import { Colors } from '../../constants/styles';
 import { getServicesAgenda } from '../../http/ServicesApi';
 import { GetServicesAgendaResponse } from '../../models/customers/services/GetServicesAgendaResponse';
@@ -9,9 +11,10 @@ import { agendaItems, getMarkedDates } from './mocks/agendaItems';
 import { getTheme } from './mocks/theme';
 import { getDate } from './mocks/timelineEvents';
 
+import { useIsFocused } from '@react-navigation/native';
 import groupBy from 'lodash/groupBy';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import {
   AgendaList,
   CalendarProvider,
@@ -72,11 +75,17 @@ LocaleConfig.locales['pt'] = {
 
 LocaleConfig.defaultLocale = 'pt';
 
-const AgendaHomeScreen = ({ route, navigation }) => {
+type Props = {
+  route: any;
+  navigation: any;
+};
+
+const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isFocused = useIsFocused();
 
   const [events, setEvents] = useState<TimelineEventProps[]>();
 
@@ -118,7 +127,6 @@ const AgendaHomeScreen = ({ route, navigation }) => {
         const servicesAgendaResponse = response.body as GetServicesAgendaResponse;
         const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
           s.date = new Date(s.date);
-          console.log(formatDateTimeUTCFormat(s.date));
           const start = new Date(s.date);
           s.date.setHours(s.date.getHours() + 1);
           const end = new Date(s.date);
@@ -126,10 +134,11 @@ const AgendaHomeScreen = ({ route, navigation }) => {
             start: `${formatDateTimeUTCFormat(start)}`,
             end: `${formatDateTimeUTCFormat(end)}`,
             title: s.customerName,
-            summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - ')
+            summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - '),
+            serviceId: s.serviceId,
+            customerId: s.customerId
           };
         });
-        console.log(JSON.stringify(newEvents));
         setEvents((curEvents) => {
           setState({
             currentDate: getDate(),
@@ -154,8 +163,17 @@ const AgendaHomeScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    getServicesAgendaAsync(2023, 9);
-  }, [getServicesAgendaAsync]);
+    if (isFocused) {
+      getServicesAgendaAsync(2023, 9);
+    }
+  }, [getServicesAgendaAsync, isFocused]);
+
+  const timelineEventPressHandler = (event: any) => {
+    navigation.push('EditService', {
+      customerId: event.customerId,
+      serviceId: event.serviceId
+    });
+  };
 
   const renderItem = useCallback(({ item }: any) => {
     return <AgendaItem item={item} />;
@@ -167,10 +185,10 @@ const AgendaHomeScreen = ({ route, navigation }) => {
         {...timelineProps}
         renderEvent={(item) => {
           return (
-            <View>
+            <TouchableOpacity>
               <Text style={{ color: Colors.primary500, fontSize: 17 }}>{item.title}</Text>
               <Text style={{ color: Colors.primary500, fontSize: 14 }}>{item.summary}</Text>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
@@ -205,7 +223,8 @@ const AgendaHomeScreen = ({ route, navigation }) => {
         color: Colors.primary500,
         fontSize: 16
       }
-    }
+    },
+    onEventPress: timelineEventPressHandler
   };
 
   return (
@@ -239,7 +258,7 @@ const AgendaHomeScreen = ({ route, navigation }) => {
       <Portal>
         <FAB.Group
           open={fabOpen}
-          visible
+          visible={isFocused}
           icon={fabOpen ? 'minus' : 'plus'}
           actions={[
             { icon: 'minus', onPress: () => console.log('Pressed add') },
@@ -253,7 +272,7 @@ const AgendaHomeScreen = ({ route, navigation }) => {
               icon: 'bell',
               label: 'Novo Agendamento',
               onPress: () => {
-                navigation.push('CreateService', { customerId: '' });
+                navigation.push('PatientsList');
               },
               labelTextColor: 'white'
             }

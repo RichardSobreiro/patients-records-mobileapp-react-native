@@ -337,13 +337,25 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       }
     }
 
+    // const mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
+    // if (mainDrawerNavigator) {
+    //   if (route.name === 'CreateService') {
+    //     mainDrawerNavigator.setOptions({
+    //       headerShown: false
+    //     });
+    //   }
+    // }
+
     return () => {
-      tabNavigator.setOptions({
+      tabNavigator?.setOptions({
         headerShown: true
       });
-      patientsBottomTabNavigator.setOptions({
+      patientsBottomTabNavigator?.setOptions({
         tabBarStyle: { display: 'absolute' }
       });
+      // mainDrawerNavigator?.setOptions({
+      //   headerShown: true
+      // });
     };
   }, [navigation, route, submitHandler]);
 

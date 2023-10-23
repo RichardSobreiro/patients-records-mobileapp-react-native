@@ -384,7 +384,7 @@ const EditService: React.FC<Props> = ({
   ]);
 
   useLayoutEffect(() => {
-    if (!navigation || !route) return;
+    if (!navigation || navigation === undefined || !route || route === undefined) return;
 
     navigation.setOptions({
       headerRight: () => (
@@ -423,12 +423,24 @@ const EditService: React.FC<Props> = ({
       }
     }
 
+    const mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
+    if (mainDrawerNavigator) {
+      if (route.name === 'EditService') {
+        mainDrawerNavigator.setOptions({
+          headerShown: false
+        });
+      }
+    }
+
     return () => {
-      tabNavigator.setOptions({
+      tabNavigator?.setOptions({
         headerShown: true
       });
-      patientsBottomTabNavigator.setOptions({
+      patientsBottomTabNavigator?.setOptions({
         tabBarStyle: { display: 'absolute' }
+      });
+      mainDrawerNavigator?.setOptions({
+        headerShown: true
       });
     };
   }, [navigation, route, submitHandler]);

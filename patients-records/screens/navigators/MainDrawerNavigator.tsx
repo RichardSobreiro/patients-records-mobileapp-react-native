@@ -1,15 +1,22 @@
 import IconButton from '../../components/ui/IconButton';
 import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
-import AgendaHomeScreen from '../Agenda/AgendaHomeScreen';
 import FinancialHomeScreen from '../Financial/FinancialHomeScreen';
 import PatientsHomeScreen from '../Patients/PatientsHomeScreen';
 import ReportsHomeScreen from '../Reports/ReportsHomeScreen';
+import AgendaStackCompScreen from './AgendaStackNavigator';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useContext } from 'react';
 
-const Drawer = createDrawerNavigator();
+export type MainDrawerParamList = {
+  Agenda: { customerId?: string; serviceId?: string };
+  PatientsHome;
+  Financial;
+  Reports;
+};
+
+const Drawer = createDrawerNavigator<MainDrawerParamList>();
 
 const MainDrawerNavigatorComp = () => {
   const authCtx = useContext(AuthContext);
@@ -31,7 +38,14 @@ const MainDrawerNavigatorComp = () => {
       }}
       initialRouteName="Agenda"
     >
-      <Drawer.Screen name="Agenda" component={AgendaHomeScreen} />
+      <Drawer.Screen
+        name="Agenda"
+        options={{
+          drawerLabel: 'Agenda',
+          headerTitle: 'Agenda'
+        }}
+        component={AgendaStackCompScreen}
+      />
       <Drawer.Screen
         name="PatientsHome"
         options={{
@@ -49,7 +63,7 @@ const MainDrawerNavigatorComp = () => {
         component={FinancialHomeScreen}
       />
       <Drawer.Screen
-        name="Relatórios"
+        name="Reports"
         options={{
           drawerLabel: 'Relatórios',
           headerTitle: 'Relatórios'

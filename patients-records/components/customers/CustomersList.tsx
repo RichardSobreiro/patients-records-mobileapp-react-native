@@ -8,17 +8,18 @@ import { DateParser } from '../../util/dateParser';
 import DateRangePicker from '../ui/custom-form/DateRangePicker';
 import CustomerListItem from './CustomerListItem';
 import ServiceTypesModal from './patients-crud/services-crud/service-types-crud/ServiceTypesModal';
+
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
   ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Pressable,
-  ScrollView
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { FAB, Portal, Searchbar } from 'react-native-paper';
 
@@ -137,7 +138,15 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
     return () => setIsVisibleFabGroup(false);
   });
 
-  const navigateToEditPatient = (customerId: string, customerName: string) => {
+  const navigateToCreateEditPatient = (customerId: string, customerName: string) => {
+    const routes = navigation.getState()?.routes;
+    if (routes.length >= 2) {
+      const prevRoute = routes[routes.length - 2];
+      if (prevRoute.name === 'AgendaHome') {
+        navigation?.navigate('CreateService', { customerId });
+        return;
+      }
+    }
     navigation?.navigate('EditPatient', { customerId, customerName });
   };
 
@@ -146,7 +155,7 @@ const CustomersList: React.FC<Props> = ({ navigation }) => {
   };
 
   const renderArticle = ({ item }) => (
-    <CustomerListItem item={item} onNavigateToEditCustomer={navigateToEditPatient} />
+    <CustomerListItem item={item} onNavigateToEditCustomer={navigateToCreateEditPatient} />
   );
   const renderDivider = () => <View style={styles.articleSeparator}></View>;
   const renderFooter = () => {

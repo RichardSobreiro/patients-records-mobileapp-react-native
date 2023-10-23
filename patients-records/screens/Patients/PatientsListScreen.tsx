@@ -18,13 +18,28 @@ const PatientsListScreen = ({ route, navigation }) => {
         headerShown: false
       });
     }
+    const routes = navigation.getState()?.routes;
+    let mainDrawerNavigator: any = undefined;
+    if (routes.length >= 2) {
+      const prevRoute = routes[routes.length - 2];
+      if (prevRoute.name === 'AgendaHome') {
+        mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
+        if (mainDrawerNavigator) {
+          console.log(`PATIENTS LIST SCREEN ROUTES: ${JSON.stringify(routes)}`);
+          mainDrawerNavigator.setOptions({
+            headerShown: false
+          });
+        }
+      }
+    }
 
     return () => {
-      if (tabNavigator) {
-        tabNavigator.setOptions({
-          headerShown: true
-        });
-      }
+      tabNavigator?.setOptions({
+        headerShown: true
+      });
+      mainDrawerNavigator?.setOptions({
+        headerShown: true
+      });
     };
   }, [authCtx.userInfo?.username, navigation, route]);
 
