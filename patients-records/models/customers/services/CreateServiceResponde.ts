@@ -15,6 +15,8 @@ export class CreateServiceResponse {
   constructor(
     public serviceId: string,
     public date: Date,
+    public durationHours: number,
+    public durationMinutes: number,
     public serviceTypeDescription: string,
     public beforeNotes?: string,
     public beforePhotos?: CreateServicePhotosResponse[] | null,

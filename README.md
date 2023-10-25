@@ -161,6 +161,8 @@ https://auth.expo.io/@richardsobreiro/patients-records
 1. Start the emulator
 
 ```
+emulator -avd Pixel_4_API_UpsideDownCake -prop persist.sys.language=pt-BR -prop persist.sys.country=BR -feature -Vulkan
+
 emulator @Pixel_4_API_UpsideDownCake -feature -Vulkan
 ```
 

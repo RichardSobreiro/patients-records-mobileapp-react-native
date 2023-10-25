@@ -2,7 +2,9 @@ import { Colors } from '../../constants/styles';
 import AgendaHomeScreen from '../Agenda/AgendaHomeScreen';
 import PatientsListScreen from '../Patients/PatientsListScreen';
 import CreateServiceScreen from '../Patients/ServicesScreens/CreateServiceScreen';
+import CreateServiceTypeScreen from '../Patients/ServicesScreens/CreateServiceTypeScreen';
 import EditServiceScreen from '../Patients/ServicesScreens/EditServiceScreen';
+import EditServiceTypeScreen from '../Patients/ServicesScreens/EditServiceTypeScreen';
 
 import { AntDesign } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,6 +15,8 @@ export type AgendaStackParamList = {
   CreateService: { customerId: string };
   EditService: { customerId: string; serviceId: string; showCreatedSnackbar?: boolean };
   PatientsList;
+  EditServiceType: { serviceTypeId: string; showCreatedSnackbar?: boolean };
+  CreateServiceType;
 };
 
 const StackAgenda = createNativeStackNavigator<AgendaStackParamList>();
@@ -20,6 +24,7 @@ const StackAgenda = createNativeStackNavigator<AgendaStackParamList>();
 const AgendaStackCompScreen = ({ route, navigation }) => {
   const customerId = route.params !== undefined ? route.params.customerId : '';
   const serviceId = route.params !== undefined ? route.params.serviceId : '';
+  const serviceTypeId = route.params !== undefined ? route.params.serviceTypeId : '';
 
   return (
     <StackAgenda.Navigator
@@ -99,7 +104,10 @@ const AgendaStackCompScreen = ({ route, navigation }) => {
           component={PatientsListScreen}
           options={{
             contentStyle: { backgroundColor: Colors.primary100 },
-            headerTitle: 'Pacientes',
+            headerTitle: 'Selecione o Paciente:',
+            headerTitleStyle: {
+              color: Colors.primary500
+            },
             headerLeft: () => (
               <TouchableOpacity>
                 <AntDesign
@@ -116,6 +124,34 @@ const AgendaStackCompScreen = ({ route, navigation }) => {
                 />
               </TouchableOpacity>
             ),
+            headerStyle: {
+              backgroundColor: Colors.primary100
+            },
+            headerShadowVisible: false
+          }}
+        />
+        <StackAgenda.Screen
+          name="CreateServiceType"
+          component={CreateServiceTypeScreen}
+          options={{
+            contentStyle: { backgroundColor: Colors.primary100 },
+            headerTitle: '',
+            headerTitleStyle: {
+              color: Colors.primary500
+            },
+            headerStyle: {
+              backgroundColor: Colors.primary100
+            },
+            headerShadowVisible: false
+          }}
+        />
+        <StackAgenda.Screen
+          name="EditServiceType"
+          component={EditServiceTypeScreen}
+          initialParams={{ serviceTypeId }}
+          options={{
+            contentStyle: { backgroundColor: Colors.primary100 },
+            headerTitle: '',
             headerStyle: {
               backgroundColor: Colors.primary100
             },

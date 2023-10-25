@@ -25,7 +25,6 @@ const PatientsListScreen = ({ route, navigation }) => {
       if (prevRoute.name === 'AgendaHome') {
         mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
         if (mainDrawerNavigator) {
-          console.log(`PATIENTS LIST SCREEN ROUTES: ${JSON.stringify(routes)}`);
           mainDrawerNavigator.setOptions({
             headerShown: false
           });

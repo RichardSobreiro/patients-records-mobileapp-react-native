@@ -59,6 +59,14 @@ const EditService: React.FC<Props> = ({
       value: 0,
       isValid: true
     },
+    durationHours: {
+      value: 0,
+      isValid: true
+    },
+    durationMinutes: {
+      value: 30,
+      isValid: true
+    },
     selectedServiceTypes: {
       value: [],
       isValid: true
@@ -111,6 +119,14 @@ const EditService: React.FC<Props> = ({
       },
       minutes: {
         value: 0,
+        isValid: true
+      },
+      durationHours: {
+        value: 0,
+        isValid: true
+      },
+      durationMinutes: {
+        value: 30,
         isValid: true
       },
       selectedServiceTypes: {
@@ -176,6 +192,14 @@ const EditService: React.FC<Props> = ({
       },
       minutes: {
         value: dateObject.getMinutes(),
+        isValid: true
+      },
+      durationHours: {
+        value: getServiceResponse.durationHours,
+        isValid: true
+      },
+      durationMinutes: {
+        value: getServiceResponse.durationMinutes,
         isValid: true
       },
       selectedServiceTypes: {
@@ -338,6 +362,8 @@ const EditService: React.FC<Props> = ({
     const request = new UpdateServiceRequest(
       serviceId,
       dateObject,
+      inputs.durationHours.value,
+      inputs.durationMinutes.value,
       inputs.selectedServiceTypes.value,
       inputs.beforeComments.value,
       inputs.beforePhotos.value,
@@ -375,6 +401,8 @@ const EditService: React.FC<Props> = ({
     inputs.beforeComments.value,
     inputs.beforePhotos.value,
     inputs.date.value,
+    inputs.durationHours.value,
+    inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
     inputs.selectedServiceTypes.value,
@@ -508,6 +536,7 @@ const EditService: React.FC<Props> = ({
           errors={errors}
           changeHandler={handleChange}
           blurHandler={handleBlur}
+          navigation={navigation}
         />
 
         <AccordionItem title={'Antes do procedimento'} initiallyExpanded={false}>

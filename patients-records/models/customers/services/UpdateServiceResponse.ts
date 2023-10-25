@@ -1,6 +1,5 @@
 /** @format */
-
-import { GetServiceTypeResponse } from "../service-types/GetServiceTypesResponse";
+import { GetServiceTypeResponse } from '../service-types/GetServiceTypesResponse';
 
 /** @format */
 export class UpdateServicePhotosResponse {
@@ -19,6 +18,8 @@ export class UpdateServiceResponse {
     public serviceId: string,
     public customerId: string,
     public date: Date,
+    public durationHours: number,
+    public durationMinutes: number,
     public serviceTypes: GetServiceTypeResponse[],
     public beforeNotes?: string,
     public afterNotes?: string,

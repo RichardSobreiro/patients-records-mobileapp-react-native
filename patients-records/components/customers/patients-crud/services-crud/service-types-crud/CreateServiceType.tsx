@@ -170,7 +170,7 @@ const CreateServiceType: React.FC<Props> = ({ route, navigation }) => {
     }
 
     return () => {
-      tabNavigator.setOptions({
+      tabNavigator?.setOptions({
         headerShown: false
       });
     };

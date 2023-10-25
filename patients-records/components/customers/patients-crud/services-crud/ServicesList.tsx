@@ -40,6 +40,14 @@ export type Inputs = {
     value: number;
     isValid: boolean;
   };
+  durationHours: {
+    value: number;
+    isValid: boolean;
+  };
+  durationMinutes: {
+    value: number;
+    isValid: boolean;
+  };
   selectedServiceTypes: {
     value: GetServiceTypeResponse[];
     isValid: boolean;

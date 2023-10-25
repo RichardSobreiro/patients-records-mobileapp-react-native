@@ -17,7 +17,9 @@ export const createService = async (
     const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services`;
 
     const formData = new FormData();
-    formData.append('date', request.date.toString());
+    formData.append('date', request.date.toISOString());
+    formData.append('durationHours', request.durationHours.toString());
+    formData.append('durationMinutes', request.durationMinutes.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);
     formData.append('afterNotes', request.afterNotes!);
@@ -64,7 +66,7 @@ export const getServiceById = async (
   customerId: string,
   serviceId: string
 ): Promise<ApiResponse> => {
-  const URL = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
+  const URL = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
   try {
     const response = await fetch(URL, {
       method: 'GET',
@@ -94,10 +96,12 @@ export const updateService = async (
   request: UpdateServiceRequest
 ): Promise<ApiResponse> => {
   try {
-    const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
+    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
 
     const formData = new FormData();
-    formData.append('date', request.date.toString());
+    formData.append('date', request.date.toISOString());
+    formData.append('durationHours', request.durationHours.toString());
+    formData.append('durationMinutes', request.durationMinutes.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('beforeNotes', request.beforeNotes!);
     formData.append('afterNotes', request.afterNotes!);
@@ -157,7 +161,7 @@ export const getServices = async (
   endDate?: Date,
   serviceTypeIds?: string[]
 ): Promise<ApiResponse> => {
-  let URL = `${process.env.API_URL}/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
+  let URL = `http://10.0.2.2:3006/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
 
   if (startDate && endDate) {
     URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;

@@ -6,16 +6,14 @@ import {
   GetServiceTypesResponse
 } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
 import { AuthContext } from '../../../../../store/auth-context';
-import IconButton from '../../../../ui/IconButton';
 import StackSheetCustom from '../../../../ui/custom-form/StackSheetCustom';
+import IconButton from '../../../../ui/IconButton';
 import { ErrorType } from '../ServicesList';
-import { RootStackServicesCrudParamList } from '/App';
+
 import { AntDesign } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, FlatList, Platform } from 'react-native';
-import { Switch, Chip, Searchbar, Button as ButtonPaper } from 'react-native-paper';
+import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button as ButtonPaper, Chip, Searchbar, Switch } from 'react-native-paper';
 
 type Props = {
   visible: boolean;
@@ -26,6 +24,7 @@ type Props = {
   errors?: ErrorType;
   onChangeHandler?: (field: string, value: GetServiceTypeResponse[]) => void;
   onBlurHandler?: (field: string) => void;
+  navigation: any;
 };
 
 const ServiceTypesModal: React.FC<Props> = ({
@@ -36,13 +35,13 @@ const ServiceTypesModal: React.FC<Props> = ({
   setSelectedServiceTypes,
   mode,
   onChangeHandler,
-  onBlurHandler
+  onBlurHandler,
+  navigation
 }: Props) => {
   const authCtx = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [serviceTypesList, setServicesTypeList] = useState<GetServiceTypeResponse[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackServicesCrudParamList>>();
 
   const onChangeSearch = (query) => setSearchQuery(query);
 

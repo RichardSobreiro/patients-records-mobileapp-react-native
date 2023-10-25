@@ -44,6 +44,14 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       value: 0,
       isValid: true
     },
+    durationHours: {
+      value: 0,
+      isValid: true
+    },
+    durationMinutes: {
+      value: 30,
+      isValid: true
+    },
     selectedServiceTypes: {
       value: [],
       isValid: true
@@ -207,6 +215,8 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
         inputs.hour.value! * 1,
         inputs.minutes.value * 1
       ),
+      inputs.durationHours.value,
+      inputs.durationMinutes.value,
       inputs.selectedServiceTypes.value,
       inputs.beforeComments.value,
       inputs.beforePhotos.value,
@@ -227,6 +237,14 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
           isValid: true
         },
         minutes: {
+          value: 0,
+          isValid: true
+        },
+        durationHours: {
+          value: 0,
+          isValid: true
+        },
+        durationMinutes: {
           value: 0,
           isValid: true
         },
@@ -289,6 +307,8 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     inputs.beforeComments.value,
     inputs.beforePhotos.value,
     inputs.date.value,
+    inputs.durationHours.value,
+    inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
     inputs.selectedServiceTypes.value,
@@ -337,15 +357,6 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       }
     }
 
-    // const mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
-    // if (mainDrawerNavigator) {
-    //   if (route.name === 'CreateService') {
-    //     mainDrawerNavigator.setOptions({
-    //       headerShown: false
-    //     });
-    //   }
-    // }
-
     return () => {
       tabNavigator?.setOptions({
         headerShown: true
@@ -353,9 +364,6 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       patientsBottomTabNavigator?.setOptions({
         tabBarStyle: { display: 'absolute' }
       });
-      // mainDrawerNavigator?.setOptions({
-      //   headerShown: true
-      // });
     };
   }, [navigation, route, submitHandler]);
 
@@ -390,6 +398,7 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
           errors={errors}
           changeHandler={handleChange}
           blurHandler={handleBlur}
+          navigation={navigation}
         />
 
         <AccordionItem title={'Antes do procedimento'} initiallyExpanded={false}>

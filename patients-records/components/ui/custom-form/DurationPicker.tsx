@@ -8,7 +8,8 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Button } from 'react-native-paper';
 
 type Props = {
-  field: string;
+  fieldHours: string;
+  fieldMinutes: string;
   label: string;
   values: any;
   touched: any;
@@ -17,8 +18,9 @@ type Props = {
   onBlurHandler: (field: string) => void;
 };
 
-const TimerPicker: React.FC<Props> = ({
-  field,
+const DurationPicker: React.FC<Props> = ({
+  fieldHours,
+  fieldMinutes,
   label,
   values,
   touched,
@@ -27,21 +29,29 @@ const TimerPicker: React.FC<Props> = ({
   onBlurHandler
 }) => {
   const [visible, setVisible] = useState(false);
-  const [dateValue, setDateValue] = useState<Date>(new Date());
+  const [dateValue, setDateValue] = useState<Date>(new Date(new Date().setHours(0, 30, 0, 0)));
 
   useEffect(() => {
-    if (values['hour'].value !== undefined && values['minutes'].value !== undefined) {
-      const newDateValue = new Date();
-      newDateValue.setHours(values['hour'].value, values['minutes'].value);
-      setDateValue(newDateValue);
+    if (
+      values[fieldHours].value &&
+      values[fieldMinutes].value &&
+      values[fieldHours].value >= 0 &&
+      values[fieldMinutes].value >= 10
+    ) {
+      const today = new Date();
+      today.setHours(values[fieldHours].value, values[fieldMinutes].value);
+      setDateValue(today);
     }
-  }, [values]);
+  }, [fieldHours, fieldMinutes, values]);
 
-  const onChange = (selectedTime) => {
+  const onChange = (selectedTime: Date) => {
     setVisible(false);
-    const currentDate = new Date(selectedTime);
-    onChangeHandler('hour', currentDate.getHours());
-    onChangeHandler('minutes', currentDate.getMinutes());
+    console.log(`selectedTime: ${selectedTime.toISOString()}`);
+    const currentDate = new Date(selectedTime.toISOString());
+    currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+    console.log(`currentDate: ${currentDate}`);
+    onChangeHandler(fieldHours, currentDate.getHours());
+    onChangeHandler(fieldMinutes, currentDate.getMinutes());
   };
 
   return (
@@ -51,21 +61,27 @@ const TimerPicker: React.FC<Props> = ({
         <Button
           onPress={() => {
             setVisible(true);
-            onBlurHandler(field);
+            onBlurHandler(fieldHours);
+            onBlurHandler(fieldMinutes);
           }}
           uppercase={false}
           mode="outlined"
           style={{ width: '100%' }}
         >
-          {values['hour'].value && values['hour'].value !== ''
+          {values[fieldHours].value &&
+          values[fieldMinutes].value &&
+          values[fieldHours].value >= 0 &&
+          values[fieldMinutes].value >= 10
             ? `${
-                values['hour'].value * 1 < 10 ? '0' + values['hour'].value : values['hour'].value
+                values[fieldHours].value * 1 < 10
+                  ? '0' + values[fieldHours].value
+                  : values[fieldHours].value
               }:${
-                values['minutes'].value * 1 < 10
-                  ? '0' + values['minutes'].value
-                  : values['minutes'].value
+                values[fieldMinutes].value * 1 < 10
+                  ? '0' + values[fieldMinutes].value
+                  : values[fieldMinutes].value
               }`
-            : 'Selecione a hora'}
+            : 'Selecione a duração'}
         </Button>
         {errors.time ? (
           <View style={styles.errorContainer}>
@@ -91,7 +107,7 @@ const TimerPicker: React.FC<Props> = ({
   );
 };
 
-export default TimerPicker;
+export default DurationPicker;
 
 const styles = StyleSheet.create({
   label: {

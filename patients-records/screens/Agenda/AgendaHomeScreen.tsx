@@ -7,14 +7,14 @@ import { AuthContext } from '../../store/auth-context';
 import { NotificationContext } from '../../store/notification-context';
 import { formatDateTimeUTCFormat } from '../../util/date-helpers';
 import AgendaItem from './mocks/AgendaItem';
-import { agendaItems, getMarkedDates } from './mocks/agendaItems';
+import { agendaItems } from './mocks/agendaItems';
 import { getTheme } from './mocks/theme';
 import { getDate } from './mocks/timelineEvents';
 
 import { useIsFocused } from '@react-navigation/native';
 import groupBy from 'lodash/groupBy';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import {
   AgendaList,
   CalendarProvider,
@@ -28,8 +28,17 @@ import {
 } from 'react-native-calendars';
 import { FAB, Portal, SegmentedButtons } from 'react-native-paper';
 
+import { PackedEvent } from 'react-native-calendars/src/timeline/EventBlock';
+import { MarkedDates } from 'react-native-calendars/src/types';
+
 const ITEMS: any[] = agendaItems;
 const INITIAL_TIME = { hour: 9, minutes: 0 };
+
+interface CustomEvent extends PackedEvent {
+  customerId: string;
+  serviceId: string;
+  confirmed: boolean;
+}
 
 LocaleConfig.locales['pt'] = {
   monthNames: [
@@ -91,7 +100,8 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [fabOpen, setFabOpen] = useState<boolean>(false);
   const [calendarMode, setCalendarMode] = useState<string>('daily');
-  const marked = useRef(getMarkedDates());
+  // const marked = useRef(getMarkedDates());
+  const marked = useRef<MarkedDates>();
   const theme = useRef(getTheme());
   const todayBtnTheme = useRef({
     todayButtonTextColor: Colors.primary500
@@ -125,20 +135,27 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
 
       if (response.ok) {
         const servicesAgendaResponse = response.body as GetServicesAgendaResponse;
+        const newMarkedDates: MarkedDates = {};
         const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
           s.date = new Date(s.date);
           const start = new Date(s.date);
           s.date.setHours(s.date.getHours() + 1);
           const end = new Date(s.date);
+          const confirmed = Math.random() < 0.5;
+          newMarkedDates[start.toISOString().split('T')[0]] = { marked: true };
+
           return {
             start: `${formatDateTimeUTCFormat(start)}`,
             end: `${formatDateTimeUTCFormat(end)}`,
             title: s.customerName,
             summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - '),
             serviceId: s.serviceId,
-            customerId: s.customerId
+            customerId: s.customerId,
+            confirmed,
+            color: confirmed ? Colors.secondary100 : Colors.primary100
           };
         });
+        marked.current = newMarkedDates;
         setEvents((curEvents) => {
           setState({
             currentDate: getDate(),
@@ -185,9 +202,23 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
         {...timelineProps}
         renderEvent={(item) => {
           return (
-            <TouchableOpacity>
-              <Text style={{ color: Colors.primary500, fontSize: 17 }}>{item.title}</Text>
-              <Text style={{ color: Colors.primary500, fontSize: 14 }}>{item.summary}</Text>
+            <TouchableOpacity style={{ flex: 1, justifyContent: 'space-between' }}>
+              <View>
+                <Text style={{ color: Colors.primary500, fontSize: 17 }}>{item.title}</Text>
+                <Text style={{ color: Colors.primary500, fontSize: 14 }}>{item.summary}</Text>
+              </View>
+              <View style={{ marginBottom: 5 }}>
+                <Text
+                  style={{
+                    color: (item as CustomEvent).confirmed
+                      ? Colors.secondary800
+                      : Colors.tertiary800,
+                    fontSize: 12
+                  }}
+                >
+                  {(item as CustomEvent).confirmed ? `Confirmado` : `Não confirmado`}
+                </Text>
+              </View>
             </TouchableOpacity>
           );
         }}

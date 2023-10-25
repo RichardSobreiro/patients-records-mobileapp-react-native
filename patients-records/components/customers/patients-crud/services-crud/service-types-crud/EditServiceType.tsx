@@ -220,7 +220,7 @@ const EditServiceType: React.FC<Props> = ({
     }
 
     return () => {
-      tabNavigator.setOptions({
+      tabNavigator?.setOptions({
         headerShown: false
       });
     };

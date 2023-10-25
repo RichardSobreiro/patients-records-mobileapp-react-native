@@ -1,5 +1,6 @@
 /** @format */
 import { Colors } from '../constants/styles';
+
 import { createContext, useState } from 'react';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
@@ -52,7 +53,9 @@ const NotificationProvider = ({ children }: Props) => {
           <Portal>
             <Dialog
               style={{
-                backgroundColor: Colors.secondary500,
+                backgroundColor: Colors.primary100,
+                borderColor: Colors.primary800,
+                borderWidth: 1,
                 justifyContent: 'center',
                 alignContent: 'center',
                 alignSelf: 'center',
@@ -79,7 +82,13 @@ const NotificationProvider = ({ children }: Props) => {
                   flexWrap: 'wrap'
                 }}
               >
-                <Text variant="bodyMedium" style={{ alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <Text
+                  variant="bodyMedium"
+                  style={{
+                    alignItems: 'flex-start',
+                    flexWrap: 'wrap'
+                  }}
+                >
                   {notification.message}
                 </Text>
               </Dialog.Content>

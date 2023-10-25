@@ -1,12 +1,15 @@
 /* eslint-disable import/order */
 import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
+import DurationPicker from '../../../../ui/custom-form/DurationPicker';
 import TimerPicker from '../../../../ui/custom-form/TimerPicker';
-import { ErrorType, Inputs, Touched } from '../ServicesList';
 import ServiceTypesModal from '../service-types-crud/ServiceTypesModal';
-import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
+import { ErrorType, Inputs, Touched } from '../ServicesList';
+
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import { GetServiceTypeResponse } from 'models/customers/service-types/GetServiceTypesResponse';
 import FileCustom from 'util/types/FileCustom';
 
 type Props = {
@@ -18,6 +21,7 @@ type Props = {
     enteredValue: string | Date | GetServiceTypeResponse[] | FileCustom[] | undefined
   ) => void;
   blurHandler: (field: string) => void;
+  navigation: any;
 };
 
 const Step1ServiceInfo: React.FC<Props> = ({
@@ -25,7 +29,8 @@ const Step1ServiceInfo: React.FC<Props> = ({
   touched,
   errors,
   changeHandler,
-  blurHandler
+  blurHandler,
+  navigation
 }) => {
   const [openServiceTypesModal, setOpenServiceTypesModal] = useState<boolean>(false);
   const [selectedServiceTypes, setSelectedServiceTypes] = useState<GetServiceTypeResponse[]>(
@@ -56,6 +61,16 @@ const Step1ServiceInfo: React.FC<Props> = ({
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
       />
+      <DurationPicker
+        fieldHours="durationHours"
+        fieldMinutes="durationMinutes"
+        label="Duração do atendimento:"
+        values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
+      />
       <ServiceTypesModal
         errors={errors}
         visible={openServiceTypesModal}
@@ -65,6 +80,7 @@ const Step1ServiceInfo: React.FC<Props> = ({
         mode="crud"
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
+        navigation={navigation}
       />
     </KeyboardAwareScrollView>
   );
