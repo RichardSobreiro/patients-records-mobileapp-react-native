@@ -100,7 +100,6 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [fabOpen, setFabOpen] = useState<boolean>(false);
   const [calendarMode, setCalendarMode] = useState<string>('daily');
-  // const marked = useRef(getMarkedDates());
   const marked = useRef<MarkedDates>();
   const theme = useRef(getTheme());
   const todayBtnTheme = useRef({
@@ -139,8 +138,16 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
         const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
           s.date = new Date(s.date);
           const start = new Date(s.date);
-          s.date.setHours(s.date.getHours() + 1);
-          const end = new Date(s.date);
+          let end = new Date(start);
+          if (isNaN(+s.durationHours) || isNaN(+s.durationMinutes)) {
+            end = new Date(end.getTime() + 30 * 60 * 1000);
+          } else {
+            if (+s.durationHours > 0) {
+              end = new Date(s.date.getTime() + +s.durationHours * 60 * 60 * 1000);
+            }
+            end = new Date(end.getTime() + +s.durationMinutes * 60 * 1000);
+          }
+
           const confirmed = Math.random() < 0.5;
           newMarkedDates[start.toISOString().split('T')[0]] = { marked: true };
 

@@ -12,6 +12,8 @@ export class GetServiceByIdResponse {
     public durationHours: number,
     public durationMinutes: number,
     public serviceTypes: GetServiceTypeResponse[],
+    public status: string,
+    public sendReminder: boolean,
     public beforeNotes?: string,
     public afterNotes?: string,
     public beforePhotos?: GetServicePhotosResponse[] | null,

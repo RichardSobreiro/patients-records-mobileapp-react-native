@@ -52,6 +52,16 @@ export type Inputs = {
     value: GetServiceTypeResponse[];
     isValid: boolean;
   };
+  status: {
+    value: string;
+    isValid: boolean;
+  };
+  reminderMessage: {
+    value: {
+      sendReminder: boolean;
+    };
+    isValid: boolean;
+  };
   beforeComments: {
     value: string | undefined;
     isValid: boolean;

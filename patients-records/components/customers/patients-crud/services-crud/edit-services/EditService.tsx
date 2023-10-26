@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import AccordionItem from '../../../../../components/ui/AccordionItem';
+import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import { Colors } from '../../../../../constants/styles';
 import { getServiceById, updateService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
@@ -71,6 +72,16 @@ const EditService: React.FC<Props> = ({
       value: [],
       isValid: true
     },
+    status: {
+      value: ServiceStatus.Unconfirmed,
+      isValid: true
+    },
+    reminderMessage: {
+      value: {
+        sendReminder: true
+      },
+      isValid: true
+    },
     beforeComments: {
       value: '',
       isValid: true
@@ -133,6 +144,16 @@ const EditService: React.FC<Props> = ({
         value: [],
         isValid: true
       },
+      status: {
+        value: ServiceStatus.Unconfirmed,
+        isValid: true
+      },
+      reminderMessage: {
+        value: {
+          sendReminder: true
+        },
+        isValid: true
+      },
       beforeComments: {
         value: '',
         isValid: true
@@ -181,6 +202,7 @@ const EditService: React.FC<Props> = ({
       getServiceResponse.afterPhotos,
       'after-photo'
     );
+
     setInputs({
       date: {
         value: dateObject,
@@ -204,6 +226,16 @@ const EditService: React.FC<Props> = ({
       },
       selectedServiceTypes: {
         value: [...getServiceResponse.serviceTypes],
+        isValid: true
+      },
+      status: {
+        value: getServiceResponse.status,
+        isValid: true
+      },
+      reminderMessage: {
+        value: {
+          sendReminder: getServiceResponse.sendReminder ?? true
+        },
         isValid: true
       },
       beforeComments: {

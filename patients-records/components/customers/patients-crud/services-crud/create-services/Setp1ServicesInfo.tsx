@@ -1,4 +1,6 @@
 /* eslint-disable import/order */
+import Dropdown from '../../../../../components/ui/Dropdown';
+import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
 import DurationPicker from '../../../../ui/custom-form/DurationPicker';
 import TimerPicker from '../../../../ui/custom-form/TimerPicker';
@@ -81,6 +83,19 @@ const Step1ServiceInfo: React.FC<Props> = ({
         onChangeHandler={changeHandler}
         onBlurHandler={blurHandler}
         navigation={navigation}
+      />
+      <Dropdown
+        field="status"
+        label="Status:"
+        values={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        data={[
+          { label: 'Confirmado', value: ServiceStatus.Confirmed },
+          { label: 'Não Confirmado', value: ServiceStatus.Unconfirmed },
+          { label: 'Cancelado', value: ServiceStatus.Canceled }
+        ]}
       />
     </KeyboardAwareScrollView>
   );

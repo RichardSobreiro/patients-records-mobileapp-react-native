@@ -33,8 +33,8 @@ const DurationPicker: React.FC<Props> = ({
 
   useEffect(() => {
     if (
-      values[fieldHours].value &&
-      values[fieldMinutes].value &&
+      !isNaN(values[fieldHours].value) &&
+      !isNaN(values[fieldMinutes].value) &&
       values[fieldHours].value >= 0 &&
       values[fieldMinutes].value >= 10
     ) {
@@ -46,10 +46,8 @@ const DurationPicker: React.FC<Props> = ({
 
   const onChange = (selectedTime: Date) => {
     setVisible(false);
-    console.log(`selectedTime: ${selectedTime.toISOString()}`);
     const currentDate = new Date(selectedTime.toISOString());
     currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-    console.log(`currentDate: ${currentDate}`);
     onChangeHandler(fieldHours, currentDate.getHours());
     onChangeHandler(fieldMinutes, currentDate.getMinutes());
   };
@@ -68,8 +66,8 @@ const DurationPicker: React.FC<Props> = ({
           mode="outlined"
           style={{ width: '100%' }}
         >
-          {values[fieldHours].value &&
-          values[fieldMinutes].value &&
+          {!isNaN(values[fieldHours].value) &&
+          !isNaN(values[fieldMinutes].value) &&
           values[fieldHours].value >= 0 &&
           values[fieldMinutes].value >= 10
             ? `${

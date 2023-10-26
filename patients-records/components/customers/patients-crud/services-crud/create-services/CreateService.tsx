@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import AccordionItem from '../../../../../components/ui/AccordionItem';
+import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import { Colors } from '../../../../../constants/styles';
 import { createService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
@@ -54,6 +55,10 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     },
     selectedServiceTypes: {
       value: [],
+      isValid: true
+    },
+    status: {
+      value: ServiceStatus.Unconfirmed,
       isValid: true
     },
     beforeComments: {
@@ -252,6 +257,7 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
           value: [],
           isValid: true
         },
+        status: { value: ServiceStatus.Unconfirmed, isValid: true },
         beforeComments: {
           value: '',
           isValid: true
