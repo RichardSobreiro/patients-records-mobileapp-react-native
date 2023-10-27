@@ -14,6 +14,7 @@ export class GetServiceByIdResponse {
     public serviceTypes: GetServiceTypeResponse[],
     public status: string,
     public sendReminder: boolean,
+    public reminderMessageAdvanceTime: number,
     public beforeNotes?: string,
     public afterNotes?: string,
     public beforePhotos?: GetServicePhotosResponse[] | null,

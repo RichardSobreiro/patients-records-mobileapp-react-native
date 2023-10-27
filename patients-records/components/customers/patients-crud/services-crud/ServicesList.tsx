@@ -20,7 +20,12 @@ import { FAB, Portal, Searchbar } from 'react-native-paper';
 export type ErrorType = {
   date: null | string;
   time: null | string;
+  durationHours: null | string;
+  durationMinutes: null | string;
   selectedServiceTypes: null | string;
+  status: null | string;
+  reminderMessage: null | string;
+  reminderMessageAdvanceTime: null | string;
   beforeComments: null | string;
   beforePhotos: null | string;
   afterComments: null | string;
@@ -62,6 +67,10 @@ export type Inputs = {
     };
     isValid: boolean;
   };
+  reminderMessageAdvanceTime: {
+    value: number;
+    isValid: boolean;
+  };
   beforeComments: {
     value: string | undefined;
     isValid: boolean;
@@ -83,7 +92,12 @@ export type Inputs = {
 export type Touched = {
   date: boolean;
   time: boolean;
+  durationHours: boolean;
+  durationMinutes: boolean;
   selectedServiceTypes: boolean;
+  status: boolean;
+  reminderMessage: boolean;
+  reminderMessageAdvanceTime: boolean;
   beforeComments: boolean;
   beforePhotos: boolean;
   afterComments: boolean;

@@ -82,6 +82,10 @@ const EditService: React.FC<Props> = ({
       },
       isValid: true
     },
+    reminderMessageAdvanceTime: {
+      value: 24,
+      isValid: true
+    },
     beforeComments: {
       value: '',
       isValid: true
@@ -102,7 +106,12 @@ const EditService: React.FC<Props> = ({
   const [touched, setTouched] = useState<Touched>({
     date: false,
     time: false,
+    durationHours: false,
+    durationMinutes: false,
     selectedServiceTypes: false,
+    status: false,
+    reminderMessage: false,
+    reminderMessageAdvanceTime: false,
     beforeComments: false,
     beforePhotos: false,
     afterComments: false,
@@ -111,7 +120,12 @@ const EditService: React.FC<Props> = ({
   const [errors, setErrors] = useState<ErrorType>({
     date: null,
     time: null,
+    durationHours: null,
+    durationMinutes: null,
     selectedServiceTypes: null,
+    status: null,
+    reminderMessage: null,
+    reminderMessageAdvanceTime: null,
     beforeComments: null,
     beforePhotos: null,
     afterComments: null,
@@ -154,6 +168,10 @@ const EditService: React.FC<Props> = ({
         },
         isValid: true
       },
+      reminderMessageAdvanceTime: {
+        value: 24,
+        isValid: true
+      },
       beforeComments: {
         value: '',
         isValid: true
@@ -174,7 +192,12 @@ const EditService: React.FC<Props> = ({
     setTouched({
       date: false,
       time: false,
+      durationHours: false,
+      durationMinutes: false,
       selectedServiceTypes: false,
+      status: false,
+      reminderMessage: false,
+      reminderMessageAdvanceTime: false,
       beforeComments: false,
       beforePhotos: false,
       afterComments: false,
@@ -183,7 +206,12 @@ const EditService: React.FC<Props> = ({
     setErrors({
       date: null,
       time: null,
+      durationHours: null,
+      durationMinutes: null,
       selectedServiceTypes: null,
+      status: null,
+      reminderMessage: null,
+      reminderMessageAdvanceTime: null,
       beforeComments: null,
       beforePhotos: null,
       afterComments: null,
@@ -229,13 +257,17 @@ const EditService: React.FC<Props> = ({
         isValid: true
       },
       status: {
-        value: getServiceResponse.status,
+        value: getServiceResponse.status ?? ServiceStatus.Unconfirmed,
         isValid: true
       },
       reminderMessage: {
         value: {
           sendReminder: getServiceResponse.sendReminder ?? true
         },
+        isValid: true
+      },
+      reminderMessageAdvanceTime: {
+        value: getServiceResponse.reminderMessageAdvanceTime ?? 24,
         isValid: true
       },
       beforeComments: {
@@ -354,6 +386,12 @@ const EditService: React.FC<Props> = ({
 
       if (field === 'selectedServiceTypes') {
         newInputs[field].isValid = validateServiceTypes(newInputs);
+      }
+
+      if (field === 'reminderMessageAdvanceTime') {
+        newInputs[field].value = +newInputs[field].value.toString().replace(/\D/g, '');
+        console.log(`REPLACE RESULT: ${newInputs[field].value.toString().replace(/\D/g, '')}`);
+        console.log(`reminderMessageAdvanceTime: ${newInputs[field].value}`);
       }
 
       return newInputs;

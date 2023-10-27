@@ -106,7 +106,10 @@ const Step1ServiceInfo: React.FC<Props> = ({
         enabled={inputs['status'].value === ServiceStatus.Unconfirmed}
         field={'reminderMessage'}
         inputs={inputs}
+        touched={touched}
+        errors={errors}
         onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
       />
     </KeyboardAwareScrollView>
   );

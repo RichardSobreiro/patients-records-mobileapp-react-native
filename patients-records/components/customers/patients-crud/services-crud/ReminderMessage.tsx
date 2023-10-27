@@ -1,5 +1,6 @@
+import InlineInput from '../../../../components/ui/custom-form/InputInline';
 import { Colors } from '../../../../constants/styles';
-import { Inputs } from './ServicesList';
+import { ErrorType, Inputs, Touched } from './ServicesList';
 
 import { StyleSheet, Text, View } from 'react-native';
 import { Switch } from 'react-native-paper';
@@ -8,16 +9,25 @@ type Props = {
   enabled: boolean;
   field: string;
   inputs: Inputs;
+  touched: Touched;
+  errors: ErrorType;
   onChangeHandler: (field: string, value: any) => void;
+  onBlurHandler: (field: string) => void;
 };
 
-const ReminderMessage: React.FC<Props> = ({ enabled, field, inputs, onChangeHandler }) => {
+const ReminderMessage: React.FC<Props> = ({
+  enabled,
+  field,
+  inputs,
+  touched,
+  errors,
+  onChangeHandler,
+  onBlurHandler
+}) => {
   return (
-    <View style={enabled ? styles.contentEnabled : styles.contentDisabled}>
-      <View style={styles.switchContainer}>
-        <Text style={[styles.switchText, enabled ? {} : styles.textDisabled]}>
-          Enviar lembrete?
-        </Text>
+    <View style={styles.content}>
+      <View style={styles.rowContainer}>
+        <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>Enviar lembrete?</Text>
         <Switch
           value={inputs[field].value.sendReminder}
           onValueChange={() => {
@@ -29,6 +39,29 @@ const ReminderMessage: React.FC<Props> = ({ enabled, field, inputs, onChangeHand
           disabled={!enabled}
         />
       </View>
+      <View style={[{ justifyContent: 'flex-start' }]}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>
+            Enviar mensagem com{' '}
+          </Text>
+          <InlineInput
+            field="reminderMessageAdvanceTime"
+            inputs={inputs}
+            touched={touched}
+            errors={errors}
+            onChangeHandler={onChangeHandler}
+            onBlurHandler={onBlurHandler}
+            editable={enabled}
+            keyboardType="number-pad"
+            maxLength={2}
+            defaultValue={'24'}
+          />
+          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}> horas de</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>antecedência</Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -36,23 +69,18 @@ const ReminderMessage: React.FC<Props> = ({ enabled, field, inputs, onChangeHand
 export default ReminderMessage;
 
 const styles = StyleSheet.create({
-  contentEnabled: {
-    gap: 20,
-    backgroundColor: 'transparent',
-    marginBottom: 20
-  },
-  contentDisabled: {
+  content: {
     gap: 20,
     backgroundColor: 'transparent',
     marginBottom: 20
   },
   textDisabled: { color: Colors.tertiary500 },
-  switchContainer: {
+  rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  switchText: {
+  rowText: {
     fontSize: 18,
     color: Colors.primary500
   }
