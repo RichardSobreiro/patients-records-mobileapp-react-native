@@ -7,6 +7,7 @@ import { GetServiceByIdResponse } from '../models/customers/services/GetServiceB
 import { GetServicesResponse } from '../models/customers/services/GetServicesResponse';
 import { UpdateServiceRequest } from '../models/customers/services/UpdateServiceRequest';
 import { UpdateServiceResponse } from '../models/customers/services/UpdateServiceResponse';
+import fetchWithTimeout from '../util/fetchWithTimeout';
 
 export const createService = async (
   accessToken: string,
@@ -100,9 +101,15 @@ export const updateService = async (
 
     const formData = new FormData();
     formData.append('date', request.date.toISOString());
-    formData.append('durationHours', request.durationHours.toString());
-    formData.append('durationMinutes', request.durationMinutes.toString());
+    formData.append('durationHours', JSON.stringify(request.durationHours));
+    formData.append('durationMinutes', JSON.stringify(request.durationMinutes));
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
+    formData.append('status', request.status);
+    formData.append('sendReminder', JSON.stringify(request.sendReminder));
+    formData.append(
+      'reminderMessageAdvanceTime',
+      JSON.stringify(request.reminderMessageAdvanceTime)
+    );
     formData.append('beforeNotes', request.beforeNotes!);
     formData.append('afterNotes', request.afterNotes!);
     if (request.beforePhotos) {
@@ -210,7 +217,7 @@ export const getServicesAgenda = async (
   }
 
   try {
-    const response = await fetch(URL, {
+    const response = await fetchWithTimeout(URL, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -226,7 +233,12 @@ export const getServicesAgenda = async (
       return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
     }
   } catch (error: any) {
-    console.log(`Error: ${JSON.stringify(error)}`);
-    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+    return new ApiResponse(
+      false,
+      400,
+      error.message,
+      new ErrorDetails(error.message, 400),
+      error.name
+    );
   }
 };

@@ -1,6 +1,6 @@
 import { Colors } from '../../../constants/styles';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 type Props = {
@@ -34,9 +34,11 @@ const InlineInput: React.FC<Props> = ({
   maxLength,
   defaultValue
 }) => {
-  const [value, setValue] = useState<string>(inputs[field].value ?? '');
-  console.log(`VALUE: ${value}`);
-  console.log(`inputs[field].value: ${inputs[field].value}`);
+  const [value, setValue] = useState<string>(
+    typeof inputs[field].value === 'number'
+      ? inputs[field].value.toString()
+      : inputs[field].value ?? ''
+  );
 
   return (
     <>
@@ -48,7 +50,6 @@ const InlineInput: React.FC<Props> = ({
         value={value}
         defaultValue={defaultValue ?? ''}
         onChangeText={(text) => {
-          console.log(`text: ${text}`);
           if (keyboardType === 'number-pad') {
             setValue(text.replace(/\D/g, ''));
           } else {

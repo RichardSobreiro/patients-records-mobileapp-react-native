@@ -390,8 +390,6 @@ const EditService: React.FC<Props> = ({
 
       if (field === 'reminderMessageAdvanceTime') {
         newInputs[field].value = +newInputs[field].value.toString().replace(/\D/g, '');
-        console.log(`REPLACE RESULT: ${newInputs[field].value.toString().replace(/\D/g, '')}`);
-        console.log(`reminderMessageAdvanceTime: ${newInputs[field].value}`);
       }
 
       return newInputs;
@@ -429,12 +427,17 @@ const EditService: React.FC<Props> = ({
     dateObject.setHours(inputs.hour.value as unknown as number);
     dateObject.setMinutes(inputs.minutes.value as unknown as number);
 
+    console.log(`SendReminder: ${inputs.reminderMessage.value.sendReminder}`);
+
     const request = new UpdateServiceRequest(
       serviceId,
       dateObject,
       inputs.durationHours.value,
       inputs.durationMinutes.value,
       inputs.selectedServiceTypes.value,
+      inputs.status.value,
+      inputs.reminderMessage.value.sendReminder,
+      inputs.reminderMessageAdvanceTime.value,
       inputs.beforeComments.value,
       inputs.beforePhotos.value,
       inputs.afterComments.value,
@@ -475,7 +478,10 @@ const EditService: React.FC<Props> = ({
     inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
+    inputs.reminderMessage.value.sendReminder,
+    inputs.reminderMessageAdvanceTime.value,
     inputs.selectedServiceTypes.value,
+    inputs.status.value,
     notificationCtx,
     serviceId,
     validateForm

@@ -1,8 +1,7 @@
 /** @format */
-import { Colors } from '../constants/styles';
+import ErrorDialog from '../components/ui/ErrorDialog';
 
 import { createContext, useState } from 'react';
-import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 export type Notification = {
   title?: string | null | undefined;
@@ -49,59 +48,12 @@ const NotificationProvider = ({ children }: Props) => {
     <NotificationContext.Provider value={value}>
       {children}
       {show && (
-        <>
-          <Portal>
-            <Dialog
-              style={{
-                backgroundColor: Colors.primary100,
-                borderColor: Colors.primary800,
-                borderWidth: 1,
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignSelf: 'center',
-                maxWidth: 250,
-                maxHeight: 270
-              }}
-              visible={show}
-              onDismiss={hideNotification}
-            >
-              <Dialog.Title
-                style={{
-                  flex: 2,
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
-                {notification.title}
-              </Dialog.Title>
-              <Dialog.Content
-                style={{
-                  flex: 2,
-                  alignItems: 'flex-start',
-                  flexWrap: 'wrap'
-                }}
-              >
-                <Text
-                  variant="bodyMedium"
-                  style={{
-                    alignItems: 'flex-start',
-                    flexWrap: 'wrap'
-                  }}
-                >
-                  {notification.message}
-                </Text>
-              </Dialog.Content>
-              <Dialog.Actions
-                style={{
-                  flex: 1
-                }}
-              >
-                <Button onPress={() => hideNotification()}>Ok</Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
-        </>
+        <ErrorDialog
+          show={show}
+          hideNotification={hideNotification}
+          title={notification.title!}
+          message={notification.message!}
+        />
       )}
     </NotificationContext.Provider>
   );

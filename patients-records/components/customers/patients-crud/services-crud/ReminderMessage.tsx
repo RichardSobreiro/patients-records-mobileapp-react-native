@@ -2,6 +2,7 @@ import InlineInput from '../../../../components/ui/custom-form/InputInline';
 import { Colors } from '../../../../constants/styles';
 import { ErrorType, Inputs, Touched } from './ServicesList';
 
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Switch } from 'react-native-paper';
 
@@ -24,16 +25,25 @@ const ReminderMessage: React.FC<Props> = ({
   onChangeHandler,
   onBlurHandler
 }) => {
+  const [onOffSwitchState, setOnOffSwitchState] = useState<boolean>(enabled);
+
+  useEffect(() => {
+    setOnOffSwitchState(enabled);
+  }, [enabled]);
+
   return (
     <View style={styles.content}>
       <View style={styles.rowContainer}>
-        <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>Enviar lembrete?</Text>
+        <Text style={[styles.rowText, onOffSwitchState ? {} : styles.textDisabled]}>
+          Enviar lembrete?
+        </Text>
         <Switch
-          value={inputs[field].value.sendReminder}
-          onValueChange={() => {
+          value={onOffSwitchState}
+          onValueChange={(value) => {
+            setOnOffSwitchState(value);
+
             onChangeHandler(field, {
-              ...inputs[field].value,
-              sendReminder: !inputs[field].value.sendReminder
+              sendReminder: value
             });
           }}
           disabled={!enabled}
@@ -41,7 +51,7 @@ const ReminderMessage: React.FC<Props> = ({
       </View>
       <View style={[{ justifyContent: 'flex-start' }]}>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>
+          <Text style={[styles.rowText, onOffSwitchState ? {} : styles.textDisabled]}>
             Enviar mensagem com{' '}
           </Text>
           <InlineInput
@@ -51,15 +61,20 @@ const ReminderMessage: React.FC<Props> = ({
             errors={errors}
             onChangeHandler={onChangeHandler}
             onBlurHandler={onBlurHandler}
-            editable={enabled}
+            editable={onOffSwitchState}
             keyboardType="number-pad"
             maxLength={2}
             defaultValue={'24'}
           />
-          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}> horas de</Text>
+          <Text style={[styles.rowText, onOffSwitchState ? {} : styles.textDisabled]}>
+            {' '}
+            horas de
+          </Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={[styles.rowText, enabled ? {} : styles.textDisabled]}>antecedência</Text>
+          <Text style={[styles.rowText, onOffSwitchState ? {} : styles.textDisabled]}>
+            antecedência
+          </Text>
         </View>
       </View>
     </View>

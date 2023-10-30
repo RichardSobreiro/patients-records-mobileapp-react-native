@@ -1,10 +1,10 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Colors } from '../../constants/styles';
+import useAsyncErrorHandler from '../../hooks/useAsyncErrorHandler';
 import { getServicesAgenda } from '../../http/ServicesApi';
 import { GetServicesAgendaResponse } from '../../models/customers/services/GetServicesAgendaResponse';
 import { AuthContext } from '../../store/auth-context';
-import { NotificationContext } from '../../store/notification-context';
 import { formatDateTimeUTCFormat } from '../../util/date-helpers';
 import AgendaItem from './mocks/AgendaItem';
 import { agendaItems } from './mocks/agendaItems';
@@ -91,7 +91,7 @@ type Props = {
 
 const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
-  const notificationCtx = useContext(NotificationContext);
+  const asyncErrorHandler = useAsyncErrorHandler();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isFocused = useIsFocused();
@@ -176,14 +176,15 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
           return newEvents;
         });
       } else {
-        notificationCtx.showNotification({
-          title: 'Ops...',
-          message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
-        });
+        asyncErrorHandler(
+          new Error(`getServicesAgenda: ${response.error?.message}`, {
+            cause: response.httpStatusCode
+          })
+        );
       }
       setIsLoading(false);
     },
-    [authCtx.token?.access_token, notificationCtx]
+    [authCtx.token?.access_token, asyncErrorHandler]
   );
 
   useEffect(() => {
