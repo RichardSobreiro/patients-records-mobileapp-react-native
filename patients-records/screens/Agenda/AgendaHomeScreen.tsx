@@ -177,7 +177,7 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
         });
       } else {
         asyncErrorHandler(
-          new Error(`getServicesAgenda: ${response.error?.message}`, {
+          new Error(`getServicesAgenda: ${JSON.stringify(response)}`, {
             cause: response.httpStatusCode
           })
         );

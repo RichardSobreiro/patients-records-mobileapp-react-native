@@ -230,15 +230,22 @@ export const getServicesAgenda = async (
       const responseBody: GetServicesResponse = await response.json();
       return new ApiResponse(true, response.status, responseBody);
     } else {
-      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
+      return new ApiResponse(
+        false,
+        response.status,
+        undefined,
+        new ErrorDetails(response.statusText, response.status, 'ERROR CALLING getServicesAgenda')
+      );
     }
   } catch (error: any) {
-    return new ApiResponse(
-      false,
-      400,
-      error.message,
-      new ErrorDetails(error.message, 400),
-      error.name
-    );
+    console.log(`ERROR: ${error}`);
+    // return new ApiResponse(
+    //   false,
+    //   400,
+    //   error.message,
+    //   new ErrorDetails(error.message, 400),
+    //   error.name
+    // );
+    throw error;
   }
 };

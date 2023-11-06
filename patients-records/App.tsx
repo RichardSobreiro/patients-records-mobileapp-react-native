@@ -25,8 +25,8 @@ LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']
 WebBrowser.maybeCompleteAuthSession();
 
 const handleJSErrors = (error: Error, stackTrace: string) => {
-  console.log(`ERROR HANDLER: ${JSON.stringify(error)}`);
-  console.log(`STACK TRACE: ${stackTrace}`);
+  // console.log(`ERROR HANDLER: ${JSON.stringify(error)}`);
+  // console.log(`STACK TRACE: ${stackTrace}`);
 };
 
 const CustomFallback = (props: { error: Error; resetError: Function }) => {
@@ -34,6 +34,7 @@ const CustomFallback = (props: { error: Error; resetError: Function }) => {
   const authCtx = useContext(AuthContext);
   if (props.error.cause === 401) {
     authCtx.logout();
+    props.resetError();
   }
   return (
     <ErrorDialog
