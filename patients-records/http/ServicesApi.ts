@@ -101,8 +101,8 @@ export const updateService = async (
 
     const formData = new FormData();
     formData.append('date', request.date.toISOString());
-    formData.append('durationHours', JSON.stringify(request.durationHours));
-    formData.append('durationMinutes', JSON.stringify(request.durationMinutes));
+    formData.append('durationHours', request.durationHours.toString());
+    formData.append('durationMinutes', request.durationMinutes.toString());
     formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
     formData.append('status', request.status);
     formData.append('sendReminder', JSON.stringify(request.sendReminder));

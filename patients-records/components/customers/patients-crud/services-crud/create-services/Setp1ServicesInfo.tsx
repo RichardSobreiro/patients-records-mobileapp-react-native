@@ -4,6 +4,7 @@ import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import DatePickerV2 from '../../../../ui/custom-form/DatePickerV2';
 import DurationPicker from '../../../../ui/custom-form/DurationPicker';
 import TimerPicker from '../../../../ui/custom-form/TimerPicker';
+import ReminderMessage from '../ReminderMessage';
 import ServiceTypesModal from '../service-types-crud/ServiceTypesModal';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
 
@@ -96,6 +97,15 @@ const Step1ServiceInfo: React.FC<Props> = ({
           { label: 'Não Confirmado', value: ServiceStatus.Unconfirmed },
           { label: 'Cancelado', value: ServiceStatus.Canceled }
         ]}
+      />
+      <ReminderMessage
+        enabled={inputs['status'].value === ServiceStatus.Unconfirmed}
+        field={'sendReminder'}
+        inputs={inputs}
+        touched={touched}
+        errors={errors}
+        onChangeHandler={changeHandler}
+        onBlurHandler={blurHandler}
       />
     </KeyboardAwareScrollView>
   );

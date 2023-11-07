@@ -1,5 +1,6 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import ServiceStatus from '../../constants/enums/ServiceStatus';
 import { Colors } from '../../constants/styles';
 import useAsyncErrorHandler from '../../hooks/useAsyncErrorHandler';
 import { getServicesAgenda } from '../../http/ServicesApi';
@@ -11,6 +12,7 @@ import { agendaItems } from './mocks/agendaItems';
 import { getTheme } from './mocks/theme';
 import { getDate } from './mocks/timelineEvents';
 
+import { AntDesign, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import groupBy from 'lodash/groupBy';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
@@ -37,7 +39,8 @@ const INITIAL_TIME = { hour: 9, minutes: 0 };
 interface CustomEvent extends PackedEvent {
   customerId: string;
   serviceId: string;
-  confirmed: boolean;
+  serviceStatus: ServiceStatus;
+  sendReminder: boolean;
 }
 
 LocaleConfig.locales['pt'] = {
@@ -148,8 +151,12 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
             end = new Date(end.getTime() + +s.durationMinutes * 60 * 1000);
           }
 
-          const confirmed = Math.random() < 0.5;
           newMarkedDates[start.toISOString().split('T')[0]] = { marked: true };
+
+          let color: string = Colors.primary100;
+          if (s.status === ServiceStatus.Confirmed) color = Colors.secondary100;
+          else if (s.status === ServiceStatus.Unconfirmed) color = Colors.primary100;
+          else if (s.status === ServiceStatus.Canceled) color = Colors.tertiary300;
 
           return {
             start: `${formatDateTimeUTCFormat(start)}`,
@@ -158,8 +165,9 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
             summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - '),
             serviceId: s.serviceId,
             customerId: s.customerId,
-            confirmed,
-            color: confirmed ? Colors.secondary100 : Colors.primary100
+            serviceStatus: s.status,
+            sendReminder: s.sendReminder,
+            color
           };
         });
         marked.current = newMarkedDates;
@@ -189,7 +197,7 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
-      getServicesAgendaAsync(2023, 9);
+      getServicesAgendaAsync(2023, 10);
     }
   }, [getServicesAgendaAsync, isFocused]);
 
@@ -209,23 +217,39 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <Timeline
         {...timelineProps}
         renderEvent={(item) => {
+          let textColor: string = Colors.primary500;
+          if ((item as CustomEvent).serviceStatus === ServiceStatus.Confirmed)
+            textColor = Colors.primary500;
+          else if ((item as CustomEvent).serviceStatus === ServiceStatus.Unconfirmed)
+            textColor = Colors.primary500;
+          else if ((item as CustomEvent).serviceStatus === ServiceStatus.Canceled)
+            textColor = Colors.tertiary800;
           return (
-            <TouchableOpacity style={{ flex: 1, justifyContent: 'space-between' }}>
-              <View>
-                <Text style={{ color: Colors.primary500, fontSize: 17 }}>{item.title}</Text>
-                <Text style={{ color: Colors.primary500, fontSize: 14 }}>{item.summary}</Text>
+            <TouchableOpacity
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                width: '100%'
+              }}
+            >
+              <View style={{}}>
+                <Text style={{ color: textColor, fontSize: 17 }}>{item.title}</Text>
+                <Text style={{ color: textColor, fontSize: 14 }}>{item.summary}</Text>
               </View>
-              <View style={{ marginBottom: 5 }}>
-                <Text
-                  style={{
-                    color: (item as CustomEvent).confirmed
-                      ? Colors.secondary800
-                      : Colors.tertiary800,
-                    fontSize: 12
-                  }}
-                >
-                  {(item as CustomEvent).confirmed ? `Confirmado` : `Não confirmado`}
-                </Text>
+              <View style={{ paddingHorizontal: 10, paddingVertical: 2 }}>
+                {(item as CustomEvent).serviceStatus === ServiceStatus.Confirmed &&
+                  (item as CustomEvent).sendReminder && <AntDesign name="checkcircleo" size={24} />}
+                {(item as CustomEvent).serviceStatus === ServiceStatus.Unconfirmed &&
+                  (item as CustomEvent).sendReminder && (
+                    <FontAwesome5 name="user-clock" size={24} color="black" />
+                  )}
+                {(item as CustomEvent).serviceStatus === ServiceStatus.Canceled &&
+                  (item as CustomEvent).sendReminder && (
+                    <FontAwesome5 name="user-times" size={24} color="black" />
+                  )}
+                {!(item as CustomEvent).sendReminder && (
+                  <MaterialCommunityIcons name="message-lock" size={24} color="black" />
+                )}
               </View>
             </TouchableOpacity>
           );

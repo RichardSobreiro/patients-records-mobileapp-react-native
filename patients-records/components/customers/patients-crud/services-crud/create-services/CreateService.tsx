@@ -61,6 +61,14 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       value: ServiceStatus.Unconfirmed,
       isValid: true
     },
+    sendReminder: {
+      value: true,
+      isValid: true
+    },
+    reminderMessageAdvanceTime: {
+      value: 24,
+      isValid: true
+    },
     beforeComments: {
       value: '',
       isValid: true
@@ -81,7 +89,12 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
   const [touched, setTouched] = useState<Touched>({
     date: false,
     time: false,
+    durationHours: false,
+    durationMinutes: false,
     selectedServiceTypes: false,
+    status: false,
+    sendReminder: false,
+    reminderMessageAdvanceTime: false,
     beforeComments: false,
     beforePhotos: false,
     afterComments: false,
@@ -90,7 +103,12 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
   const [errors, setErrors] = useState<ErrorType>({
     date: null,
     time: null,
+    durationHours: null,
+    durationMinutes: null,
     selectedServiceTypes: null,
+    status: null,
+    sendReminder: null,
+    reminderMessageAdvanceTime: null,
     beforeComments: null,
     beforePhotos: null,
     afterComments: null,
@@ -167,6 +185,9 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
         [field]: { value: enteredValue, isValid: true }
       };
 
+      console.log(`durationHours: ${newInputs.durationHours.value}`);
+      console.log(`durationMinutes: ${newInputs.durationMinutes.value}`);
+
       if (field === 'date') {
         newInputs[field].isValid = validateDate(newInputs);
       }
@@ -177,6 +198,10 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
 
       if (field === 'selectedServiceTypes') {
         newInputs[field].isValid = validateServiceTypes(newInputs);
+      }
+
+      if (field === 'reminderMessageAdvanceTime') {
+        newInputs[field].value = +newInputs[field].value.toString().replace(/\D/g, '');
       }
 
       return newInputs;
@@ -223,6 +248,9 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       inputs.durationHours.value,
       inputs.durationMinutes.value,
       inputs.selectedServiceTypes.value,
+      inputs.status.value,
+      inputs.sendReminder.value,
+      inputs.reminderMessageAdvanceTime.value,
       inputs.beforeComments.value,
       inputs.beforePhotos.value,
       inputs.afterComments.value,
@@ -232,67 +260,67 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     const response = await createService(authCtx.token?.access_token, customerId, request);
 
     if (response.ok) {
-      setInputs({
-        date: {
-          value: new Date(),
-          isValid: true
-        },
-        hour: {
-          value: 9,
-          isValid: true
-        },
-        minutes: {
-          value: 0,
-          isValid: true
-        },
-        durationHours: {
-          value: 0,
-          isValid: true
-        },
-        durationMinutes: {
-          value: 0,
-          isValid: true
-        },
-        selectedServiceTypes: {
-          value: [],
-          isValid: true
-        },
-        status: { value: ServiceStatus.Unconfirmed, isValid: true },
-        beforeComments: {
-          value: '',
-          isValid: true
-        },
-        beforePhotos: {
-          value: [],
-          isValid: true
-        },
-        afterComments: {
-          value: '',
-          isValid: true
-        },
-        afterPhotos: {
-          value: [],
-          isValid: true
-        }
-      });
-      setErrors({
-        date: null,
-        time: null,
-        selectedServiceTypes: null,
-        beforeComments: null,
-        beforePhotos: null,
-        afterComments: null,
-        afterPhotos: null
-      });
-      setTouched({
-        date: false,
-        time: false,
-        selectedServiceTypes: false,
-        beforeComments: false,
-        beforePhotos: false,
-        afterComments: false,
-        afterPhotos: false
-      });
+      // setInputs({
+      //   date: {
+      //     value: new Date(),
+      //     isValid: true
+      //   },
+      //   hour: {
+      //     value: 9,
+      //     isValid: true
+      //   },
+      //   minutes: {
+      //     value: 0,
+      //     isValid: true
+      //   },
+      //   durationHours: {
+      //     value: 0,
+      //     isValid: true
+      //   },
+      //   durationMinutes: {
+      //     value: 0,
+      //     isValid: true
+      //   },
+      //   selectedServiceTypes: {
+      //     value: [],
+      //     isValid: true
+      //   },
+      //   status: { value: ServiceStatus.Unconfirmed, isValid: true },
+      //   beforeComments: {
+      //     value: '',
+      //     isValid: true
+      //   },
+      //   beforePhotos: {
+      //     value: [],
+      //     isValid: true
+      //   },
+      //   afterComments: {
+      //     value: '',
+      //     isValid: true
+      //   },
+      //   afterPhotos: {
+      //     value: [],
+      //     isValid: true
+      //   }
+      // });
+      // setErrors({
+      //   date: null,
+      //   time: null,
+      //   selectedServiceTypes: null,
+      //   beforeComments: null,
+      //   beforePhotos: null,
+      //   afterComments: null,
+      //   afterPhotos: null
+      // });
+      // setTouched({
+      //   date: false,
+      //   time: false,
+      //   selectedServiceTypes: false,
+      //   beforeComments: false,
+      //   beforePhotos: false,
+      //   afterComments: false,
+      //   afterPhotos: false
+      // });
       navigation.replace('EditService', {
         customerId,
         serviceId: response.body.serviceId,
@@ -317,7 +345,10 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
+    inputs.reminderMessageAdvanceTime.value,
     inputs.selectedServiceTypes.value,
+    inputs.sendReminder.value,
+    inputs.status.value,
     navigation,
     notificationCtx,
     validateForm

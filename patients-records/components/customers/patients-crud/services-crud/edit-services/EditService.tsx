@@ -76,10 +76,8 @@ const EditService: React.FC<Props> = ({
       value: ServiceStatus.Unconfirmed,
       isValid: true
     },
-    reminderMessage: {
-      value: {
-        sendReminder: true
-      },
+    sendReminder: {
+      value: true,
       isValid: true
     },
     reminderMessageAdvanceTime: {
@@ -110,7 +108,7 @@ const EditService: React.FC<Props> = ({
     durationMinutes: false,
     selectedServiceTypes: false,
     status: false,
-    reminderMessage: false,
+    sendReminder: false,
     reminderMessageAdvanceTime: false,
     beforeComments: false,
     beforePhotos: false,
@@ -124,7 +122,7 @@ const EditService: React.FC<Props> = ({
     durationMinutes: null,
     selectedServiceTypes: null,
     status: null,
-    reminderMessage: null,
+    sendReminder: null,
     reminderMessageAdvanceTime: null,
     beforeComments: null,
     beforePhotos: null,
@@ -162,10 +160,8 @@ const EditService: React.FC<Props> = ({
         value: ServiceStatus.Unconfirmed,
         isValid: true
       },
-      reminderMessage: {
-        value: {
-          sendReminder: true
-        },
+      sendReminder: {
+        value: true,
         isValid: true
       },
       reminderMessageAdvanceTime: {
@@ -196,7 +192,7 @@ const EditService: React.FC<Props> = ({
       durationMinutes: false,
       selectedServiceTypes: false,
       status: false,
-      reminderMessage: false,
+      sendReminder: false,
       reminderMessageAdvanceTime: false,
       beforeComments: false,
       beforePhotos: false,
@@ -210,7 +206,7 @@ const EditService: React.FC<Props> = ({
       durationMinutes: null,
       selectedServiceTypes: null,
       status: null,
-      reminderMessage: null,
+      sendReminder: null,
       reminderMessageAdvanceTime: null,
       beforeComments: null,
       beforePhotos: null,
@@ -225,12 +221,10 @@ const EditService: React.FC<Props> = ({
       getServiceResponse.beforePhotos,
       'before-photo'
     );
-
     const afterPhotosFileCustom = await convertArrayPhotoApiToFileCustom(
       getServiceResponse.afterPhotos,
       'after-photo'
     );
-
     setInputs({
       date: {
         value: dateObject,
@@ -260,10 +254,8 @@ const EditService: React.FC<Props> = ({
         value: getServiceResponse.status ?? ServiceStatus.Unconfirmed,
         isValid: true
       },
-      reminderMessage: {
-        value: {
-          sendReminder: getServiceResponse.sendReminder ?? true
-        },
+      sendReminder: {
+        value: getServiceResponse.sendReminder ?? true,
         isValid: true
       },
       reminderMessageAdvanceTime: {
@@ -427,8 +419,6 @@ const EditService: React.FC<Props> = ({
     dateObject.setHours(inputs.hour.value as unknown as number);
     dateObject.setMinutes(inputs.minutes.value as unknown as number);
 
-    console.log(`SendReminder: ${inputs.reminderMessage.value.sendReminder}`);
-
     const request = new UpdateServiceRequest(
       serviceId,
       dateObject,
@@ -436,7 +426,7 @@ const EditService: React.FC<Props> = ({
       inputs.durationMinutes.value,
       inputs.selectedServiceTypes.value,
       inputs.status.value,
-      inputs.reminderMessage.value.sendReminder,
+      inputs.sendReminder.value,
       inputs.reminderMessageAdvanceTime.value,
       inputs.beforeComments.value,
       inputs.beforePhotos.value,
@@ -478,7 +468,7 @@ const EditService: React.FC<Props> = ({
     inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
-    inputs.reminderMessage.value.sendReminder,
+    inputs.sendReminder.value,
     inputs.reminderMessageAdvanceTime.value,
     inputs.selectedServiceTypes.value,
     inputs.status.value,

@@ -24,7 +24,7 @@ export type ErrorType = {
   durationMinutes: null | string;
   selectedServiceTypes: null | string;
   status: null | string;
-  reminderMessage: null | string;
+  sendReminder: null | string;
   reminderMessageAdvanceTime: null | string;
   beforeComments: null | string;
   beforePhotos: null | string;
@@ -61,10 +61,8 @@ export type Inputs = {
     value: string;
     isValid: boolean;
   };
-  reminderMessage: {
-    value: {
-      sendReminder: boolean;
-    };
+  sendReminder: {
+    value: boolean;
     isValid: boolean;
   };
   reminderMessageAdvanceTime: {
@@ -96,7 +94,7 @@ export type Touched = {
   durationMinutes: boolean;
   selectedServiceTypes: boolean;
   status: boolean;
-  reminderMessage: boolean;
+  sendReminder: boolean;
   reminderMessageAdvanceTime: boolean;
   beforeComments: boolean;
   beforePhotos: boolean;

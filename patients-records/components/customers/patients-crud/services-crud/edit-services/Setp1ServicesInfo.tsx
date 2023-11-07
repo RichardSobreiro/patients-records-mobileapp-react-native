@@ -104,7 +104,7 @@ const Step1ServiceInfo: React.FC<Props> = ({
       />
       <ReminderMessage
         enabled={inputs['status'].value === ServiceStatus.Unconfirmed}
-        field={'reminderMessage'}
+        field={'sendReminder'}
         inputs={inputs}
         touched={touched}
         errors={errors}
