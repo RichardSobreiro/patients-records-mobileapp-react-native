@@ -14,51 +14,50 @@ export const createService = async (
   customerId: string,
   request: CreateServiceRequest
 ): Promise<ApiResponse> => {
-  try {
-    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services`;
+  const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services`;
 
-    const formData = new FormData();
-    formData.append('date', request.date.toISOString());
-    formData.append('durationHours', request.durationHours.toString());
-    formData.append('durationMinutes', request.durationMinutes.toString());
-    formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
-    formData.append('beforeNotes', request.beforeNotes!);
-    formData.append('afterNotes', request.afterNotes!);
-    if (request.beforePhotos) {
-      for (const photo of request.beforePhotos) {
-        formData.append('beforePhotos', {
-          name: photo.name,
-          type: photo.file.type,
-          uri: photo.url
-        } as unknown as Blob);
-      }
+  const formData = new FormData();
+  formData.append('date', request.date.toISOString());
+  formData.append('durationHours', request.durationHours.toString());
+  formData.append('durationMinutes', request.durationMinutes.toString());
+  formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
+  formData.append('status', request.status);
+  formData.append('sendReminder', JSON.stringify(request.sendReminder));
+  formData.append('reminderMessageAdvanceTime', JSON.stringify(request.reminderMessageAdvanceTime));
+  formData.append('beforeNotes', request.beforeNotes!);
+  formData.append('afterNotes', request.afterNotes!);
+  if (request.beforePhotos) {
+    for (const photo of request.beforePhotos) {
+      formData.append('beforePhotos', {
+        name: photo.name,
+        type: photo.file.type,
+        uri: photo.url
+      } as unknown as Blob);
     }
-    if (request.afterPhotos) {
-      for (const photo of request.afterPhotos) {
-        formData.append('afterPhotos', {
-          name: photo.name,
-          type: photo.file.type,
-          uri: photo.url
-        } as unknown as Blob);
-      }
+  }
+  if (request.afterPhotos) {
+    for (const photo of request.afterPhotos) {
+      formData.append('afterPhotos', {
+        name: photo.name,
+        type: photo.file.type,
+        uri: photo.url
+      } as unknown as Blob);
     }
-    const response = await fetch(URL_ADDRESS, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json'
-      },
-      body: formData
-    });
+  }
+  const response = await fetch(URL_ADDRESS, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/json'
+    },
+    body: formData
+  });
 
-    if (response.ok) {
-      const responseBody: CreateServiceResponse = await response.json();
-      return new ApiResponse(true, response.status, responseBody);
-    } else {
-      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
-    }
-  } catch (error: any) {
-    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  if (response.ok) {
+    const responseBody: CreateServiceResponse = await response.json();
+    return new ApiResponse(true, response.status, responseBody);
+  } else {
+    return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
   }
 };
 
@@ -67,7 +66,7 @@ export const getServiceById = async (
   customerId: string,
   serviceId: string
 ): Promise<ApiResponse> => {
-  const URL = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
+  const URL = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
   try {
     const response = await fetch(URL, {
       method: 'GET',
@@ -96,65 +95,58 @@ export const updateService = async (
   serviceId: string,
   request: UpdateServiceRequest
 ): Promise<ApiResponse> => {
-  try {
-    const URL_ADDRESS = `http://10.0.2.2:3006/customers/${customerId}/services/${serviceId}`;
+  const URL_ADDRESS = `${process.env.API_URL}/customers/${customerId}/services/${serviceId}`;
 
-    const formData = new FormData();
-    formData.append('date', request.date.toISOString());
-    formData.append('durationHours', request.durationHours.toString());
-    formData.append('durationMinutes', request.durationMinutes.toString());
-    formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
-    formData.append('status', request.status);
-    formData.append('sendReminder', JSON.stringify(request.sendReminder));
-    formData.append(
-      'reminderMessageAdvanceTime',
-      JSON.stringify(request.reminderMessageAdvanceTime)
-    );
-    formData.append('beforeNotes', request.beforeNotes!);
-    formData.append('afterNotes', request.afterNotes!);
-    if (request.beforePhotos) {
-      for (const photo of request.beforePhotos) {
-        if (photo.id) {
-          formData.append('existingBeforePhotosIds', photo.id);
-        } else {
-          formData.append('beforePhotos', {
-            name: photo.name,
-            type: photo.file.type,
-            uri: photo.url
-          } as unknown as Blob);
-        }
+  const formData = new FormData();
+  formData.append('date', request.date.toISOString());
+  formData.append('durationHours', request.durationHours.toString());
+  formData.append('durationMinutes', request.durationMinutes.toString());
+  formData.append('serviceTypes', JSON.stringify(request.serviceTypes));
+  formData.append('status', request.status);
+  formData.append('sendReminder', JSON.stringify(request.sendReminder));
+  formData.append('reminderMessageAdvanceTime', JSON.stringify(request.reminderMessageAdvanceTime));
+  formData.append('beforeNotes', request.beforeNotes!);
+  formData.append('afterNotes', request.afterNotes!);
+  if (request.beforePhotos) {
+    for (const photo of request.beforePhotos) {
+      if (photo.id) {
+        formData.append('existingBeforePhotosIds', photo.id);
+      } else {
+        formData.append('beforePhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
-    if (request.afterPhotos) {
-      for (const photo of request.afterPhotos) {
-        if (photo.id) {
-          formData.append('existingAfterPhotosIds', photo.id);
-        } else {
-          formData.append('afterPhotos', {
-            name: photo.name,
-            type: photo.file.type,
-            uri: photo.url
-          } as unknown as Blob);
-        }
+  }
+  if (request.afterPhotos) {
+    for (const photo of request.afterPhotos) {
+      if (photo.id) {
+        formData.append('existingAfterPhotosIds', photo.id);
+      } else {
+        formData.append('afterPhotos', {
+          name: photo.name,
+          type: photo.file.type,
+          uri: photo.url
+        } as unknown as Blob);
       }
     }
-    const response = await fetch(URL_ADDRESS, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json'
-      },
-      body: formData
-    });
+  }
+  const response = await fetch(URL_ADDRESS, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/json'
+    },
+    body: formData
+  });
 
-    if (response.ok) {
-      const responseBody: UpdateServiceResponse = await response.json();
-      return new ApiResponse(true, response.status, responseBody);
-    } else {
-      return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
-    }
-  } catch (error: any) {
-    return new ApiResponse(false, 400, error.message, new ErrorDetails(error.message, 400));
+  if (response.ok) {
+    const responseBody: UpdateServiceResponse = await response.json();
+    return new ApiResponse(true, response.status, responseBody);
+  } else {
+    return new ApiResponse(false, response.status, ``, new ErrorDetails(``, response.status));
   }
 };
 
@@ -168,7 +160,7 @@ export const getServices = async (
   endDate?: Date,
   serviceTypeIds?: string[]
 ): Promise<ApiResponse> => {
-  let URL = `http://10.0.2.2:3006/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
+  let URL = `${process.env.API_URL}/customers/${customerId}/services?pageNumber=${pageNumber}&limit=${limit}`;
 
   if (startDate && endDate) {
     URL += `&startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
@@ -210,42 +202,30 @@ export const getServicesAgenda = async (
   startDate?: Date,
   endDate?: Date
 ): Promise<ApiResponse> => {
-  let URL = `http://10.0.2.2:3006/services`;
+  let URL = `${process.env.API_URL}/services`;
 
   if (startDate && endDate) {
     URL += `?startDate=${startDate.toString()}&endDate=${endDate.toString()}`;
   }
 
-  try {
-    const response = await fetchWithTimeout(URL, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }
-    });
-
-    if (response.ok) {
-      const responseBody: GetServicesResponse = await response.json();
-      return new ApiResponse(true, response.status, responseBody);
-    } else {
-      return new ApiResponse(
-        false,
-        response.status,
-        undefined,
-        new ErrorDetails(response.statusText, response.status, 'ERROR CALLING getServicesAgenda')
-      );
+  const response = await fetchWithTimeout(URL, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
     }
-  } catch (error: any) {
-    console.log(`ERROR: ${error}`);
-    // return new ApiResponse(
-    //   false,
-    //   400,
-    //   error.message,
-    //   new ErrorDetails(error.message, 400),
-    //   error.name
-    // );
-    throw error;
+  });
+
+  if (response.ok) {
+    const responseBody: GetServicesResponse = await response.json();
+    return new ApiResponse(true, response.status, responseBody);
+  } else {
+    return new ApiResponse(
+      false,
+      response.status,
+      undefined,
+      new ErrorDetails(response.statusText, response.status, 'ERROR CALLING getServicesAgenda')
+    );
   }
 };

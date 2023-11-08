@@ -2,12 +2,12 @@
 import AccordionItem from '../../../../../components/ui/AccordionItem';
 import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import { Colors } from '../../../../../constants/styles';
+import useAsyncErrorHandler from '../../../../../hooks/useAsyncErrorHandler';
 import { getServiceById, updateService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
 import { GetServiceByIdResponse } from '../../../../../models/customers/services/GetServiceByIdResponse';
 import { UpdateServiceRequest } from '../../../../../models/customers/services/UpdateServiceRequest';
 import { AuthContext } from '../../../../../store/auth-context';
-import { NotificationContext } from '../../../../../store/notification-context';
 import { isValidDate } from '../../../../../util/date-helpers';
 import FileCustom, { convertArrayPhotoApiToFileCustom } from '../../../../../util/types/FileCustom';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
@@ -38,8 +38,7 @@ const EditService: React.FC<Props> = ({
   showCreatedSnackbar
 }) => {
   const authCtx = useContext(AuthContext);
-  const notificationCtx = useContext(NotificationContext);
-
+  const asyncErrorHandler = useAsyncErrorHandler();
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
   const [visibleCreatedSnackbar, setVisibleCreatedSnackbar] = useState<boolean>(
     !!showCreatedSnackbar
@@ -129,91 +128,6 @@ const EditService: React.FC<Props> = ({
     afterComments: null,
     afterPhotos: null
   });
-
-  const resetInputs = () => {
-    setInputs({
-      date: {
-        value: new Date(),
-        isValid: true
-      },
-      hour: {
-        value: 9,
-        isValid: true
-      },
-      minutes: {
-        value: 0,
-        isValid: true
-      },
-      durationHours: {
-        value: 0,
-        isValid: true
-      },
-      durationMinutes: {
-        value: 30,
-        isValid: true
-      },
-      selectedServiceTypes: {
-        value: [],
-        isValid: true
-      },
-      status: {
-        value: ServiceStatus.Unconfirmed,
-        isValid: true
-      },
-      sendReminder: {
-        value: true,
-        isValid: true
-      },
-      reminderMessageAdvanceTime: {
-        value: 24,
-        isValid: true
-      },
-      beforeComments: {
-        value: '',
-        isValid: true
-      },
-      beforePhotos: {
-        value: [],
-        isValid: true
-      },
-      afterComments: {
-        value: '',
-        isValid: true
-      },
-      afterPhotos: {
-        value: [],
-        isValid: true
-      }
-    });
-    setTouched({
-      date: false,
-      time: false,
-      durationHours: false,
-      durationMinutes: false,
-      selectedServiceTypes: false,
-      status: false,
-      sendReminder: false,
-      reminderMessageAdvanceTime: false,
-      beforeComments: false,
-      beforePhotos: false,
-      afterComments: false,
-      afterPhotos: false
-    });
-    setErrors({
-      date: null,
-      time: null,
-      durationHours: null,
-      durationMinutes: null,
-      selectedServiceTypes: null,
-      status: null,
-      sendReminder: null,
-      reminderMessageAdvanceTime: null,
-      beforeComments: null,
-      beforePhotos: null,
-      afterComments: null,
-      afterPhotos: null
-    });
-  };
 
   const setServiceState = async (getServiceResponse: GetServiceByIdResponse) => {
     const dateObject = new Date(getServiceResponse.date);
@@ -384,6 +298,10 @@ const EditService: React.FC<Props> = ({
         newInputs[field].value = +newInputs[field].value.toString().replace(/\D/g, '');
       }
 
+      if (field === 'status' && enteredValue !== ServiceStatus.Unconfirmed) {
+        newInputs.sendReminder.value = false;
+      }
+
       return newInputs;
     });
   };
@@ -433,48 +351,55 @@ const EditService: React.FC<Props> = ({
       inputs.afterComments.value,
       inputs.afterPhotos.value
     );
+    try {
+      const response = await updateService(
+        authCtx.token?.access_token,
+        customerId,
+        serviceId,
+        request
+      );
 
-    const response = await updateService(
-      authCtx.token?.access_token,
-      customerId,
-      serviceId,
-      request
-    );
-
-    if (response.ok) {
-      const getServiceResponse = response.body as GetServiceByIdResponse;
-      await setServiceState(getServiceResponse);
-      setVisibleSnackbar(true);
-      setTimeout(() => {
-        setVisibleSnackbar(false);
-      }, 5000);
-    } else {
-      resetInputs();
-      notificationCtx.showNotification({
-        title: 'Ops...',
-        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
-      });
+      if (response.ok) {
+        const getServiceResponse = response.body as GetServiceByIdResponse;
+        await setServiceState(getServiceResponse);
+        setVisibleSnackbar(true);
+        setTimeout(() => {
+          setVisibleSnackbar(false);
+        }, 5000);
+      } else {
+        asyncErrorHandler(
+          new Error(`EditService.submitHandler - else: ${JSON.stringify(response)}`, {
+            cause: response.httpStatusCode
+          })
+        );
+      }
+    } catch (e: any) {
+      asyncErrorHandler(
+        new Error(`EditService.submitHandler - catch: ${JSON.stringify(e)}`, {
+          cause: e.message
+        })
+      );
     }
     setIsLoading(false);
   }, [
+    validateForm,
     authCtx.token?.access_token,
-    customerId,
-    inputs.afterComments.value,
-    inputs.afterPhotos.value,
-    inputs.beforeComments.value,
-    inputs.beforePhotos.value,
+    serviceId,
     inputs.date.value,
-    inputs.durationHours.value,
-    inputs.durationMinutes.value,
     inputs.hour.value,
     inputs.minutes.value,
-    inputs.sendReminder.value,
-    inputs.reminderMessageAdvanceTime.value,
+    inputs.durationHours.value,
+    inputs.durationMinutes.value,
     inputs.selectedServiceTypes.value,
     inputs.status.value,
-    notificationCtx,
-    serviceId,
-    validateForm
+    inputs.sendReminder.value,
+    inputs.reminderMessageAdvanceTime.value,
+    inputs.beforeComments.value,
+    inputs.beforePhotos.value,
+    inputs.afterComments.value,
+    inputs.afterPhotos.value,
+    customerId,
+    asyncErrorHandler
   ]);
 
   useLayoutEffect(() => {

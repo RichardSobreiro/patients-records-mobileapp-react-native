@@ -41,10 +41,6 @@ const DurationPicker: React.FC<Props> = ({
       const today = new Date();
       today.setHours(values[fieldHours].value, values[fieldMinutes].value);
       setDateValue(today);
-
-      console.log(`useEffect = fieldHours[${fieldHours}]: ${values[fieldHours].value}`);
-      console.log(`useEffect = fieldMinutes[${fieldMinutes}]: ${values[fieldMinutes].value}`);
-      console.log(`useEffect = today: ${today.toLocaleString()}`);
     }
   }, [fieldHours, fieldMinutes, values]);
 
@@ -52,8 +48,6 @@ const DurationPicker: React.FC<Props> = ({
     setVisible(false);
     const currentDate = new Date(selectedTime.toISOString());
     currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-    console.log(`fieldHours[${fieldHours}]: ${currentDate.getHours()}`);
-    console.log(`fieldMinutes[${fieldMinutes}]: ${currentDate.getMinutes()}`);
     onChangeHandler(fieldHours, currentDate.getHours());
     onChangeHandler(fieldMinutes, currentDate.getMinutes());
   };

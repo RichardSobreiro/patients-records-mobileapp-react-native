@@ -2,11 +2,11 @@
 import AccordionItem from '../../../../../components/ui/AccordionItem';
 import ServiceStatus from '../../../../../constants/enums/ServiceStatus';
 import { Colors } from '../../../../../constants/styles';
+import useAsyncErrorHandler from '../../../../../hooks/useAsyncErrorHandler';
 import { createService } from '../../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../../models/customers/service-types/GetServiceTypesResponse';
 import { CreateServiceRequest } from '../../../../../models/customers/services/CreateServiceRequest';
 import { AuthContext } from '../../../../../store/auth-context';
-import { NotificationContext } from '../../../../../store/notification-context';
 import { isValidDate } from '../../../../../util/date-helpers';
 import FileCustom from '../../../../../util/types/FileCustom';
 import { ErrorType, Inputs, Touched } from '../ServicesList';
@@ -28,8 +28,7 @@ type Props = {
 
 const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
   const authCtx = useContext(AuthContext);
-  const notificationCtx = useContext(NotificationContext);
-
+  const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [inputs, setInputs] = useState<Inputs>({
@@ -185,9 +184,6 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
         [field]: { value: enteredValue, isValid: true }
       };
 
-      console.log(`durationHours: ${newInputs.durationHours.value}`);
-      console.log(`durationMinutes: ${newInputs.durationMinutes.value}`);
-
       if (field === 'date') {
         newInputs[field].isValid = validateDate(newInputs);
       }
@@ -202,6 +198,10 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
 
       if (field === 'reminderMessageAdvanceTime') {
         newInputs[field].value = +newInputs[field].value.toString().replace(/\D/g, '');
+      }
+
+      if (field === 'status' && enteredValue !== ServiceStatus.Unconfirmed) {
+        newInputs.sendReminder.value = false;
       }
 
       return newInputs;
@@ -256,84 +256,93 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
       inputs.afterComments.value,
       inputs.afterPhotos.value
     );
+    try {
+      const response = await createService(authCtx.token?.access_token, customerId, request);
 
-    const response = await createService(authCtx.token?.access_token, customerId, request);
-
-    if (response.ok) {
-      // setInputs({
-      //   date: {
-      //     value: new Date(),
-      //     isValid: true
-      //   },
-      //   hour: {
-      //     value: 9,
-      //     isValid: true
-      //   },
-      //   minutes: {
-      //     value: 0,
-      //     isValid: true
-      //   },
-      //   durationHours: {
-      //     value: 0,
-      //     isValid: true
-      //   },
-      //   durationMinutes: {
-      //     value: 0,
-      //     isValid: true
-      //   },
-      //   selectedServiceTypes: {
-      //     value: [],
-      //     isValid: true
-      //   },
-      //   status: { value: ServiceStatus.Unconfirmed, isValid: true },
-      //   beforeComments: {
-      //     value: '',
-      //     isValid: true
-      //   },
-      //   beforePhotos: {
-      //     value: [],
-      //     isValid: true
-      //   },
-      //   afterComments: {
-      //     value: '',
-      //     isValid: true
-      //   },
-      //   afterPhotos: {
-      //     value: [],
-      //     isValid: true
-      //   }
-      // });
-      // setErrors({
-      //   date: null,
-      //   time: null,
-      //   selectedServiceTypes: null,
-      //   beforeComments: null,
-      //   beforePhotos: null,
-      //   afterComments: null,
-      //   afterPhotos: null
-      // });
-      // setTouched({
-      //   date: false,
-      //   time: false,
-      //   selectedServiceTypes: false,
-      //   beforeComments: false,
-      //   beforePhotos: false,
-      //   afterComments: false,
-      //   afterPhotos: false
-      // });
-      navigation.replace('EditService', {
-        customerId,
-        serviceId: response.body.serviceId,
-        showCreatedSnackbar: true
-      });
-    } else {
-      notificationCtx.showNotification({
-        title: 'Ops...',
-        message: 'Tivemos um problema passageiro. Por favor, tente novamente!'
-      });
+      if (response.ok) {
+        // setInputs({
+        //   date: {
+        //     value: new Date(),
+        //     isValid: true
+        //   },
+        //   hour: {
+        //     value: 9,
+        //     isValid: true
+        //   },
+        //   minutes: {
+        //     value: 0,
+        //     isValid: true
+        //   },
+        //   durationHours: {
+        //     value: 0,
+        //     isValid: true
+        //   },
+        //   durationMinutes: {
+        //     value: 0,
+        //     isValid: true
+        //   },
+        //   selectedServiceTypes: {
+        //     value: [],
+        //     isValid: true
+        //   },
+        //   status: { value: ServiceStatus.Unconfirmed, isValid: true },
+        //   beforeComments: {
+        //     value: '',
+        //     isValid: true
+        //   },
+        //   beforePhotos: {
+        //     value: [],
+        //     isValid: true
+        //   },
+        //   afterComments: {
+        //     value: '',
+        //     isValid: true
+        //   },
+        //   afterPhotos: {
+        //     value: [],
+        //     isValid: true
+        //   }
+        // });
+        // setErrors({
+        //   date: null,
+        //   time: null,
+        //   selectedServiceTypes: null,
+        //   beforeComments: null,
+        //   beforePhotos: null,
+        //   afterComments: null,
+        //   afterPhotos: null
+        // });
+        // setTouched({
+        //   date: false,
+        //   time: false,
+        //   selectedServiceTypes: false,
+        //   beforeComments: false,
+        //   beforePhotos: false,
+        //   afterComments: false,
+        //   afterPhotos: false
+        // });
+        navigation.replace('EditService', {
+          customerId,
+          serviceId: response.body.serviceId,
+          showCreatedSnackbar: true
+        });
+      } else {
+        asyncErrorHandler(
+          new Error(`CreateService.submitHandler - else: ${JSON.stringify(response)}`, {
+            cause: response.httpStatusCode
+          })
+        );
+      }
+    } catch (e: any) {
+      asyncErrorHandler(
+        new Error(`CreateService.submitHandler - catch: ${JSON.stringify(e)}`, {
+          cause: e.message
+        })
+      );
     }
     setIsLoading(false);
   }, [
+    asyncErrorHandler,
     authCtx.token?.access_token,
     customerId,
     inputs.afterComments.value,
@@ -350,7 +359,6 @@ const CreateService: React.FC<Props> = ({ customerId, route, navigation }) => {
     inputs.sendReminder.value,
     inputs.status.value,
     navigation,
-    notificationCtx,
     validateForm
   ]);
 

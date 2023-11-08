@@ -133,63 +133,74 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
         0
       );
 
-      const response = await getServicesAgenda(authCtx.token?.access_token!, startDate, endDate);
-
-      if (response.ok) {
-        const servicesAgendaResponse = response.body as GetServicesAgendaResponse;
-        const newMarkedDates: MarkedDates = {};
-        const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
-          s.date = new Date(s.date);
-          const start = new Date(s.date);
-          let end = new Date(start);
-          if (isNaN(+s.durationHours) || isNaN(+s.durationMinutes)) {
-            end = new Date(end.getTime() + 30 * 60 * 1000);
-          } else {
-            if (+s.durationHours > 0) {
-              end = new Date(s.date.getTime() + +s.durationHours * 60 * 60 * 1000);
+      try {
+        const response = await getServicesAgenda(authCtx.token?.access_token!, startDate, endDate);
+        if (response.ok) {
+          const servicesAgendaResponse = response.body as GetServicesAgendaResponse;
+          const newMarkedDates: MarkedDates = {};
+          const newEvents = servicesAgendaResponse.servicesList?.map((s) => {
+            s.date = new Date(s.date);
+            const start = new Date(s.date);
+            let end = new Date(start);
+            if (isNaN(+s.durationHours) || isNaN(+s.durationMinutes)) {
+              end = new Date(end.getTime() + 30 * 60 * 1000);
+            } else {
+              if (+s.durationHours > 0) {
+                end = new Date(s.date.getTime() + +s.durationHours * 60 * 60 * 1000);
+              }
+              end = new Date(end.getTime() + +s.durationMinutes * 60 * 1000);
             }
-            end = new Date(end.getTime() + +s.durationMinutes * 60 * 1000);
-          }
 
-          newMarkedDates[start.toISOString().split('T')[0]] = { marked: true };
+            newMarkedDates[start.toISOString().split('T')[0]] = { marked: true };
 
-          let color: string = Colors.primary100;
-          if (s.status === ServiceStatus.Confirmed) color = Colors.secondary100;
-          else if (s.status === ServiceStatus.Unconfirmed) color = Colors.primary100;
-          else if (s.status === ServiceStatus.Canceled) color = Colors.tertiary300;
+            let color: string = Colors.primary100;
+            if (s.status === ServiceStatus.Confirmed) color = Colors.secondary100;
+            else if (s.status === ServiceStatus.Unconfirmed) color = Colors.primary100;
+            else if (s.status === ServiceStatus.Canceled) color = Colors.tertiary300;
 
-          return {
-            start: `${formatDateTimeUTCFormat(start)}`,
-            end: `${formatDateTimeUTCFormat(end)}`,
-            title: s.customerName,
-            summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - '),
-            serviceId: s.serviceId,
-            customerId: s.customerId,
-            serviceStatus: s.status,
-            sendReminder: s.sendReminder,
-            color
-          };
-        });
-        marked.current = newMarkedDates;
-        setEvents((curEvents) => {
-          setState({
-            currentDate: getDate(),
-            events: newEvents,
-            eventsByDate: groupBy(newEvents, (e) =>
-              CalendarUtils.getCalendarDateString(e.start)
-            ) as {
-              [key: string]: TimelineEventProps[];
-            }
+            return {
+              start: `${formatDateTimeUTCFormat(start)}`,
+              end: `${formatDateTimeUTCFormat(end)}`,
+              title: s.customerName,
+              summary: s.serviceTypes.map((st) => st.serviceTypeDescription).join(' - '),
+              serviceId: s.serviceId,
+              customerId: s.customerId,
+              serviceStatus: s.status,
+              sendReminder: s.sendReminder,
+              color
+            };
           });
-          return newEvents;
-        });
-      } else {
+          marked.current = newMarkedDates;
+          setEvents((curEvents) => {
+            setState({
+              currentDate: getDate(),
+              events: newEvents,
+              eventsByDate: groupBy(newEvents, (e) =>
+                CalendarUtils.getCalendarDateString(e.start)
+              ) as {
+                [key: string]: TimelineEventProps[];
+              }
+            });
+            return newEvents;
+          });
+        } else {
+          asyncErrorHandler(
+            new Error(
+              `AgendaHomeScree.getServicesAgendaAsync - else: ${JSON.stringify(response)}`,
+              {
+                cause: response.httpStatusCode
+              }
+            )
+          );
+        }
+      } catch (e: any) {
         asyncErrorHandler(
-          new Error(`getServicesAgenda: ${JSON.stringify(response)}`, {
-            cause: response.httpStatusCode
+          new Error(`AgendaHomeScree.getServicesAgendaAsync - catch: ${JSON.stringify(e)}`, {
+            cause: e.message
           })
         );
       }
+
       setIsLoading(false);
     },
     [authCtx.token?.access_token, asyncErrorHandler]
@@ -353,7 +364,7 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
           color={Colors.primary100}
         />
       </Portal>
-      <SegmentedButtons
+      {/* <SegmentedButtons
         style={{ marginTop: 10 }}
         theme={{ colors: { secondaryContainer: Colors.primary100 } }}
         value={calendarMode}
@@ -370,7 +381,7 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
             showSelectedCheck: true
           }
         ]}
-      />
+      /> */}
       <ExpandableCalendar
         theme={{
           ...theme.current
@@ -379,9 +390,9 @@ const AgendaHomeScreen: React.FC<Props> = ({ route, navigation }) => {
         firstDay={1}
         markedDates={marked.current}
       />
-      {calendarMode === 'list' && (
+      {/* {calendarMode === 'list' && (
         <AgendaList sections={ITEMS} renderItem={renderItem} sectionStyle={styles.section} />
-      )}
+      )} */}
       {calendarMode === 'daily' && (
         <TimelineList
           events={state.eventsByDate}
