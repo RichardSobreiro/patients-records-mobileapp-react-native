@@ -3,8 +3,8 @@ import 'react-native-gesture-handler';
 
 import ErrorDialog from './components/ui/ErrorDialog';
 import { Colors } from './constants/styles';
-import LoginMainStack from './screens/Login/LoginMain';
-import MainDrawerNavigatorComp from './screens/navigators/MainDrawerNavigator';
+import LoginMainStackNavigator from './screens/Navigators/LoginMainStackNavigator';
+import MainDrawerNavigatorComp from './screens/Navigators/MainDrawerNavigator';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
@@ -25,8 +25,9 @@ LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']
 WebBrowser.maybeCompleteAuthSession();
 
 const handleJSErrors = (error: Error, stackTrace: string) => {
-  // console.log(`ERROR HANDLER: ${JSON.stringify(error)}`);
-  // console.log(`STACK TRACE: ${stackTrace}`);
+  const now = new Date();
+  console.log(`${now.toISOString()} - ERROR HANDLER: ${JSON.stringify(error)}`);
+  console.log(`${now.toISOString()} - STACK TRACE: ${stackTrace}`);
 };
 
 const CustomFallback = (props: { error: Error; resetError: Function }) => {
@@ -55,7 +56,7 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <ErrorBoundary onError={handleJSErrors} FallbackComponent={CustomFallback}>
-        {!authCtx.isAuthenticated && <LoginMainStack />}
+        {!authCtx.isAuthenticated && <LoginMainStackNavigator />}
         {authCtx.isAuthenticated && <MainDrawerNavigatorComp />}
       </ErrorBoundary>
     </NavigationContainer>

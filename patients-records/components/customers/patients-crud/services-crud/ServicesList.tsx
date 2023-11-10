@@ -3,7 +3,7 @@ import { Colors } from '../../../../constants/styles';
 import { getServices } from '../../../../http/ServicesApi';
 import { GetServiceTypeResponse } from '../../../../models/customers/service-types/GetServiceTypesResponse';
 import { GetServiceResponse } from '../../../../models/customers/services/GetServicesResponse';
-import { RootStackServicesCrudParamList } from '../../../../screens/navigators/ServicesStackNavigator';
+import { RootStackServicesCrudParamList } from '../../../../screens/Navigators/Patients/ServicesStackNavigator';
 import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
 import { DateParser } from '../../../../util/dateParser';

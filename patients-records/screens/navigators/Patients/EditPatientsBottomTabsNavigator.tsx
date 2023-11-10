@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
-import { Colors } from '../../constants/styles';
-import EditCustomerScreen from '../Patients/EditCustomerScreen';
+import { Colors } from '../../../constants/styles';
+import EditCustomerScreen from '../../Patients/EditCustomerScreen';
 import AnamnesisCrudStackComp from './AnamnesisStackNavigator';
 import ServicesCrudStackComp from './ServicesStackNavigator';
 

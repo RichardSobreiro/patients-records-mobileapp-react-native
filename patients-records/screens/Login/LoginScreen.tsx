@@ -1,11 +1,17 @@
-import AuthContent from '../components/authentication/AuthContent';
-import LoadingOverlay from '../components/ui/LoadingOverlay';
-import { AuthContext } from '../store/auth-context';
-import { login, authenticateFacebook, facebookCallbackParams } from '../util/auth';
+import Login from '../../components/authentication/Login';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
+import { AuthContext } from '../../store/auth-context';
+import { authenticateFacebook, facebookCallbackParams, login } from '../../util/auth';
+
 import { useCallback, useContext, useState } from 'react';
 import { Alert } from 'react-native';
 
-const LoginScreen: React.FC = () => {
+type Props = {
+  route: any;
+  navigation: any;
+};
+
+const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const authCtx = useContext(AuthContext);
@@ -16,8 +22,13 @@ const LoginScreen: React.FC = () => {
       const accessToken = await login(email, password);
       if (accessToken) {
         authCtx.authenticate(accessToken, {
+          userId: accessToken.userId,
           username: accessToken.username,
-          email: accessToken.email
+          email: accessToken.email,
+          userCreationCompleted: accessToken.userCreationCompleted,
+          userPlanId: accessToken.userPlanId,
+          paymentOk: accessToken.paymentOk,
+          companyName: accessToken.companyName
         });
       } else {
         Alert.alert(
@@ -25,7 +36,7 @@ const LoginScreen: React.FC = () => {
           'Verifique suas credencias e tente novamente!'
         );
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Ops?!?! Falha na autenticação.', 'Verifique suas credencias e tente novamente!');
     }
     setIsAuthenticating(false);
@@ -44,8 +55,13 @@ const LoginScreen: React.FC = () => {
         const accessToken = await loginFacebook(params);
         if (accessToken) {
           await authCtx.authenticate(accessToken, {
+            userId: '',
             username: params.username,
-            email: params.email
+            email: params.email,
+            userCreationCompleted: accessToken.userCreationCompleted,
+            userPlanId: accessToken.userPlanId,
+            paymentOk: accessToken.paymentOk,
+            companyName: accessToken.companyName
           });
         } else {
           throw new Error('The user was not authenticated.');
@@ -66,7 +82,14 @@ const LoginScreen: React.FC = () => {
     return <LoadingOverlay message="Fazendo login..." />;
   }
 
-  return <AuthContent isLogin onAuthenticate={loginHandler} facebookCallback={facebookCallback} />;
+  return (
+    <Login
+      navigation={navigation}
+      isLogin
+      onAuthenticate={loginHandler}
+      facebookCallback={facebookCallback}
+    />
+  );
 };
 
 export default LoginScreen;

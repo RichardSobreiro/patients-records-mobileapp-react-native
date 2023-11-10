@@ -1,10 +1,10 @@
-import { Colors } from '../../constants/styles';
-import AgendaHomeScreen from '../Agenda/AgendaHomeScreen';
-import PatientsListScreen from '../Patients/PatientsListScreen';
-import CreateServiceScreen from '../Patients/ServicesScreens/CreateServiceScreen';
-import CreateServiceTypeScreen from '../Patients/ServicesScreens/CreateServiceTypeScreen';
-import EditServiceScreen from '../Patients/ServicesScreens/EditServiceScreen';
-import EditServiceTypeScreen from '../Patients/ServicesScreens/EditServiceTypeScreen';
+import { Colors } from '../../../constants/styles';
+import AgendaHomeScreen from '../../Agenda/AgendaHomeScreen';
+import PatientsListScreen from '../../Patients/PatientsListScreen';
+import CreateServiceScreen from '../../Patients/ServicesScreens/CreateServiceScreen';
+import CreateServiceTypeScreen from '../../Patients/ServicesScreens/CreateServiceTypeScreen';
+import EditServiceScreen from '../../Patients/ServicesScreens/EditServiceScreen';
+import EditServiceTypeScreen from '../../Patients/ServicesScreens/EditServiceTypeScreen';
 
 import { AntDesign } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

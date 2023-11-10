@@ -3,7 +3,7 @@ import { Colors } from '../../../../constants/styles';
 import { getAnamnesis } from '../../../../http/AnamnesisApi';
 import { CreateAnamnesisTypeContentRequest } from '../../../../models/customers/anamnesis/CreateAnamneseRequest';
 import { GetAnamnesis } from '../../../../models/customers/anamnesis/GetAnamnesisResponse';
-import { RootStackAnamnesisCrudParamList } from '../../../../screens/navigators/AnamnesisStackNavigator';
+import { RootStackAnamnesisCrudParamList } from '../../../../screens/Navigators/Patients/AnamnesisStackNavigator';
 import { AuthContext } from '../../../../store/auth-context';
 import { NotificationContext } from '../../../../store/notification-context';
 import AnamnesisListItem from './AnamnesisListItem';

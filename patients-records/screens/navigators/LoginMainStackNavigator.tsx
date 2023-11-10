@@ -1,6 +1,6 @@
 import { Colors } from '../../constants/styles';
-import LoginScreen from '../LoginScreen';
-import SignupScreen from '../SignupScreen';
+import LoginScreen from '../Login/LoginScreen';
+import SignupStackNavigator from './SignupStackNavigator';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -11,7 +11,7 @@ export type LogintStackParamList = {
 
 const Stack = createNativeStackNavigator<LogintStackParamList>();
 
-const LoginMainStack = () => {
+const LoginMainStackNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -29,13 +29,13 @@ const LoginMainStack = () => {
       />
       <Stack.Screen
         name="Signup"
-        component={SignupScreen}
+        component={SignupStackNavigator}
         options={{
-          headerTitle: 'Cadastro'
+          headerShown: false
         }}
       />
     </Stack.Navigator>
   );
 };
 
-export default LoginMainStack;
+export default LoginMainStackNavigator;

@@ -1,4 +1,5 @@
 import { Colors } from '../../constants/styles';
+
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export enum ButtonTypes {
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
-    color: Colors.primary100,
+    color: 'white',
     paddingHorizontal: 15
   }
 });

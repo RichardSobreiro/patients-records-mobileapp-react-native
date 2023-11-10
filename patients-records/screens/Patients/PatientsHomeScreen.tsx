@@ -1,7 +1,7 @@
 import IconButton from '../../components/ui/IconButton';
 import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
-import EditPatientBottomTabs from '../navigators/EditPatientsBottomTabsNavigator';
+import EditPatientBottomTabs from '../Navigators/Patients/EditPatientsBottomTabsNavigator';
 import CreateCustomerScreen from './CreateCustomerScreen';
 import PatientsListScreen from './PatientsListScreen';
 

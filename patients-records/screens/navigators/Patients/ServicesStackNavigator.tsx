@@ -1,10 +1,10 @@
 /* eslint-disable import/order */
-import { Colors } from '../../constants/styles';
-import CreateServiceScreen from '../Patients/ServicesScreens/CreateServiceScreen';
-import CreateServiceTypeScreen from '../Patients/ServicesScreens/CreateServiceTypeScreen';
-import EditServiceScreen from '../Patients/ServicesScreens/EditServiceScreen';
-import EditServiceTypeScreen from '../Patients/ServicesScreens/EditServiceTypeScreen';
-import ServicesListScreen from '../Patients/ServicesScreens/ServicesListScreen';
+import { Colors } from '../../../constants/styles';
+import CreateServiceScreen from '../../Patients/ServicesScreens/CreateServiceScreen';
+import CreateServiceTypeScreen from '../../Patients/ServicesScreens/CreateServiceTypeScreen';
+import EditServiceScreen from '../../Patients/ServicesScreens/EditServiceScreen';
+import EditServiceTypeScreen from '../../Patients/ServicesScreens/EditServiceTypeScreen';
+import ServicesListScreen from '../../Patients/ServicesScreens/ServicesListScreen';
 
 import { AntDesign } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

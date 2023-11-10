@@ -9,7 +9,7 @@ import { getCepInfo } from '../../../http/PostalService';
 import { GetCustomer } from '../../../models/customers/GetCustomersResponse';
 import { UpdateCustomerRequest } from '../../../models/customers/UpdateCustomerRequest';
 import { PostalServiceResponse } from '../../../models/postal-service/PostalServiceResponse';
-import { EditPatientStackParamList } from '../../../screens/navigators/EditPatientsBottomTabsNavigator';
+import { EditPatientStackParamList } from '../../../screens/Navigators/Patients/EditPatientsBottomTabsNavigator';
 import { RootStackParamList } from '../../../screens/Patients/PatientsHomeScreen';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';

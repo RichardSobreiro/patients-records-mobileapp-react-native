@@ -4,7 +4,8 @@ import { AuthContext } from '../../store/auth-context';
 import FinancialHomeScreen from '../Financial/FinancialHomeScreen';
 import PatientsHomeScreen from '../Patients/PatientsHomeScreen';
 import ReportsHomeScreen from '../Reports/ReportsHomeScreen';
-import AgendaStackCompScreen from './AgendaStackNavigator';
+import AgendaStackCompScreen from './Agenda/AgendaStackNavigator';
+import SettingsBottomTabs from './Settings/SettingsBottomTabsNavigator';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useContext } from 'react';
@@ -14,6 +15,7 @@ export type MainDrawerParamList = {
   PatientsHome;
   Financial;
   Reports;
+  Settings;
 };
 
 const Drawer = createDrawerNavigator<MainDrawerParamList>();
@@ -36,7 +38,7 @@ const MainDrawerNavigatorComp = () => {
           />
         )
       }}
-      initialRouteName="Agenda"
+      initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'Settings'}
     >
       <Drawer.Screen
         name="Agenda"
@@ -69,6 +71,14 @@ const MainDrawerNavigatorComp = () => {
           headerTitle: 'Relatórios'
         }}
         component={ReportsHomeScreen}
+      />
+      <Drawer.Screen
+        name="Settings"
+        options={{
+          drawerLabel: 'Configurações',
+          headerTitle: 'Configurações'
+        }}
+        component={SettingsBottomTabs}
       />
     </Drawer.Navigator>
   );

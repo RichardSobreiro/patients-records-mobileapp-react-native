@@ -7,11 +7,20 @@ export type Token = {
   refresh_token: string;
   scope: string;
   token_type: string;
+  userCreationCompleted: string;
+  userPlanId: string;
+  paymentOk: string;
+  companyName: string;
 };
 
 export type UserInfo = {
+  userId: string;
   username: string;
   email: string;
+  userCreationCompleted: string;
+  userPlanId: string;
+  paymentOk: string;
+  companyName: string;
 };
 
 export type TokenPasswordGranType = {
@@ -21,8 +30,13 @@ export type TokenPasswordGranType = {
   refresh_token: string;
   scope: string;
   token_type: string;
+  userId: string;
   username: string;
   email: string;
+  userCreationCompleted: string;
+  userPlanId: string;
+  paymentOk: string;
+  companyName: string;
 };
 
 export type facebookCallbackParams = {
@@ -132,7 +146,7 @@ export const createUser = async (email, password, username) => {
 };
 
 export const login = async (email, password) => {
-  const url = `${process.env.AUTHNZ_URL}/token`;
+  const url = `http://10.0.2.2:3005/token`;
 
   const uninterceptedAxiosInstance = axios.create();
   const options = {

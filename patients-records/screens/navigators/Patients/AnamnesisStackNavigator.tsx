@@ -1,10 +1,10 @@
 /* eslint-disable import/order */
-import { Colors } from '../../constants/styles';
-import AnamnesisListScreen from '../Patients/AnamnesisScreens/AnamnesisListScreen';
-import CreateAnamnesisScreen from '../Patients/AnamnesisScreens/CreateAnamnesisScreen';
-import CreateAnamnesisTypeScreen from '../Patients/AnamnesisScreens/CreateAnamnesisTypeScreen';
-import EditAnamnesisScreen from '../Patients/AnamnesisScreens/EditAnamnesisScreen';
-import EditAnamnesisTypeScreen from '../Patients/AnamnesisScreens/EditAnamnesisTypeScreen';
+import { Colors } from '../../../constants/styles';
+import AnamnesisListScreen from '../../Patients/AnamnesisScreens/AnamnesisListScreen';
+import CreateAnamnesisScreen from '../../Patients/AnamnesisScreens/CreateAnamnesisScreen';
+import CreateAnamnesisTypeScreen from '../../Patients/AnamnesisScreens/CreateAnamnesisTypeScreen';
+import EditAnamnesisScreen from '../../Patients/AnamnesisScreens/EditAnamnesisScreen';
+import EditAnamnesisTypeScreen from '../../Patients/AnamnesisScreens/EditAnamnesisTypeScreen';
 
 import { AntDesign } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

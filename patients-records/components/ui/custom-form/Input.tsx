@@ -1,12 +1,14 @@
 import { Colors } from '../../../constants/styles';
-import { useEffect, useRef } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { useEffect, useRef, useState } from 'react';
+import { KeyboardTypeOptions, StyleSheet, Text, View } from 'react-native';
 import MaskInput from 'react-native-mask-input';
+import { TextInput } from 'react-native-paper';
 
 type Props = {
   field: string;
   label: string;
-  keyboardType?: string;
+  keyboardType?: KeyboardTypeOptions;
   values?;
   touched?;
   errors?;
@@ -16,6 +18,38 @@ type Props = {
   scrollTos?: any;
   handleScrollTo?: (field: string, value: boolean) => void;
   scrollViewRef?: any;
+  secureTextEntry?: boolean;
+  textContentType?:
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode'
+    | undefined;
+  disabled?: boolean;
 };
 
 const Input: React.FC<Props> = ({
@@ -30,10 +64,14 @@ const Input: React.FC<Props> = ({
   textInputConfig,
   scrollTos,
   handleScrollTo,
-  scrollViewRef
+  scrollViewRef,
+  secureTextEntry,
+  textContentType,
+  disabled
 }) => {
   const invalid = errors[field];
   const ref = useRef<any>(null);
+  const [isPasswordSecure, setIsPasswordSecure] = useState<boolean>(true);
 
   useEffect(() => {
     if (scrollViewRef && handleScrollTo && scrollTos) {
@@ -87,6 +125,7 @@ const Input: React.FC<Props> = ({
         />
       ) : (
         <TextInput
+          disabled={disabled ? disabled : false}
           style={[
             styles.input,
             textInputConfig?.multiline && styles.inputMultiline,
@@ -100,6 +139,20 @@ const Input: React.FC<Props> = ({
           returnKeyType="next"
           editable={!!(onBlurHandler && onChangeHandler)}
           selectTextOnFocus={!!(onBlurHandler && onChangeHandler)}
+          secureTextEntry={secureTextEntry && isPasswordSecure}
+          textContentType={textContentType}
+          right={
+            secureTextEntry ? (
+              <TextInput.Icon
+                icon={isPasswordSecure ? 'eye-off' : 'eye'}
+                size={28}
+                color={Colors.primary500}
+                onPress={() => {
+                  setIsPasswordSecure((curValue) => !curValue);
+                }}
+              />
+            ) : undefined
+          }
         />
       )}
       {errors[field] ? (
@@ -126,8 +179,8 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: Colors.primary100,
     color: Colors.primary800,
-    minHeight: 50,
-    padding: 6,
+    height: 50,
+    padding: 0,
     fontSize: 18,
     borderRadius: 5,
     borderWidth: 2,

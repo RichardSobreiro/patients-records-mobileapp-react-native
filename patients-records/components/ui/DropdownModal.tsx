@@ -1,10 +1,11 @@
 /* eslint-disable import/order */
 import { Colors } from '../../constants/styles';
 import StackSheetCustom from './custom-form/StackSheetCustom';
+
 import { Ionicons } from '@expo/vector-icons';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Searchbar, Checkbox } from 'react-native-paper';
+import { Checkbox, Searchbar } from 'react-native-paper';
 
 export type DropdownData = { label: string; value: string };
 type DropdownDataState = { label: string; value: string; checked: boolean; visible: boolean };
@@ -131,7 +132,7 @@ const DropdownModal: FC<Props> = ({
           data={list}
           renderItem={renderItem}
           contentContainerStyle={[styles.listContent, Platform.OS === 'ios' ? { gap: 20 } : null]}
-          keyExtractor={(item) => item.serviceTypeId}
+          keyExtractor={(item) => item.value}
           showsVerticalScrollIndicator={true}
         />
       </StackSheetCustom>

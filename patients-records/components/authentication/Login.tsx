@@ -1,16 +1,15 @@
 /* eslint-disable import/order */
-import { RootStackParamList } from '../../App';
 import { Colors } from '../../constants/styles';
 import FlatButton from '../ui/FlatButton';
 import AuthForm from './AuthForm';
 import FacebookAuthentication from './Facebook';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {
+  navigation: any;
   isLogin: boolean;
   onAuthenticate: (params: { email?: string; password?: string; username?: string }) => void;
   facebookCallback?: (params: {
@@ -23,9 +22,7 @@ interface Props {
   }) => void;
 }
 
-const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallback }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+const Login: React.FC<Props> = ({ navigation, isLogin, onAuthenticate, facebookCallback }) => {
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
     password: false,
@@ -99,7 +96,7 @@ const AuthContent: React.FC<Props> = ({ isLogin, onAuthenticate, facebookCallbac
   );
 };
 
-export default AuthContent;
+export default Login;
 
 const styles = StyleSheet.create({
   facebookContent: {
