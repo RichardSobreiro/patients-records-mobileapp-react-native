@@ -1,6 +1,7 @@
 import Button, { ButtonTypes } from '../../../components/ui/Button';
 import DatePickerV2 from '../../../components/ui/custom-form/DatePickerV2';
 import Input from '../../../components/ui/custom-form/Input';
+import Dropdown from '../../../components/ui/Dropdown';
 import { Colors } from '../../../constants/styles';
 import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
 import { getAccountSettings, updateAccountSettings } from '../../../http/SettingsApi';
@@ -29,6 +30,10 @@ type Inputs = {
     value: Date;
     isValid: boolean;
   };
+  userGender: {
+    value: string;
+    isValid: boolean;
+  };
   userCPF: {
     value: string;
     isValid: boolean;
@@ -46,6 +51,7 @@ type Inputs = {
 type Touched = {
   userNameComplete: boolean;
   userBirthdate: boolean;
+  userGender: boolean;
   userCPF: boolean;
   username: boolean;
   password: boolean;
@@ -54,6 +60,7 @@ type Touched = {
 type Errors = {
   userNameComplete: string | undefined;
   userBirthdate: string | undefined;
+  userGender: string | undefined;
   userCPF: string | undefined;
   username: string | undefined;
   password: string | undefined;
@@ -79,6 +86,10 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
       value: new Date(),
       isValid: true
     },
+    userGender: {
+      value: '',
+      isValid: true
+    },
     userCPF: {
       value: '',
       isValid: true
@@ -96,6 +107,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
   const [touched, setTouched] = useState<Touched>({
     userNameComplete: false,
     userBirthdate: false,
+    userGender: false,
     userCPF: false,
     username: false,
     password: false
@@ -104,6 +116,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
   const [errors, setErrors] = useState<Errors>({
     userNameComplete: undefined,
     userBirthdate: undefined,
+    userGender: undefined,
     userCPF: undefined,
     username: undefined,
     password: undefined
@@ -124,6 +137,27 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
           ...curErrors,
           userNameComplete:
             'Nome inválido!\nDeve conter no mínimo 6 caracteres incluindo letras e números, iniciando com uma letra.'
+        };
+      });
+      return false;
+    }
+  };
+
+  const validateUserGender = (newUserGender: string): boolean => {
+    console.log(`userGender: ${newUserGender}`);
+    if (/(?:male|female|others)$/.test(newUserGender)) {
+      setErrors((curErrors) => {
+        return {
+          ...curErrors,
+          userGender: undefined
+        };
+      });
+      return true;
+    } else {
+      setErrors((curErrors) => {
+        return {
+          ...curErrors,
+          userGender: 'Gênero inválido!'
         };
       });
       return false;
@@ -244,6 +278,9 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
       if (field === 'userBirthdate') {
         validateBirthdate(inputs.userBirthdate.value);
       }
+      if (field === 'userGender') {
+        validateUserGender(inputs.userGender.value);
+      }
       if (field === 'userCPF') {
         validateCpf(inputs.userCPF.value);
       }
@@ -262,6 +299,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
       Object.values(errors).some((value) => value !== undefined) ||
       !validateUsernameComplete(inputs.userNameComplete.value) ||
       !validateBirthdate(inputs.userBirthdate.value) ||
+      !validateUserGender(inputs.userGender.value) ||
       !validateCPF(inputs.userCPF.value) ||
       !validateUsername(inputs.username.value)
     ) {
@@ -273,6 +311,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
     const request = { ...accountSettingsFromServer } as unknown as UpdateAccountSettingsRequest;
     request.userNameComplete = inputs.userNameComplete.value;
     request.userBirthdate = inputs.userBirthdate.value;
+    request.userGender = inputs.userGender.value;
     request.userCPF = inputs.userCPF.value;
     request.username = inputs.username.value;
 
@@ -321,6 +360,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
                 : new Date(),
               isValid: true
             },
+            userGender: { value: getAccountSettingsResponse.userGender, isValid: true },
             userCPF: {
               value: getAccountSettingsResponse.userCPF,
               isValid: true
@@ -410,6 +450,20 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
           onChangeHandler={handleChange}
           onBlurHandler={handleBlur}
           textContentType="name"
+        />
+        <Dropdown
+          field="userGender"
+          label="Gênero:"
+          values={inputs}
+          touched={touched}
+          errors={errors}
+          onChangeHandler={handleChange}
+          onBlurHandler={handleBlur}
+          data={[
+            { label: 'Masculino', value: 'male' },
+            { label: 'Feminino', value: 'female' },
+            { label: 'Outros', value: 'others' }
+          ]}
         />
         <DatePickerV2
           field="userBirthdate"

@@ -1,7 +1,8 @@
 import { Colors } from '../../constants/styles';
+
 import { Ionicons } from '@expo/vector-icons';
 import React, { FC, ReactElement, useEffect, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, Modal, View } from 'react-native';
+import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export type DropdownData = { label: string; value: string };
 
@@ -12,10 +13,20 @@ interface Props {
   touched?;
   errors?;
   onChangeHandler: (field: string, value: any) => void;
+  onBlurHandler?: (field: string) => void;
   data: DropdownData[] | undefined;
 }
 
-const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHandler, data }) => {
+const Dropdown: FC<Props> = ({
+  field,
+  label,
+  values,
+  touched,
+  errors,
+  onChangeHandler,
+  onBlurHandler,
+  data
+}) => {
   const DropdownButton = useRef<TouchableOpacity | null>(null);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<DropdownData | undefined>(undefined);
@@ -35,6 +46,7 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
   const toggleDropdown = (): void => {
     // eslint-disable-next-line no-unused-expressions
     visible ? setVisible(false) : openDropdown();
+    onBlurHandler?.(field);
   };
 
   const openDropdown = (): void => {
@@ -83,11 +95,6 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
         <Text style={styles.label}>{label}</Text>
       </View>
       <TouchableOpacity ref={DropdownButton} style={styles.button} onPress={toggleDropdown}>
-        {touched[field] && errors[field] ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{errors[field]}</Text>
-          </View>
-        ) : null}
         {selected ? (
           <Text style={styles.buttonText}>{selected.label}</Text>
         ) : (
@@ -96,6 +103,11 @@ const Dropdown: FC<Props> = ({ field, label, values, touched, errors, onChangeHa
         <Ionicons style={styles.icon} size={25} name="chevron-down" />
         {renderDropdown()}
       </TouchableOpacity>
+      {errors[field] ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errors[field]}</Text>
+        </View>
+      ) : null}
     </View>
   );
 };

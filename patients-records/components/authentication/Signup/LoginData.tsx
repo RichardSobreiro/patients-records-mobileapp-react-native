@@ -115,6 +115,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
   };
 
   const validateEmail = (newEmail: string) => {
+    // eslint-disable-next-line no-useless-escape
     if (/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,63})$/.test(newEmail)) {
       setErrors((curErrors) => {
         return {

@@ -96,6 +96,7 @@ const Input: React.FC<Props> = ({
         <MaskInput
           style={[
             styles.input,
+            { paddingLeft: 15 },
             textInputConfig?.multiline && styles.inputMultiline,
             invalid && styles.invalidInput
           ]}
