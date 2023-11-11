@@ -14,6 +14,9 @@ class UpdateAccountSettingsResponse {
     public email: string,
     public emailVerified: boolean,
 
+    public referPronoun: string,
+    public messageProfessionalName: string,
+
     //public paymentProcessingInfo: PaymentProcessingResponse,
 
     public userAddressCEP: string,

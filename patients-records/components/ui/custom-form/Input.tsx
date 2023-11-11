@@ -50,6 +50,7 @@ type Props = {
     | 'oneTimeCode'
     | undefined;
   disabled?: boolean;
+  placeholder?: string;
 };
 
 const Input: React.FC<Props> = ({
@@ -67,7 +68,8 @@ const Input: React.FC<Props> = ({
   scrollViewRef,
   secureTextEntry,
   textContentType,
-  disabled
+  disabled,
+  placeholder
 }) => {
   const invalid = errors[field];
   const ref = useRef<any>(null);
@@ -154,6 +156,8 @@ const Input: React.FC<Props> = ({
               />
             ) : undefined
           }
+          placeholder={placeholder}
+          placeholderTextColor={Colors.placeholder}
         />
       )}
       {errors[field] ? (

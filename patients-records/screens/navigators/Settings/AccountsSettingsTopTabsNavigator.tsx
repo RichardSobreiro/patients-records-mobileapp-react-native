@@ -15,7 +15,7 @@ export type AccountsSettingsTopTabsParamsList = {
 
 const TopTab = createMaterialTopTabNavigator<AccountsSettingsTopTabsParamsList>();
 
-const AccountSettingsTopTabs = ({ route, navigation }) => {
+const AccountSettingsTopTabsNavigator = ({ route, navigation }) => {
   return (
     <TopTab.Navigator
       id="AccountSettingsTopTab"
@@ -51,4 +51,4 @@ const AccountSettingsTopTabs = ({ route, navigation }) => {
   );
 };
 
-export default AccountSettingsTopTabs;
+export default AccountSettingsTopTabsNavigator;
