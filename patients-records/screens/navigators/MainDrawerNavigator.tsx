@@ -5,6 +5,7 @@ import FinancialHomeScreen from '../Financial/FinancialHomeScreen';
 import PatientsHomeScreen from '../Patients/PatientsHomeScreen';
 import ReportsHomeScreen from '../Reports/ReportsHomeScreen';
 import AgendaStackCompScreen from './Agenda/AgendaStackNavigator';
+import FirstLoginWizardStackNavigator from './FirstLoginWizard/FirstLoginWizardStackNavigator';
 import SettingsBottomTabs from './Settings/SettingsBottomTabsNavigator';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -16,12 +17,14 @@ export type MainDrawerParamList = {
   Financial;
   Reports;
   Settings;
+  FirstLoginWizard;
 };
 
 const Drawer = createDrawerNavigator<MainDrawerParamList>();
 
 const MainDrawerNavigatorComp = () => {
   const authCtx = useContext(AuthContext);
+
   return (
     <Drawer.Navigator
       id="MainDrawerNavigator"
@@ -38,7 +41,7 @@ const MainDrawerNavigatorComp = () => {
           />
         )
       }}
-      initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'Settings'}
+      initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'FirstLoginWizard'}
     >
       <Drawer.Screen
         name="Agenda"
@@ -79,6 +82,14 @@ const MainDrawerNavigatorComp = () => {
           headerTitle: 'Configurações'
         }}
         component={SettingsBottomTabs}
+      />
+      <Drawer.Screen
+        name="FirstLoginWizard"
+        options={{
+          headerTitle: 'Finalizando Cadastro',
+          drawerItemStyle: { display: 'none' }
+        }}
+        component={FirstLoginWizardStackNavigator}
       />
     </Drawer.Navigator>
   );

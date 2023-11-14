@@ -5,6 +5,7 @@ import EditPatientBottomTabs from '../Navigators/Patients/EditPatientsBottomTabs
 import CreateCustomerScreen from './CreateCustomerScreen';
 import PatientsListScreen from './PatientsListScreen';
 
+import { useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useContext } from 'react';
 
@@ -18,6 +19,12 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const PatientsHomeScreen = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
+
+  useFocusEffect(() => {
+    if (!authCtx.userInfo?.userCreationCompleted) {
+      navigation?.navigate('FirstLoginWizard');
+    }
+  });
 
   return (
     <Stack.Navigator

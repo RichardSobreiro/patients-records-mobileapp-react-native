@@ -282,10 +282,14 @@ const AddressSettings: React.FC<Props> = ({ navigation }) => {
     try {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);
       if (response.ok) {
-        setVisibleSnackbar(true);
-        setTimeout(() => {
-          setVisibleSnackbar(false);
-        }, 5000);
+        if (!authCtx.userInfo?.userCreationCompleted) {
+          navigation.navigate('ContactsSettingsScreen');
+        } else {
+          setVisibleSnackbar(true);
+          setTimeout(() => {
+            setVisibleSnackbar(false);
+          }, 5000);
+        }
       } else {
         asyncErrorHandler(
           new Error(`AddressSettings.submitHandler - else: ${JSON.stringify(response)}`, {
@@ -515,7 +519,7 @@ const AddressSettings: React.FC<Props> = ({ navigation }) => {
             text={styles.buttonTextStyles}
             pressable={[styles.buttonPressable]}
           >
-            Salvar
+            {authCtx.userInfo?.userCreationCompleted ? 'Salvar' : 'Próximo'}
           </Button>
         </View>
       </KeyboardAwareScrollView>

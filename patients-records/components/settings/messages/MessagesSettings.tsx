@@ -164,10 +164,14 @@ const MessagesSettings: React.FC<Props> = ({ navigation }) => {
     try {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);
       if (response.ok) {
-        setVisibleSnackbar(true);
-        setTimeout(() => {
-          setVisibleSnackbar(false);
-        }, 5000);
+        if (!authCtx.userInfo?.userCreationCompleted) {
+          navigation.navigate('PlanInfo');
+        } else {
+          setVisibleSnackbar(true);
+          setTimeout(() => {
+            setVisibleSnackbar(false);
+          }, 5000);
+        }
       } else {
         asyncErrorHandler(
           new Error(`MessagesSettings.submitHandler - else: ${JSON.stringify(response)}`, {
@@ -360,7 +364,7 @@ const MessagesSettings: React.FC<Props> = ({ navigation }) => {
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={{ flexWrap: 'wrap' }}>responsa SIM ou NÂO.</Text>
+                  <Text style={{ flexWrap: 'wrap' }}>responda SIM ou NÂO.</Text>
                 </View>
               </View>
             </Text>
@@ -390,7 +394,7 @@ const MessagesSettings: React.FC<Props> = ({ navigation }) => {
             text={styles.buttonTextStyles}
             pressable={[styles.buttonPressable]}
           >
-            Salvar
+            {authCtx.userInfo?.userCreationCompleted ? 'Salvar' : 'Próximo'}
           </Button>
         </View>
       </KeyboardAwareScrollView>

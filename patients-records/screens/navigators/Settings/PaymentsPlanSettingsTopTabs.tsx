@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import PaymentsSettingsScreen from '../../../components/settings/paymentplan/PaymentsSettingsScreen';
+import PlanPaymentSettingsScreen from '../../../components/settings/paymentplan/PlanPaymentSettingsScreen';
 import PlanSettingsScreen from '../../../components/settings/paymentplan/PlanSettingsScreen';
 import { Colors } from '../../../constants/styles';
 
@@ -9,6 +10,7 @@ import React from 'react';
 export type PaymentsPlanSettingsTopTabsPamsList = {
   PlanSettingsScreen;
   PaymentsSettingsScreen;
+  PlanPaymentSettingsScreen;
 };
 
 const PaymentsPlanTopTabs = createMaterialTopTabNavigator<PaymentsPlanSettingsTopTabsPamsList>();
@@ -24,7 +26,7 @@ const PaymentsPlanSettingsTopTabs = ({ route, navigation }) => {
         tabBarActiveTintColor: Colors.primary800
       }}
     >
-      <PaymentsPlanTopTabs.Screen
+      {/* <PaymentsPlanTopTabs.Screen
         name="PlanSettingsScreen"
         component={PlanSettingsScreen}
         options={{
@@ -36,6 +38,13 @@ const PaymentsPlanSettingsTopTabs = ({ route, navigation }) => {
         component={PaymentsSettingsScreen}
         options={{
           tabBarLabel: 'Pagamento'
+        }}
+      /> */}
+      <PaymentsPlanTopTabs.Screen
+        name="PlanPaymentSettingsScreen"
+        component={PlanPaymentSettingsScreen}
+        options={{
+          tabBarLabel: 'Plano e Pagamento'
         }}
       />
     </PaymentsPlanTopTabs.Navigator>
