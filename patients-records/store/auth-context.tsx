@@ -1,4 +1,5 @@
-import { Token, validadeToken, UserInfo } from '../util/auth';
+import { Token, UserInfo, validadeToken } from '../util/auth';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState } from 'react';
 
@@ -25,6 +26,7 @@ export const AuthContext = createContext(initialState);
 const AuthContextProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState<Token | undefined>(undefined);
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
+
   const authenticate = async (token: Token, userInfo: UserInfo): Promise<void> => {
     setAuthToken(token);
     setUserInfo(userInfo);

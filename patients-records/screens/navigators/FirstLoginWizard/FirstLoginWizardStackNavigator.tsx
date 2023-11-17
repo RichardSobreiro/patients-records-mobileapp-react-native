@@ -1,7 +1,8 @@
-import PlanSettingsScreen from '../../../components/settings/paymentplan/PlanSettingsScreen';
 import { Colors } from '../../../constants/styles';
 import BusinessSettingsScreen from '../../../screens/Settings/Business/BusinessSettingsScreen';
 import MessagesSettingsScreen from '../../../screens/Settings/Messages/MessagesSettingsScreen';
+import PaymentMethodSettingsScreen from '../../../screens/Settings/Payments/PaymentMethodSettingsScreen';
+import PlanSettingsScreen from '../../../screens/Settings/Plans/PlansSettingsScreen';
 import AccountSettingsTopTabsNavigator from '../Settings/AccountsSettingsTopTabsNavigator';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,6 +13,7 @@ export type LogintStackParamList = {
   MessageSettings;
   PlanInfo;
   PaymentMethod;
+  CreditCardSettings;
   PaymentStatus;
   Summary;
 };
@@ -55,7 +57,15 @@ const FirstLoginWizardStackNavigator = () => {
         name="PlanInfo"
         component={PlanSettingsScreen}
         options={{
-          headerTitle: 'Configuração das Mensagens',
+          headerTitle: 'Escolha seu Plano',
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Stack.Screen
+        name="PaymentMethod"
+        component={PaymentMethodSettingsScreen}
+        options={{
+          headerTitle: 'Forma de Pagamento',
           headerTitleAlign: 'center'
         }}
       />

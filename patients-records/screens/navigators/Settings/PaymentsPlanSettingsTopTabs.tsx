@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
-import PaymentsSettingsScreen from '../../../components/settings/paymentplan/PaymentsSettingsScreen';
-import PlanPaymentSettingsScreen from '../../../components/settings/paymentplan/PlanPaymentSettingsScreen';
-import PlanSettingsScreen from '../../../components/settings/paymentplan/PlanSettingsScreen';
+import PaymentsSettingsScreen from '../../../components/settings/plan/PaymentsSettingsScreen';
+import PlanPaymentSettingsScreen from '../../../components/settings/plan/PlanPaymentSettingsScreen';
+import PlanSettingsScreen from '../../../components/settings/plan/PlanSettings';
 import { Colors } from '../../../constants/styles';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';

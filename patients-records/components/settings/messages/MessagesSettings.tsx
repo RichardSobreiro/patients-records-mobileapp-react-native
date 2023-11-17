@@ -150,8 +150,6 @@ const MessagesSettings: React.FC<Props> = ({ navigation }) => {
       !validateReferPronoun(inputs.referPronoun.value) ||
       !validateMessageProfessionalName(inputs.messageProfessionalName.value)
     ) {
-      console.log(`errors: ${JSON.stringify(errors)}`);
-      console.log(`inputs: ${JSON.stringify(inputs)}`);
       return;
     }
 
