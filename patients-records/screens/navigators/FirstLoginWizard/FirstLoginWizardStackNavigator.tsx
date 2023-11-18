@@ -65,7 +65,7 @@ const FirstLoginWizardStackNavigator = () => {
         name="PaymentMethod"
         component={PaymentMethodSettingsScreen}
         options={{
-          headerTitle: 'Forma de Pagamento',
+          headerTitle: 'Pagamento',
           headerTitleAlign: 'center'
         }}
       />

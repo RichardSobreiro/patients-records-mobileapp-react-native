@@ -1,15 +1,19 @@
+import PaymentMethods from '../../../constants/enums/PaymentMethods';
 import Plans from '../../../constants/enums/Plans';
 import { Colors } from '../../../constants/styles';
 import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
 import { getAccountSettings, updateAccountSettings } from '../../../http/SettingsApi';
 import GetAccountSettingsResponse from '../../../models/settings/accounts/GetAccountSettingsResponse';
-import UpdateAccountSettingsRequest from '../../../models/settings/accounts/UpdateAccountSettingsRequest';
+import UpdateAccountSettingsRequest, {
+  CreditCard
+} from '../../../models/settings/accounts/UpdateAccountSettingsRequest';
 import { AuthContext } from '../../../store/auth-context';
 import Button, { ButtonTypes } from '../../ui/Button';
 
 import { useIsFocused } from '@react-navigation/native';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { CreditCardInput } from 'react-native-input-credit-card';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Snackbar } from 'react-native-paper';
 
@@ -27,18 +31,44 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
   const [yPosition, setYPosition] = useState<number>(0);
   const isFocused = useIsFocused();
+  //let refCCInput = useRef<CreditCardInput | null>();
+  //let refCCInput = createRef<CreditCardInput | null>();
+  const [paymentForm, setPaymentForm] = useState<
+    | {
+        status: {
+          cvc: string;
+          expiry: string;
+          name: string;
+          number: string;
+        };
+        valid: boolean;
+        values: {
+          cvc: string;
+          expiry: string;
+          name: string;
+          number: string;
+          type: string | undefined;
+        };
+      }
+    | undefined
+  >(undefined);
 
-  const [plan, setPlan] = useState<Plans>(Plans.Anual);
+  const onChangeCreditCardInput = (form) => {
+    setPaymentForm(form);
+  };
 
   const submitHandler = async () => {
-    if (plan === null || plan === undefined || plan.trim() === '') {
+    if (!paymentForm?.valid) {
       return;
     }
 
     setIsLoading(true);
 
     const request = { ...accountSettingsFromServer } as unknown as UpdateAccountSettingsRequest;
-    request.userPlanId = plan;
+    request.paymentMethod = {
+      paymentMethodId: PaymentMethods.CreditCard,
+      creditCard: paymentForm.values as unknown as CreditCard
+    };
 
     try {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);
@@ -78,7 +108,37 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
         if (response.ok) {
           const getAccountSettingsResponse = response.body as GetAccountSettingsResponse;
           setAccountSettingsFromServer(getAccountSettingsResponse);
-          setPlan((getAccountSettingsResponse.userPlanId as Plans) ?? Plans.Anual);
+          // setPaymentForm(
+          //   getAccountSettingsResponse.paymentMethod &&
+          //     getAccountSettingsResponse.paymentMethod.paymentMethodId === PaymentMethods.CreditCard
+          //     ? {
+          //         status: {
+          //           cvc: 'complete',
+          //           expiry: 'complete',
+          //           name: 'complete',
+          //           number: 'complete'
+          //         },
+          //         valid: true,
+          //         values: {
+          //           cvc: '***',
+          //           expiry: getAccountSettingsResponse.paymentMethod.creditCard?.expiry!,
+          //           name: getAccountSettingsResponse.paymentMethod.creditCard?.name!,
+          //           number: `***`,
+          //           type: getAccountSettingsResponse.paymentMethod.creditCard?.number!
+          //         }
+          //       }
+          //     : {
+          //         status: {
+          //           cvc: 'incomplete',
+          //           expiry: 'incomplete',
+          //           name: 'incomplete',
+          //           number: 'incomplete'
+          //         },
+          //         valid: false,
+          //         values: { cvc: '', expiry: '', name: '', number: '', type: undefined }
+          //       }
+          // );
+          // refCCInput.current?.setValues({ number: '123' });
         } else {
           asyncErrorHandler(
             new Error(
@@ -144,9 +204,16 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
         Alterações salvas com sucesso!
       </Snackbar>
 
-      <View style={{ marginVertical: 20, paddingLeft: 20 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary500 }}>
-          Selecione o método de pagamento:
+      <View style={{ marginVertical: 10, paddingLeft: 20 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Colors.primary500 }}>
+          Não se preocupe! Seus dados de pagamento são trafegados totalmente criptografados pelo
+          nosso parceiro processador de pagamentos (Pagbank).
+        </Text>
+      </View>
+      <View style={{ marginVertical: 10, paddingLeft: 20 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Colors.primary500 }}>
+          Além disso, apenas R$ 20 do seu limite será reservado todo mês. Não ocupamos o limite do
+          seu cartão de crédito.
         </Text>
       </View>
 
@@ -156,6 +223,33 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
           setYPosition(event.nativeEvent.contentOffset.y);
         }}
       >
+        <CreditCardInput
+          // eslint-disable-next-line no-return-assign
+          //ref={(c) => (refCCInput.current = c)}
+          onChange={onChangeCreditCardInput}
+          requiresName={true}
+          requiresCVC={true}
+          allowScroll={true}
+          labels={{
+            name: 'NOME NO CARTÃO',
+            number: 'NÚMERO DO CARTÃO',
+            expiry: 'DATA DE EXPIRAÇÃO',
+            postalCode: 'CEP DO PORTADOR',
+            cvc: 'CVC'
+          }}
+          placeholders={{
+            name: 'Nome',
+            number: 'Número',
+            expiry: 'Data de expiração',
+            postalCode: 'CEP',
+            cvc: 'CVC'
+          }}
+          additionalInputsProps={{
+            name: {
+              defaultValue: 'Teste'
+            }
+          }}
+        />
         <View style={styles.buttons}>
           <Button
             type={ButtonTypes.Primary_Bordered}

@@ -1,6 +1,21 @@
+import PaymentMethods from '../../../constants/enums/PaymentMethods';
+
+class CreditCard {
+  constructor(
+    public cvc: string,
+    public name: string,
+    public expiry: string,
+    public number: string,
+    public type: string
+  ) {}
+}
+
+class PaymentMethod {
+  constructor(public paymentMethodId: PaymentMethods, public creditCard?: CreditCard | undefined) {}
+}
+
 class GetAccountSettingsResponse {
   constructor(
-    public userPlanId: string,
     public userNameComplete: string,
     public username: string,
     public userBirthdate: Date,
@@ -16,8 +31,6 @@ class GetAccountSettingsResponse {
     public referPronoun: string,
     public messageProfessionalName: string,
 
-    //public paymentProcessingInfo: PaymentProcessingResponse,
-
     public userAddressCEP: string,
     public userAddressStreet: string,
     public userAddressNumber: string,
@@ -25,6 +38,11 @@ class GetAccountSettingsResponse {
     public userAddressCity: string,
     public userAddressComplement: string,
     public userAddressState: string,
+
+    public userPlanId: string,
+
+    public paymentMethod?: PaymentMethod,
+
     public companyName?: string,
     public companyCNPJ?: string,
     public companyNumberOfEmployees?: string
