@@ -1,18 +1,4 @@
-import PaymentMethods from '../../../constants/enums/PaymentMethods';
-
-class CreditCard {
-  constructor(
-    public cvc: string,
-    public name: string,
-    public expiry: string,
-    public number: string,
-    public type: string
-  ) {}
-}
-
-class PaymentMethod {
-  constructor(public paymentMethodId: PaymentMethods, public creditCard?: CreditCard | undefined) {}
-}
+import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
 
 class GetAccountSettingsResponse {
   constructor(
@@ -41,7 +27,7 @@ class GetAccountSettingsResponse {
 
     public userPlanId: string,
 
-    public paymentMethod?: PaymentMethod,
+    public paymentStatus: PaymentInstalmentsStatus,
 
     public companyName?: string,
     public companyCNPJ?: string,

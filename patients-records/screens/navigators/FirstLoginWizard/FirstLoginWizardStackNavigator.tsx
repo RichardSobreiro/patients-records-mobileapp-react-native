@@ -1,8 +1,9 @@
 import { Colors } from '../../../constants/styles';
 import BusinessSettingsScreen from '../../../screens/Settings/Business/BusinessSettingsScreen';
+import FirstLoginWizardCompletedScreen from '../../../screens/Settings/FirstLoginWizardCompletedScreen';
 import MessagesSettingsScreen from '../../../screens/Settings/Messages/MessagesSettingsScreen';
-import PaymentMethodSettingsScreen from '../../../screens/Settings/Payments/PaymentMethodSettingsScreen';
 import PlanSettingsScreen from '../../../screens/Settings/Plans/PlansSettingsScreen';
+import CreateFirstPaymentScreen from '../../Settings/Payments/CreateFirstPaymentScreen';
 import AccountSettingsTopTabsNavigator from '../Settings/AccountsSettingsTopTabsNavigator';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,10 +13,8 @@ export type LogintStackParamList = {
   BusinessInfo;
   MessageSettings;
   PlanInfo;
-  PaymentMethod;
-  CreditCardSettings;
-  PaymentStatus;
-  Summary;
+  CreateFirstPayment;
+  FirstLoginWizardCompleted;
 };
 
 const Stack = createNativeStackNavigator<LogintStackParamList>();
@@ -62,10 +61,18 @@ const FirstLoginWizardStackNavigator = () => {
         }}
       />
       <Stack.Screen
-        name="PaymentMethod"
-        component={PaymentMethodSettingsScreen}
+        name="CreateFirstPayment"
+        component={CreateFirstPaymentScreen}
         options={{
           headerTitle: 'Pagamento',
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Stack.Screen
+        name="FirstLoginWizardCompleted"
+        component={FirstLoginWizardCompletedScreen}
+        options={{
+          headerTitle: '',
           headerTitleAlign: 'center'
         }}
       />

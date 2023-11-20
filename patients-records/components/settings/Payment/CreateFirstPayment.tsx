@@ -1,38 +1,36 @@
+import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
 import PaymentMethods from '../../../constants/enums/PaymentMethods';
-import Plans from '../../../constants/enums/Plans';
+import PaymentsUserMethodStatus from '../../../constants/enums/PaymentsUserMethodStatus';
 import { Colors } from '../../../constants/styles';
 import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
-import { getAccountSettings, updateAccountSettings } from '../../../http/SettingsApi';
+import { createPayment, createPaymentMethod } from '../../../http/PaymentsApi';
+import { getAccountSettings } from '../../../http/SettingsApi';
 import GetAccountSettingsResponse from '../../../models/settings/accounts/GetAccountSettingsResponse';
-import UpdateAccountSettingsRequest, {
-  CreditCard
-} from '../../../models/settings/accounts/UpdateAccountSettingsRequest';
+import CreatePaymentRequest from '../../../models/settings/payments/CreatePaymentRequest';
+import CreatePaymentResponse from '../../../models/settings/payments/CreatePaymentResponse';
+import CreateUserPaymentMethodRequest, {
+  CreateCreditCardPaymentMethodRequest
+} from '../../../models/settings/payments/CreateUserPaymentMethodRequest';
+import CreateUserPaymentMethodResponse from '../../../models/settings/payments/CreateUserPaymentMethodResponse';
 import { AuthContext } from '../../../store/auth-context';
+import { NotificationContext } from '../../../store/notification-context';
 import Button, { ButtonTypes } from '../../ui/Button';
 
 import { useIsFocused } from '@react-navigation/native';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { CreditCardInput } from 'react-native-input-credit-card';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Snackbar } from 'react-native-paper';
 
 type Props = {
   navigation: any;
 };
 
-const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
+const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
+  const notificationCtx = useContext(NotificationContext);
   const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [accountSettingsFromServer, setAccountSettingsFromServer] = useState<
-    GetAccountSettingsResponse | undefined
-  >(undefined);
-  const [visibleSnackbar, setVisibleSnackbar] = useState(false);
-  const [yPosition, setYPosition] = useState<number>(0);
-  const isFocused = useIsFocused();
-  //let refCCInput = useRef<CreditCardInput | null>();
-  //let refCCInput = createRef<CreditCardInput | null>();
   const [paymentForm, setPaymentForm] = useState<
     | {
         status: {
@@ -52,9 +50,83 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
       }
     | undefined
   >(undefined);
+  const isFocused = useIsFocused();
 
   const onChangeCreditCardInput = (form) => {
     setPaymentForm(form);
+  };
+
+  const createUserPaymentMethodAsync = async (): Promise<
+    CreateUserPaymentMethodResponse | undefined
+  > => {
+    if (!paymentForm?.valid) {
+      return;
+    }
+
+    const request = new CreateUserPaymentMethodRequest(
+      PaymentMethods.CreditCard,
+      new CreateCreditCardPaymentMethodRequest(
+        paymentForm.values.cvc,
+        paymentForm.values.name,
+        paymentForm.values.expiry,
+        paymentForm.values.number,
+        paymentForm.values.number.substring(
+          paymentForm.values.number.length - 4,
+          paymentForm.values.number.length
+        ),
+        paymentForm.values.type
+      )
+    );
+
+    try {
+      const response = await createPaymentMethod(authCtx.token?.access_token!, request);
+      if (response.ok) {
+        const reponseBody = response.body as CreateUserPaymentMethodResponse;
+        return reponseBody;
+      } else {
+        asyncErrorHandler(
+          new Error(`CreateFirstPayment.submitHandler - else: ${JSON.stringify(response)}`, {
+            cause: response.httpStatusCode
+          })
+        );
+      }
+    } catch (error: any) {
+      asyncErrorHandler(
+        new Error(`CreateFirstPayment.submitHandler - catch: ${JSON.stringify(error)}`, {
+          cause: error.message
+        })
+      );
+    }
+  };
+
+  const createPaymentAsync = async (
+    paymentsUserMethodId: string
+  ): Promise<CreatePaymentResponse | undefined> => {
+    if (!paymentForm?.valid) {
+      return;
+    }
+
+    const request = new CreatePaymentRequest(paymentsUserMethodId);
+
+    try {
+      const response = await createPayment(authCtx.token?.access_token!, request);
+      if (response.ok) {
+        const reponseBody = response.body as CreatePaymentResponse;
+        return reponseBody;
+      } else {
+        asyncErrorHandler(
+          new Error(`CreateFirstPayment.submitHandler - else: ${JSON.stringify(response)}`, {
+            cause: response.httpStatusCode
+          })
+        );
+      }
+    } catch (error: any) {
+      asyncErrorHandler(
+        new Error(`CreateFirstPayment.submitHandler - catch: ${JSON.stringify(error)}`, {
+          cause: error.message
+        })
+      );
+    }
   };
 
   const submitHandler = async () => {
@@ -64,38 +136,29 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
 
     setIsLoading(true);
 
-    const request = { ...accountSettingsFromServer } as unknown as UpdateAccountSettingsRequest;
-    request.paymentMethod = {
-      paymentMethodId: PaymentMethods.CreditCard,
-      creditCard: paymentForm.values as unknown as CreditCard
-    };
-
-    try {
-      const response = await updateAccountSettings(authCtx.token?.access_token!, request);
-      if (response.ok) {
-        if (!authCtx.userInfo?.userCreationCompleted) {
-          navigation.navigate('PaymentMethod');
-        } else {
-          setVisibleSnackbar(true);
-          setTimeout(() => {
-            setVisibleSnackbar(false);
-          }, 5000);
+    const responseCreateUserPaymentMethod = await createUserPaymentMethodAsync();
+    if (responseCreateUserPaymentMethod) {
+      if (responseCreateUserPaymentMethod.status === PaymentsUserMethodStatus.OK) {
+        const responseCreatePayment = await createPaymentAsync(
+          responseCreateUserPaymentMethod.paymentsUserMethodId
+        );
+        if (responseCreatePayment) {
+          if (responseCreatePayment.status === PaymentInstalmentsStatus.OK) {
+            navigation.navigate('FirstLoginWizardCompleted');
+          } else {
+            notificationCtx.showNotification({
+              title: 'Erro no Pagamento',
+              message: responseCreateUserPaymentMethod.statusDescription
+            });
+          }
         }
       } else {
-        asyncErrorHandler(
-          new Error(`PaymentMethodSettings.submitHandler - else: ${JSON.stringify(response)}`, {
-            cause: response.httpStatusCode
-          })
-        );
+        notificationCtx.showNotification({
+          title: 'Erro no Pagamento',
+          message: responseCreateUserPaymentMethod.statusDescription
+        });
       }
-    } catch (error: any) {
-      asyncErrorHandler(
-        new Error(`PaymentMethodSettings.submitHandler - catch: ${JSON.stringify(error)}`, {
-          cause: error.message
-        })
-      );
     }
-
     setIsLoading(false);
   };
 
@@ -107,42 +170,13 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
         const response = await getAccountSettings(authCtx.token?.access_token!);
         if (response.ok) {
           const getAccountSettingsResponse = response.body as GetAccountSettingsResponse;
-          setAccountSettingsFromServer(getAccountSettingsResponse);
-          // setPaymentForm(
-          //   getAccountSettingsResponse.paymentMethod &&
-          //     getAccountSettingsResponse.paymentMethod.paymentMethodId === PaymentMethods.CreditCard
-          //     ? {
-          //         status: {
-          //           cvc: 'complete',
-          //           expiry: 'complete',
-          //           name: 'complete',
-          //           number: 'complete'
-          //         },
-          //         valid: true,
-          //         values: {
-          //           cvc: '***',
-          //           expiry: getAccountSettingsResponse.paymentMethod.creditCard?.expiry!,
-          //           name: getAccountSettingsResponse.paymentMethod.creditCard?.name!,
-          //           number: `***`,
-          //           type: getAccountSettingsResponse.paymentMethod.creditCard?.number!
-          //         }
-          //       }
-          //     : {
-          //         status: {
-          //           cvc: 'incomplete',
-          //           expiry: 'incomplete',
-          //           name: 'incomplete',
-          //           number: 'incomplete'
-          //         },
-          //         valid: false,
-          //         values: { cvc: '', expiry: '', name: '', number: '', type: undefined }
-          //       }
-          // );
-          // refCCInput.current?.setValues({ number: '123' });
+          if (getAccountSettingsResponse.paymentStatus === PaymentInstalmentsStatus.OK) {
+            navigation.navigate('FirstLoginWizardCompleted');
+          }
         } else {
           asyncErrorHandler(
             new Error(
-              `PaymentMethodSettings.getAccountSettingsAsync - else: ${JSON.stringify(response)}`,
+              `CreateFirstPayment.getAccountSettingsAsync - else: ${JSON.stringify(response)}`,
               {
                 cause: response.httpStatusCode
               }
@@ -152,7 +186,7 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
       } catch (error: any) {
         asyncErrorHandler(
           new Error(
-            `PaymentMethodSettings.getAccountSettingsAsync - catch: ${JSON.stringify(error)}`,
+            `CreateFirstPayment.getAccountSettingsAsync - catch: ${JSON.stringify(error)}`,
             {
               cause: error.message
             }
@@ -165,7 +199,7 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
     if (isFocused) {
       getAccountSettingsAsync();
     }
-  }, [asyncErrorHandler, authCtx.token?.access_token, isFocused]);
+  }, [asyncErrorHandler, authCtx.token?.access_token, isFocused, navigation]);
 
   return (
     <>
@@ -187,22 +221,6 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
           }}
         />
       )}
-      <Snackbar
-        visible={visibleSnackbar}
-        onDismiss={() => {}}
-        wrapperStyle={{
-          zIndex: 7000,
-          top: yPosition,
-          alignContent: 'center',
-          alignItems: 'center'
-        }}
-        style={{
-          backgroundColor: Colors.secondary500,
-          alignSelf: 'center'
-        }}
-      >
-        Alterações salvas com sucesso!
-      </Snackbar>
 
       <View style={{ marginVertical: 10, paddingLeft: 20 }}>
         <Text style={{ fontSize: 16, fontWeight: 'bold', color: Colors.primary500 }}>
@@ -210,22 +228,9 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
           nosso parceiro processador de pagamentos (Pagbank).
         </Text>
       </View>
-      <View style={{ marginVertical: 10, paddingLeft: 20 }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Colors.primary500 }}>
-          Além disso, apenas R$ 20 do seu limite será reservado todo mês. Não ocupamos o limite do
-          seu cartão de crédito.
-        </Text>
-      </View>
 
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.keyboardAwareStyle}
-        onScroll={(event) => {
-          setYPosition(event.nativeEvent.contentOffset.y);
-        }}
-      >
+      <KeyboardAwareScrollView contentContainerStyle={styles.keyboardAwareStyle}>
         <CreditCardInput
-          // eslint-disable-next-line no-return-assign
-          //ref={(c) => (refCCInput.current = c)}
           onChange={onChangeCreditCardInput}
           requiresName={true}
           requiresCVC={true}
@@ -265,7 +270,7 @@ const PaymentMethodSettings: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default PaymentMethodSettings;
+export default CreateFirstPayment;
 
 const styles = StyleSheet.create({
   keyboardAwareStyle: {

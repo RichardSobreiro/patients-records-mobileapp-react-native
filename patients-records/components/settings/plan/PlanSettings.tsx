@@ -27,7 +27,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
   const isFocused = useIsFocused();
 
-  const [plan, setPlan] = useState<Plans>(Plans.Anual);
+  const [plan, setPlan] = useState<Plans>(Plans.Monthly);
 
   const submitHandler = async () => {
     if (plan === null || plan === undefined || plan.trim() === '') {
@@ -43,7 +43,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);
       if (response.ok) {
         if (!authCtx.userInfo?.userCreationCompleted) {
-          navigation.navigate('PaymentMethod');
+          navigation.navigate('CreateFirstPayment');
         } else {
           setVisibleSnackbar(true);
           setTimeout(() => {
@@ -77,7 +77,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
         if (response.ok) {
           const getAccountSettingsResponse = response.body as GetAccountSettingsResponse;
           setAccountSettingsFromServer(getAccountSettingsResponse);
-          setPlan((getAccountSettingsResponse.userPlanId as Plans) ?? Plans.Anual);
+          setPlan((getAccountSettingsResponse.userPlanId as Plans) ?? Plans.Monthly);
         } else {
           asyncErrorHandler(
             new Error(`PlanSettings.getAccountSettingsAsync - else: ${JSON.stringify(response)}`, {
@@ -151,7 +151,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
             borderTopWidth: 1
           }}
         >
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', minHeight: 50 }}>
             <View style={{ borderLeftWidth: 1, borderLeftColor: Colors.primary500, flex: 1 }}>
               <Text style={{ color: Colors.primary500, fontSize: 18 }}></Text>
             </View>
@@ -166,6 +166,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
             >
               <Text style={{ color: Colors.primary500, fontSize: 18 }}>7 Dias Grátis</Text>
             </View>
+
             <View
               style={{
                 borderLeftWidth: 1,
@@ -175,18 +176,9 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
                 justifyContent: 'center'
               }}
             >
-              <Text style={{ color: Colors.primary500, fontSize: 18 }}>Anual</Text>
-            </View>
-            <View
-              style={{
-                borderLeftWidth: 1,
-                borderLeftColor: Colors.primary500,
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Text style={{ color: Colors.primary500, fontSize: 18 }}>Mensal</Text>
+              <Text style={{ color: Colors.primary500, fontSize: 18, fontWeight: 'bold' }}>
+                Mensal
+              </Text>
             </View>
           </View>
         </View>
@@ -208,7 +200,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 16, fontWeight: 'bold' }}>
+            <Text style={{ color: Colors.primary500, fontSize: 18, fontWeight: 'bold' }}>
               Plano Selecionado:
             </Text>
           </View>
@@ -227,21 +219,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               onPress={() => setPlan(Plans.Testing)}
             />
           </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <RadioButton
-              value="2"
-              status={plan === '2' ? 'checked' : 'unchecked'}
-              onPress={() => setPlan(Plans.Anual)}
-            />
-          </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -253,7 +231,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <RadioButton
               value="3"
-              status={plan === '3' ? 'checked' : 'unchecked'}
+              status={plan === Plans.Monthly ? 'checked' : 'unchecked'}
               onPress={() => setPlan(Plans.Monthly)}
             />
           </View>
@@ -276,7 +254,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Lembretes por Whatsapp</Text>
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Lembretes por Whatsapp</Text>
           </View>
           <View
             style={{
@@ -289,6 +267,40 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Feather name="check-circle" size={24} color="green" />
           </View>
+
+          <View
+            style={{
+              borderLeftWidth: 1,
+              borderLeftColor: Colors.primary500,
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Feather name="check-circle" size={24} color="green" />
+          </View>
+        </View>
+
+        <View
+          style={{
+            borderBottomColor: Colors.primary500,
+            borderBottomWidth: 1,
+            flexDirection: 'row',
+            minHeight: 50
+          }}
+        >
+          <View
+            style={{
+              borderLeftWidth: 1,
+              borderLeftColor: Colors.primary500,
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Prontuário eletrônico</Text>
+          </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -330,8 +342,9 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Prontuário eletrônico</Text>
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Agenda online</Text>
           </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -343,17 +356,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Feather name="check-circle" size={24} color="green" />
           </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -384,8 +387,9 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Agenda online</Text>
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Gestão financeira</Text>
           </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -397,17 +401,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Feather name="check-circle" size={24} color="green" />
           </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -438,8 +432,9 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Gestão financeira</Text>
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Relatórios</Text>
           </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -451,17 +446,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Feather name="check-circle" size={24} color="green" />
           </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -492,7 +477,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Relatórios</Text>
+            <Text style={{ color: Colors.primary500, fontSize: 16 }}>Anamneses personalizadas</Text>
           </View>
 
           <View
@@ -506,72 +491,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Feather name="check-circle" size={24} color="green" />
           </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
-        </View>
 
-        <View
-          style={{
-            borderBottomColor: Colors.primary500,
-            borderBottomWidth: 1,
-            flexDirection: 'row',
-            minHeight: 50
-          }}
-        >
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Text style={{ color: Colors.primary500, fontSize: 14 }}>Anamneses personalizadas</Text>
-          </View>
-
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Feather name="check-circle" size={24} color="green" />
-          </View>
           <View
             style={{
               borderLeftWidth: 1,
@@ -618,6 +538,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
           >
             <Text style={{ color: Colors.primary500, fontSize: 16, fontWeight: 'bold' }}>R$ 0</Text>
           </View>
+
           <View
             style={{
               borderLeftWidth: 1,
@@ -628,20 +549,7 @@ const PlanSettings: React.FC<Props> = ({ navigation }) => {
             }}
           >
             <Text style={{ color: Colors.primary500, fontSize: 16, fontWeight: 'bold' }}>
-              R$ 240
-            </Text>
-          </View>
-          <View
-            style={{
-              borderLeftWidth: 1,
-              borderLeftColor: Colors.primary500,
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Text style={{ color: Colors.primary500, fontSize: 16, fontWeight: 'bold' }}>
-              R$ 20
+              R$ 19,90
             </Text>
           </View>
         </View>
