@@ -15,7 +15,7 @@ export const createUser = async (request: CreateUserRequest): Promise<ApiRespons
 
   const formBodyString = formBody.join('&');
 
-  const response = await fetchWithTimeout(URL_ADDRESS, {
+  const response = await fetch(URL_ADDRESS, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

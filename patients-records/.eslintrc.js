@@ -2,7 +2,7 @@ module.exports = {
   extends: ['universe', 'universe/shared/typescript-analysis', 'plugin:react-hooks/recommended'],
   overrides: [
     {
-      files: ['*.ts', '*.tsx', '*.d.ts'],
+      files: ['*.ts', '*.tsx', '*.d.ts', '*.js'],
       parserOptions: {
         project: './patients-records/tsconfig.json'
       }

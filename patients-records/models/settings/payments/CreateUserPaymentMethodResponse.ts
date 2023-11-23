@@ -14,10 +14,11 @@ export class CreateCreditCardPaymentMethodResponse {
 
 class CreateUserPaymentMethodResponse {
   constructor(
-    public paymentsUserMethodId: string,
+    public paymentUserMethodId: string,
     public userId: string,
     public creationDate: Date,
     public paymentMethodId: PaymentMethods,
+    public isDefault: boolean,
     public status: PaymentsUserMethodStatus,
     public statusDescription: string,
     public expireDate?: Date,

@@ -14,6 +14,7 @@ import CreateUserPaymentMethodRequest, {
 import CreateUserPaymentMethodResponse from '../../../models/settings/payments/CreateUserPaymentMethodResponse';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
+import PagSeguro from '../../../util/payments-providers/pagseguro.js';
 import Button, { ButtonTypes } from '../../ui/Button';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -63,50 +64,76 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    const request = new CreateUserPaymentMethodRequest(
-      PaymentMethods.CreditCard,
-      new CreateCreditCardPaymentMethodRequest(
-        paymentForm.values.cvc,
-        paymentForm.values.name,
-        paymentForm.values.expiry,
-        paymentForm.values.number,
-        paymentForm.values.number.substring(
-          paymentForm.values.number.length - 4,
-          paymentForm.values.number.length
-        ),
-        paymentForm.values.type
-      )
-    );
+    console.log(`number: ${paymentForm.values.number.replace(' ', '')}`);
 
-    try {
-      const response = await createPaymentMethod(authCtx.token?.access_token!, request);
-      if (response.ok) {
-        const reponseBody = response.body as CreateUserPaymentMethodResponse;
-        return reponseBody;
-      } else {
+    const card = PagSeguro.encryptCard({
+      publicKey: process.env.PUBLIC_KEY_PAG_SEGURO,
+      holder: paymentForm.values.name,
+      number: paymentForm.values.number.replaceAll(' ', ''),
+      expMonth: paymentForm.values.expiry.split('/')[0],
+      expYear: `20${paymentForm.values.expiry.split('/')[1]}`,
+      securityCode: paymentForm.values.cvc
+    });
+
+    console.log(`card.encryptedCard: ${card.encryptedCard}`);
+    console.log(`card.hasErrors: ${card.hasErrors}`);
+    console.log(`card.errors: ${JSON.stringify(card.errors)}`);
+
+    if (card.hasErrors) {
+      let message = 'Verifique os dados do cartão e tente novamente!';
+      if (card.errors[0].code === 'INVALID_NUMBER') {
+        message = 'Número do cartão é inválido. Verifique os algarismos e tente novamente!';
+      }
+      notificationCtx.showNotification({
+        title: 'Erro ao criptografar o cartão',
+        message
+      });
+    } else {
+      const request = new CreateUserPaymentMethodRequest(
+        PaymentMethods.CreditCardRecurrent,
+        true,
+        new CreateCreditCardPaymentMethodRequest(
+          paymentForm.values.cvc,
+          paymentForm.values.name,
+          paymentForm.values.expiry,
+          card.encryptedCard,
+          paymentForm.values.number.substring(
+            paymentForm.values.number.length - 4,
+            paymentForm.values.number.length
+          ),
+          paymentForm.values.type
+        )
+      );
+      try {
+        const response = await createPaymentMethod(authCtx.token?.access_token!, request);
+        if (response.ok) {
+          const reponseBody = response.body as CreateUserPaymentMethodResponse;
+          return reponseBody;
+        } else {
+          asyncErrorHandler(
+            new Error(`CreateFirstPayment.submitHandler - else: ${JSON.stringify(response)}`, {
+              cause: response.httpStatusCode
+            })
+          );
+        }
+      } catch (error: any) {
         asyncErrorHandler(
-          new Error(`CreateFirstPayment.submitHandler - else: ${JSON.stringify(response)}`, {
-            cause: response.httpStatusCode
+          new Error(`CreateFirstPayment.submitHandler - catch: ${JSON.stringify(error)}`, {
+            cause: error.message
           })
         );
       }
-    } catch (error: any) {
-      asyncErrorHandler(
-        new Error(`CreateFirstPayment.submitHandler - catch: ${JSON.stringify(error)}`, {
-          cause: error.message
-        })
-      );
     }
   };
 
   const createPaymentAsync = async (
-    paymentsUserMethodId: string
+    paymentUserMethodId: string
   ): Promise<CreatePaymentResponse | undefined> => {
     if (!paymentForm?.valid) {
       return;
     }
 
-    const request = new CreatePaymentRequest(paymentsUserMethodId);
+    const request = new CreatePaymentRequest(paymentUserMethodId);
 
     try {
       const response = await createPayment(authCtx.token?.access_token!, request);
@@ -138,9 +165,9 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
 
     const responseCreateUserPaymentMethod = await createUserPaymentMethodAsync();
     if (responseCreateUserPaymentMethod) {
-      if (responseCreateUserPaymentMethod.status === PaymentsUserMethodStatus.OK) {
+      if (responseCreateUserPaymentMethod.status === PaymentsUserMethodStatus.PENDING) {
         const responseCreatePayment = await createPaymentAsync(
-          responseCreateUserPaymentMethod.paymentsUserMethodId
+          responseCreateUserPaymentMethod.paymentUserMethodId
         );
         if (responseCreatePayment) {
           if (responseCreatePayment.status === PaymentInstalmentsStatus.OK) {
@@ -148,7 +175,7 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
           } else {
             notificationCtx.showNotification({
               title: 'Erro no Pagamento',
-              message: responseCreateUserPaymentMethod.statusDescription
+              message: responseCreatePayment.statusDescription
             });
           }
         }

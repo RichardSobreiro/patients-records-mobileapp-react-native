@@ -12,7 +12,7 @@ export const createPaymentMethod = async (
 ): Promise<ApiResponse> => {
   const URL = `http://10.0.2.2:3006/payments/methods`;
 
-  const response = await fetchWithTimeout(URL, {
+  const response = await fetch(URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -41,7 +41,7 @@ export const createPayment = async (
 ): Promise<ApiResponse> => {
   const URL = `http://10.0.2.2:3006/payments`;
 
-  const response = await fetchWithTimeout(URL, {
+  const response = await fetch(URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,

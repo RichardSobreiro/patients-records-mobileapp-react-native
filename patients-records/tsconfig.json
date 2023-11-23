@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
+    //    "module": "CommonJS",
+    "allowJs": true,
     "strictNullChecks": true,
+    "checkJs": false,
     "baseUrl": "./",
     "paths": {
       "/*": ["./*"]

@@ -1,12 +1,21 @@
 import Button, { ButtonTypes } from '../../components/ui/Button';
+import PaymentMethods from '../../constants/enums/PaymentMethods';
+import PaymentsUserMethodStatus from '../../constants/enums/PaymentsUserMethodStatus';
 import { Colors } from '../../constants/styles';
 import useAsyncErrorHandler from '../../hooks/useAsyncErrorHandler';
 import { getAccountSettings } from '../../http/SettingsApi';
 import GetAccountSettingsResponse from '../../models/settings/accounts/GetAccountSettingsResponse';
+import {
+  GetCreditCardPaymentMethodResponse,
+  GetUserPaymentMethodResponse
+} from '../../models/settings/payments/GetPaymentUserMethodResponse';
 import { AuthContext } from '../../store/auth-context';
+import CreditCard from '../ui/CreditCard';
+import PaymentInstalmentsList from './Payment/PaymentInstalmentsList';
 
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
@@ -19,6 +28,9 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [accountSettingsFromServer, setAccountSettingsFromServer] = useState<
     GetAccountSettingsResponse | undefined
+  >(undefined);
+  const [defaultPaymentMethod, setDefaultPaymentMethod] = useState<
+    GetUserPaymentMethodResponse | undefined
   >(undefined);
   const isFocused = useIsFocused();
 
@@ -33,6 +45,34 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
         if (response.ok) {
           const getAccountSettingsResponse = response.body as GetAccountSettingsResponse;
           setAccountSettingsFromServer(getAccountSettingsResponse);
+          setDefaultPaymentMethod((curValue) => {
+            const defaultPaymentMethodResponse =
+              getAccountSettingsResponse.paymentUserMethods?.paymentMethods?.find(
+                (pm) =>
+                  pm.paymentUserMethodId ===
+                  getAccountSettingsResponse.paymentUserMethods?.defaultPaymentUserMethodId
+              );
+            if (defaultPaymentMethodResponse) {
+              return defaultPaymentMethodResponse;
+            } else {
+              return new GetUserPaymentMethodResponse(
+                '',
+                '',
+                new Date(),
+                PaymentMethods.CreditCardRecurrent,
+                PaymentsUserMethodStatus.PENDING,
+                '',
+                new Date(),
+                new GetCreditCardPaymentMethodResponse(
+                  '***',
+                  'Nome Inválido',
+                  '**/**',
+                  'Inválido',
+                  'mastercard'
+                )
+              );
+            }
+          });
         } else {
           asyncErrorHandler(
             new Error(
@@ -63,6 +103,23 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
     }
   }, [asyncErrorHandler, authCtx.token?.access_token, isFocused]);
 
+  useLayoutEffect(() => {
+    if (!navigation || navigation === undefined) return;
+
+    navigation.setOptions({ headerShown: false });
+
+    const MainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
+    if (MainDrawerNavigator) {
+      MainDrawerNavigator.setOptions({
+        headerTitle: 'Cadastro Finalizado'
+      });
+    }
+
+    return () => {
+      navigation.setOptions({ headerShown: true });
+    };
+  });
+
   return (
     <>
       {isLoading && (
@@ -84,11 +141,29 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
         />
       )}
 
-      <View style={{ marginVertical: 20, paddingLeft: 20 }}>
+      <View
+        style={{
+          marginVertical: 20,
+          paddingLeft: 20,
+          alignContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <FontAwesome5 name="check-circle" size={80} color="green" />
         <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary500 }}>
           Tudo certo com o seu cadastro.
         </Text>
       </View>
+
+      <CreditCard
+        cvc={defaultPaymentMethod?.creditCard?.cvc}
+        name={defaultPaymentMethod?.creditCard?.name}
+        expiry={defaultPaymentMethod?.creditCard?.expiry}
+        lastFourNumbers={defaultPaymentMethod?.creditCard?.fourFinalNumbers}
+        type={defaultPaymentMethod?.creditCard?.type}
+      />
+
+      <PaymentInstalmentsList instalmentsProp={accountSettingsFromServer?.instalments} />
 
       <ScrollView horizontal contentContainerStyle={{ flex: 1, flexDirection: 'column' }}>
         <View style={styles.buttons}>
