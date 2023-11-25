@@ -1,4 +1,4 @@
-import CreateFirstPayment from '../../../components/settings/Payment/CreateFirstPayment';
+import CreateFirstPayment from '../../../components/settings/payment/CreateFirstPayment';
 
 type Props = {
   route: any;

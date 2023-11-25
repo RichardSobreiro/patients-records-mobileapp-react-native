@@ -3,7 +3,7 @@ import { Colors } from '../../../constants/styles';
 import BusinessSettingsScreen from '../../../screens/Settings/Business/BusinessSettingsScreen';
 import MessagesSettingsScreen from '../../../screens/Settings/Messages/MessagesSettingsScreen';
 import AccountSettingsTopTabsNavigator from './AccountsSettingsTopTabsNavigator';
-import PaymentsPlanSettingsTopTabs from './PaymentsPlanSettingsTopTabs';
+import PaymentsPlansSettingsStackNavigator from './PaymentsPlansSettingsStackNavigator';
 
 import { FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -62,7 +62,7 @@ const SettingsBottomTabs = ({ route, navigation }) => {
       />
       <BottomTabs.Screen
         name="PaymentsPlanSettings"
-        component={PaymentsPlanSettingsTopTabs}
+        component={PaymentsPlansSettingsStackNavigator}
         options={{
           tabBarLabel: 'Pagamento e Planos',
           tabBarIcon: ({ color, size }) => (

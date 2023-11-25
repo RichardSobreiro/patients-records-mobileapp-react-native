@@ -41,7 +41,7 @@ const PaymentInstalmentsList: React.FC<Props> = ({ instalmentsProp, navigation }
           </View>
         </View>
         {instalments?.map((it) => (
-          <View style={styles.row}>
+          <View key={it.paymentInstalmentsId} style={styles.row}>
             <View style={[styles.cell, { flex: 1 }]}>
               <Text style={styles.text}>{it.instalmentNumber}</Text>
             </View>

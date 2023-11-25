@@ -17,7 +17,7 @@ export type UserInfo = {
   userId: string;
   username: string;
   email: string;
-  userCreationCompleted: string;
+  userCreationCompleted: boolean;
   userPlanId: string;
   paymentOk: string;
   companyName: string;
@@ -33,7 +33,7 @@ export type TokenPasswordGranType = {
   userId: string;
   username: string;
   email: string;
-  userCreationCompleted: string;
+  userCreationCompleted: boolean;
   userPlanId: string;
   paymentOk: string;
   companyName: string;
@@ -145,7 +145,7 @@ export const createUser = async (email, password, username) => {
   return response;
 };
 
-export const login = async (email, password) => {
+export const login = async (email, password): Promise<TokenPasswordGranType | undefined> => {
   const url = `http://10.0.2.2:3005/token`;
 
   const uninterceptedAxiosInstance = axios.create();

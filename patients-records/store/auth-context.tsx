@@ -1,33 +1,38 @@
-import { Token, UserInfo, validadeToken } from '../util/auth';
+import { Token, TokenPasswordGranType, UserInfo, validadeToken } from '../util/auth';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState } from 'react';
 
 type AuthState = {
-  token: Token | undefined;
+  token: Token | TokenPasswordGranType | undefined;
   userInfo: UserInfo | undefined;
   isAuthenticated: boolean;
-  authenticate: (token: Token, userInfo: UserInfo) => void;
+  authenticate: (token: Token | TokenPasswordGranType, userInfo: UserInfo) => void;
   logout: () => void;
   initializeState: () => void;
+  setUserCreationCompleted: (value: boolean) => void;
 };
 
 const initialState: AuthState = {
   token: undefined,
   userInfo: undefined,
   isAuthenticated: false,
-  authenticate: (token: Token, userInfo: UserInfo) => {},
+  authenticate: (token: Token | TokenPasswordGranType, userInfo: UserInfo) => {},
   logout: () => {},
-  initializeState: () => {}
+  initializeState: () => {},
+  setUserCreationCompleted: (value: boolean) => {}
 };
 
 export const AuthContext = createContext(initialState);
 
 const AuthContextProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState<Token | undefined>(undefined);
+  const [authToken, setAuthToken] = useState<Token | TokenPasswordGranType | undefined>(undefined);
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
 
-  const authenticate = async (token: Token, userInfo: UserInfo): Promise<void> => {
+  const authenticate = async (
+    token: Token | TokenPasswordGranType,
+    userInfo: UserInfo
+  ): Promise<void> => {
     setAuthToken(token);
     setUserInfo(userInfo);
     await AsyncStorage.setItem('ACCESS_TOKEN', JSON.stringify(token));
@@ -57,13 +62,26 @@ const AuthContextProvider = ({ children }) => {
     }
   };
 
+  const setUserCreationCompleted = (value: boolean) => {
+    setUserInfo((currentUserInfo) => {
+      if (currentUserInfo) {
+        const newUserInfo = { ...currentUserInfo };
+        newUserInfo.userCreationCompleted = value;
+        return newUserInfo;
+      } else {
+        return currentUserInfo;
+      }
+    });
+  };
+
   const value = {
     token: authToken,
     userInfo,
     isAuthenticated: !!authToken,
     authenticate,
     logout,
-    initializeState
+    initializeState,
+    setUserCreationCompleted
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

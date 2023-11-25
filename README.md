@@ -1,5 +1,7 @@
 <!-- @format -->
 
+Current Git Commet: PARTIAL: first login wizard and settings
+
 <!-- ----------------------------------------------------------------------------- -->
 
 # Patients Records Mobile App with React Native and Typescript

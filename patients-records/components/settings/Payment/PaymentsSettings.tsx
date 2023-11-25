@@ -1,28 +1,25 @@
-import PaymentMethods from '../../constants/enums/PaymentMethods';
-import PaymentsUserMethodStatus from '../../constants/enums/PaymentsUserMethodStatus';
-import { Colors } from '../../constants/styles';
-import useAsyncErrorHandler from '../../hooks/useAsyncErrorHandler';
-import { getAccountSettings, updateAccountSettings } from '../../http/SettingsApi';
-import GetAccountSettingsResponse from '../../models/settings/accounts/GetAccountSettingsResponse';
+import CreditCard from '../../../components/ui/CreditCard';
+import PaymentMethods from '../../../constants/enums/PaymentMethods';
+import PaymentsUserMethodStatus from '../../../constants/enums/PaymentsUserMethodStatus';
+import { Colors } from '../../../constants/styles';
+import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
+import { getAccountSettings } from '../../../http/SettingsApi';
+import GetAccountSettingsResponse from '../../../models/settings/accounts/GetAccountSettingsResponse';
 import {
   GetCreditCardPaymentMethodResponse,
   GetUserPaymentMethodResponse
-} from '../../models/settings/payments/GetPaymentUserMethodResponse';
-import { AuthContext } from '../../store/auth-context';
-import CreditCard from '../ui/CreditCard';
-import PaymentInstalmentsList from './payment/PaymentInstalmentsList';
-import UpdateAccountSettingsRequest from '/models/settings/accounts/UpdateAccountSettingsRequest';
+} from '../../../models/settings/payments/GetPaymentUserMethodResponse';
+import { AuthContext } from '../../../store/auth-context';
+import PaymentInstalmentsList from './PaymentInstalmentsList';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
-import { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-type Props = {
-  navigation: any;
-};
+type Props = { navigation: any };
 
-const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
+const PaymentsSettings: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
   const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -35,44 +32,6 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    const updateAccountSettingsAsync = async (account: GetAccountSettingsResponse) => {
-      setIsLoading(true);
-
-      const request = { ...accountSettingsFromServer } as unknown as UpdateAccountSettingsRequest;
-      request.userCreationCompleted = true;
-
-      try {
-        const response = await updateAccountSettings(authCtx.token?.access_token!, request);
-        if (response.ok) {
-          authCtx.setUserCreationCompleted(true);
-        } else {
-          asyncErrorHandler(
-            new Error(
-              `FirstLoginWizardCompleted.updateAccountSettingsAsync - else: ${JSON.stringify(
-                response
-              )}`,
-              {
-                cause: response.httpStatusCode
-              }
-            )
-          );
-        }
-      } catch (error: any) {
-        asyncErrorHandler(
-          new Error(
-            `FirstLoginWizardCompleted.updateAccountSettingsAsync - catch: ${JSON.stringify(
-              error
-            )}`,
-            {
-              cause: error.message
-            }
-          )
-        );
-      }
-
-      setIsLoading(false);
-    };
-
     const getAccountSettingsAsync = async () => {
       setIsLoading(true);
 
@@ -109,13 +68,10 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
               );
             }
           });
-          updateAccountSettingsAsync(getAccountSettingsResponse);
         } else {
           asyncErrorHandler(
             new Error(
-              `FirstLoginWizardCompleted.getAccountSettingsAsync - else: ${JSON.stringify(
-                response
-              )}`,
+              `PaymentsSettings.getAccountSettingsAsync - else: ${JSON.stringify(response)}`,
               {
                 cause: response.httpStatusCode
               }
@@ -124,12 +80,9 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
         }
       } catch (error: any) {
         asyncErrorHandler(
-          new Error(
-            `FirstLoginWizardCompleted.getAccountSettingsAsync - catch: ${JSON.stringify(error)}`,
-            {
-              cause: error.message
-            }
-          )
+          new Error(`PaymentsSettings.getAccountSettingsAsync - catch: ${JSON.stringify(error)}`, {
+            cause: error.message
+          })
         );
       }
 
@@ -145,24 +98,6 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
     authCtx.token?.access_token,
     isFocused
   ]);
-
-  useLayoutEffect(() => {
-    if (!navigation || navigation === undefined) return;
-
-    navigation.setOptions({ headerShown: false });
-
-    const MainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
-    if (MainDrawerNavigator) {
-      MainDrawerNavigator.setOptions({
-        headerTitle: 'Cadastro Finalizado',
-        headerShown: true
-      });
-    }
-
-    return () => {
-      navigation.setOptions({ headerShown: true });
-    };
-  });
 
   return (
     <>
@@ -195,7 +130,7 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
       >
         <FontAwesome5 name="check-circle" size={80} color="green" />
         <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary500 }}>
-          Tudo certo com o seu cadastro.
+          Tudo certo com o seu pagamento.
         </Text>
       </View>
 
@@ -215,4 +150,4 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default FirstLoginWizardCompleted;
+export default PaymentsSettings;

@@ -1,3 +1,4 @@
+import CustomSideBarMainDrawerNavigator from '../../components/ui/CustomSideBarMainDrawerNavigator';
 import IconButton from '../../components/ui/IconButton';
 import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
@@ -39,8 +40,19 @@ const MainDrawerNavigatorComp = () => {
             size={24}
             onPress={authCtx.logout}
           />
-        )
+        ),
+        drawerStyle: { backgroundColor: Colors.primary100 },
+        drawerLabelStyle: {
+          color: Colors.primary500,
+          fontSize: 18,
+          fontWeight: 'bold',
+          padding: 10,
+          borderWidth: 1,
+          borderColor: 'white',
+          borderRadius: 20
+        }
       }}
+      drawerContent={(props) => <CustomSideBarMainDrawerNavigator {...props} />}
       initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'FirstLoginWizard'}
     >
       <Drawer.Screen

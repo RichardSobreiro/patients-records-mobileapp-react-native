@@ -1,4 +1,3 @@
-import CreditCard from '../../../components/ui/CreditCard';
 import { Colors } from '../../../constants/styles';
 import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
 import { getPaymentInstalment } from '../../../http/PaymentsApi';
@@ -6,6 +5,7 @@ import GetPaymentInstalmentResponse from '../../../models/settings/payments/GetP
 import { AuthContext } from '../../../store/auth-context';
 import { convertPaymentMethodToString } from '../../../util/constantsToStrings';
 import { formatDatePTBR } from '../../../util/date-helpers';
+import CreditCard from '../../ui/CreditCard';
 
 import { useIsFocused } from '@react-navigation/native';
 import { useContext, useEffect, useLayoutEffect, useState } from 'react';
@@ -13,10 +13,11 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
   navigation: any;
+  route: any;
   paymentInstalmentsId: string;
 };
 
-const PaymentInstalmentsEdit: React.FC<Props> = ({ navigation, paymentInstalmentsId }) => {
+const PaymentInstalmentsEdit: React.FC<Props> = ({ navigation, route, paymentInstalmentsId }) => {
   const authCtx = useContext(AuthContext);
   const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
