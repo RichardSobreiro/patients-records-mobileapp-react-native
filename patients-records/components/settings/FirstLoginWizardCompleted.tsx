@@ -1,9 +1,8 @@
-import Button, { ButtonTypes } from '../../components/ui/Button';
 import PaymentMethods from '../../constants/enums/PaymentMethods';
 import PaymentsUserMethodStatus from '../../constants/enums/PaymentsUserMethodStatus';
 import { Colors } from '../../constants/styles';
 import useAsyncErrorHandler from '../../hooks/useAsyncErrorHandler';
-import { getAccountSettings } from '../../http/SettingsApi';
+import { getAccountSettings, updateAccountSettings } from '../../http/SettingsApi';
 import GetAccountSettingsResponse from '../../models/settings/accounts/GetAccountSettingsResponse';
 import {
   GetCreditCardPaymentMethodResponse,
@@ -12,11 +11,12 @@ import {
 import { AuthContext } from '../../store/auth-context';
 import CreditCard from '../ui/CreditCard';
 import PaymentInstalmentsList from './Payment/PaymentInstalmentsList';
+import UpdateAccountSettingsRequest from '/models/settings/accounts/UpdateAccountSettingsRequest';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 type Props = {
   navigation: any;
@@ -34,9 +34,44 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
   >(undefined);
   const isFocused = useIsFocused();
 
-  const submitHandler = async () => {};
-
   useEffect(() => {
+    const updateAccountSettingsAsync = async (account: GetAccountSettingsResponse) => {
+      setIsLoading(true);
+
+      const request = { ...accountSettingsFromServer } as unknown as UpdateAccountSettingsRequest;
+      request.userCreationCompleted = true;
+
+      try {
+        const response = await updateAccountSettings(authCtx.token?.access_token!, request);
+        if (response.ok) {
+        } else {
+          asyncErrorHandler(
+            new Error(
+              `FirstLoginWizardCompleted.updateAccountSettingsAsync - else: ${JSON.stringify(
+                response
+              )}`,
+              {
+                cause: response.httpStatusCode
+              }
+            )
+          );
+        }
+      } catch (error: any) {
+        asyncErrorHandler(
+          new Error(
+            `FirstLoginWizardCompleted.updateAccountSettingsAsync - catch: ${JSON.stringify(
+              error
+            )}`,
+            {
+              cause: error.message
+            }
+          )
+        );
+      }
+
+      setIsLoading(false);
+    };
+
     const getAccountSettingsAsync = async () => {
       setIsLoading(true);
 
@@ -73,6 +108,7 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
               );
             }
           });
+          updateAccountSettingsAsync(getAccountSettingsResponse);
         } else {
           asyncErrorHandler(
             new Error(
@@ -101,7 +137,7 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
     if (isFocused) {
       getAccountSettingsAsync();
     }
-  }, [asyncErrorHandler, authCtx.token?.access_token, isFocused]);
+  }, [accountSettingsFromServer, asyncErrorHandler, authCtx.token?.access_token, isFocused]);
 
   useLayoutEffect(() => {
     if (!navigation || navigation === undefined) return;
@@ -111,7 +147,8 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
     const MainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
     if (MainDrawerNavigator) {
       MainDrawerNavigator.setOptions({
-        headerTitle: 'Cadastro Finalizado'
+        headerTitle: 'Cadastro Finalizado',
+        headerShown: true
       });
     }
 
@@ -163,38 +200,12 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
         type={defaultPaymentMethod?.creditCard?.type}
       />
 
-      <PaymentInstalmentsList instalmentsProp={accountSettingsFromServer?.instalments} />
-
-      <ScrollView horizontal contentContainerStyle={{ flex: 1, flexDirection: 'column' }}>
-        <View style={styles.buttons}>
-          <Button
-            type={ButtonTypes.Primary_Bordered}
-            onPress={submitHandler}
-            text={styles.buttonTextStyles}
-            pressable={[styles.buttonPressable]}
-          >
-            {authCtx.userInfo?.userCreationCompleted ? 'Salvar' : 'Próximo'}
-          </Button>
-        </View>
-      </ScrollView>
+      <PaymentInstalmentsList
+        navigation={navigation}
+        instalmentsProp={accountSettingsFromServer?.instalments}
+      />
     </>
   );
 };
 
 export default FirstLoginWizardCompleted;
-
-const styles = StyleSheet.create({
-  buttons: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    marginBottom: 30,
-    marginTop: 15,
-    marginRight: 20
-  },
-  buttonPressable: {
-    flex: 1,
-    marginHorizontal: 3,
-    minHeight: 40
-  },
-  buttonTextStyles: { fontSize: 20 }
-});

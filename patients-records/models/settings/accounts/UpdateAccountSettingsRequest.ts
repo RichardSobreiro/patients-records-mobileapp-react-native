@@ -22,6 +22,7 @@ class UpdateAccountSettingsRequest {
     public userBirthdate: Date,
     public userGender: string,
     public userCPF: string,
+    public userCreationCompleted: boolean,
     public phoneNumber: string,
     public phoneNumberVerified: boolean,
     public email: string,

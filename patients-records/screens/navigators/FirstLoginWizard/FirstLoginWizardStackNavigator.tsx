@@ -2,11 +2,13 @@ import { Colors } from '../../../constants/styles';
 import BusinessSettingsScreen from '../../../screens/Settings/Business/BusinessSettingsScreen';
 import FirstLoginWizardCompletedScreen from '../../../screens/Settings/FirstLoginWizardCompletedScreen';
 import MessagesSettingsScreen from '../../../screens/Settings/Messages/MessagesSettingsScreen';
+import PaymentInstalmentsEditScreen from '../../../screens/Settings/Payments/PaymentInstalmentsEditScreen';
 import PlanSettingsScreen from '../../../screens/Settings/Plans/PlansSettingsScreen';
 import CreateFirstPaymentScreen from '../../Settings/Payments/CreateFirstPaymentScreen';
 import AccountSettingsTopTabsNavigator from '../Settings/AccountsSettingsTopTabsNavigator';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useLayoutEffect } from 'react';
 
 export type LogintStackParamList = {
   BasicUserInfo;
@@ -15,13 +17,30 @@ export type LogintStackParamList = {
   PlanInfo;
   CreateFirstPayment;
   FirstLoginWizardCompleted;
+  PaymentInstalmentsEdit;
 };
 
 const Stack = createNativeStackNavigator<LogintStackParamList>();
 
-const FirstLoginWizardStackNavigator = () => {
+const FirstLoginWizardStackNavigator = ({ navigation }) => {
+  useLayoutEffect(() => {
+    const mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
+    if (mainDrawerNavigator) {
+      mainDrawerNavigator.setOptions({
+        headerShown: false
+      });
+    }
+
+    return () => {
+      mainDrawerNavigator.setOptions({
+        headerShown: true
+      });
+    };
+  });
+
   return (
     <Stack.Navigator
+      id="FirstLoginWizardStackNavigator"
       screenOptions={{
         headerStyle: { backgroundColor: Colors.primary100 },
         headerTintColor: Colors.primary500,
@@ -71,6 +90,14 @@ const FirstLoginWizardStackNavigator = () => {
       <Stack.Screen
         name="FirstLoginWizardCompleted"
         component={FirstLoginWizardCompletedScreen}
+        options={{
+          headerTitle: '',
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Stack.Screen
+        name="PaymentInstalmentsEdit"
+        component={PaymentInstalmentsEditScreen}
         options={{
           headerTitle: '',
           headerTitleAlign: 'center'

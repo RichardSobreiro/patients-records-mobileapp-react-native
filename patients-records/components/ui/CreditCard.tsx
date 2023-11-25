@@ -77,7 +77,6 @@ export default CreditCard;
 
 const styles = StyleSheet.create({
   containerCreditCard: {
-    flex: 1,
     paddingHorizontal: 20
   },
   creditCardImageContainer: {

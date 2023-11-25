@@ -33,7 +33,13 @@ export const formatDateTimePTBR = (dateTime: Date): string => {
   return dateString;
 };
 
-export const formatDatePTBR = (dateTime: Date): string => {
+export const formatDatePTBR = (dateTime: Date | string | undefined): string => {
+  if (!dateTime) {
+    return 'Não definido';
+  }
+  if (typeof dateTime === 'string') {
+    dateTime = new Date(dateTime);
+  }
   let m = new Date();
   if (dateTime && typeof dateTime === 'string') {
     m = new Date((dateTime as unknown as string).slice(0, -1));
