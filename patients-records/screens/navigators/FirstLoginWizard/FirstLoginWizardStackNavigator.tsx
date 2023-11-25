@@ -32,9 +32,9 @@ const FirstLoginWizardStackNavigator = ({ navigation }) => {
     }
 
     return () => {
-      mainDrawerNavigator.setOptions({
-        headerShown: true
-      });
+      // mainDrawerNavigator.setOptions({
+      //   headerShown: true
+      // });
     };
   });
 

@@ -167,7 +167,6 @@ const BusinessSettings: React.FC<Props> = ({ navigation }) => {
       if (field === 'companyCNPJ') {
         enteredValue = maskCNPJ(enteredValue);
       }
-      console.log(`${field}: ${enteredValue}`);
       const newInputs = {
         ...curInputs,
         [field]: { value: enteredValue, isValid: true }
@@ -208,7 +207,6 @@ const BusinessSettings: React.FC<Props> = ({ navigation }) => {
     request.companyName = inputs.companyName.value;
     request.companyCNPJ = inputs.companyCNPJ.value;
     request.companyNumberOfEmployees = inputs.companyNumberOfEmployees.value;
-    console.log(`inputs.companyNumberOfEmployees.value: ${inputs.companyNumberOfEmployees.value}`);
 
     try {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);

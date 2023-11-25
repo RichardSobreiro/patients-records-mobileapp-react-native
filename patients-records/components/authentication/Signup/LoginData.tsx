@@ -169,12 +169,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
         (value) => value !== undefined || Object.values(touched).some((value) => value === false)
       )
     ) {
-      console.log(`errors: ${JSON.stringify(errors)}`);
-      console.log(`touched: ${JSON.stringify(touched)}`);
       return;
-    } else {
-      console.log(`errors: ${JSON.stringify(errors)}`);
-      console.log(`touched: ${JSON.stringify(touched)}`);
     }
 
     setIsLoading(true);

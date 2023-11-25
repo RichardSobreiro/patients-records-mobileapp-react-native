@@ -1,5 +1,4 @@
 import { Colors } from '../../../constants/styles';
-import { AuthContext } from '../../../store/auth-context';
 import AgendaHomeScreen from '../../Agenda/AgendaHomeScreen';
 import PatientsListScreen from '../../Patients/PatientsListScreen';
 import CreateServiceScreen from '../../Patients/ServicesScreens/CreateServiceScreen';
@@ -8,9 +7,7 @@ import EditServiceScreen from '../../Patients/ServicesScreens/EditServiceScreen'
 import EditServiceTypeScreen from '../../Patients/ServicesScreens/EditServiceTypeScreen';
 
 import { AntDesign } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useContext } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 export type AgendaStackParamList = {
@@ -28,13 +25,6 @@ const AgendaStackCompScreen = ({ route, navigation }) => {
   const customerId = route.params !== undefined ? route.params.customerId : '';
   const serviceId = route.params !== undefined ? route.params.serviceId : '';
   const serviceTypeId = route.params !== undefined ? route.params.serviceTypeId : '';
-  const authCtx = useContext(AuthContext);
-
-  useFocusEffect(() => {
-    if (!authCtx.userInfo?.userCreationCompleted) {
-      navigation?.navigate('FirstLoginWizard');
-    }
-  });
 
   return (
     <StackAgenda.Navigator

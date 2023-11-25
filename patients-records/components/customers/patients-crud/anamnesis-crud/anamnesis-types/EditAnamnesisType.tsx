@@ -118,7 +118,6 @@ const EditAnamnesisType: React.FC<Props> = ({
         });
         setAnamnesisType(anamensisTypeResponse);
       } else {
-        console.log(`ANAMNESIS LOADED WITH ERROR`);
         notificationCtx.showNotification({
           title: 'Ops...',
           message: 'Tivemos um problema passageiro. Por favor, tente novamente!'

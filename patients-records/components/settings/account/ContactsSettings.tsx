@@ -71,7 +71,6 @@ const ContactsSettings: React.FC<Props> = ({ navigation }) => {
   });
 
   const validatePhoneNumber = (newPhoneNumber: string): boolean => {
-    console.log(`phoneNumber: ${newPhoneNumber}`);
     // eslint-disable-next-line no-useless-escape
     if (/^\(\d{2}\)\s[\d]{5}-[\d]{4}$/.test(newPhoneNumber)) {
       setErrors((curErrors) => {

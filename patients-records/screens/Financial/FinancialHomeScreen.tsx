@@ -7,9 +7,6 @@ import { Button, View } from 'react-native';
 const FinancialHomeScreen = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
 
-  console.log(`ROUTE: ${JSON.stringify(route)}`);
-  console.log(`NAVIGATION: ${JSON.stringify(navigation)}`);
-
   useFocusEffect(() => {
     if (!authCtx.userInfo?.userCreationCompleted) {
       navigation?.navigate('FirstLoginWizard');

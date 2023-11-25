@@ -53,56 +53,63 @@ const MainDrawerNavigatorComp = () => {
         }
       }}
       drawerContent={(props) => <CustomSideBarMainDrawerNavigator {...props} />}
-      initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'FirstLoginWizard'}
+      //initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'FirstLoginWizard'}
+      initialRouteName={'Agenda'}
     >
-      <Drawer.Screen
-        name="Agenda"
-        options={{
-          drawerLabel: 'Agenda',
-          headerTitle: 'Agenda'
-        }}
-        component={AgendaStackCompScreen}
-      />
-      <Drawer.Screen
-        name="PatientsHome"
-        options={{
-          drawerLabel: 'Pacientes',
-          headerTitle: 'Pacientes'
-        }}
-        component={PatientsHomeScreen}
-      />
-      <Drawer.Screen
-        name="Financial"
-        options={{
-          drawerLabel: 'Financeiro',
-          headerTitle: 'Financeiro'
-        }}
-        component={FinancialHomeScreen}
-      />
-      <Drawer.Screen
-        name="Reports"
-        options={{
-          drawerLabel: 'Relatórios',
-          headerTitle: 'Relatórios'
-        }}
-        component={ReportsHomeScreen}
-      />
-      <Drawer.Screen
-        name="Settings"
-        options={{
-          drawerLabel: 'Configurações',
-          headerTitle: 'Configurações'
-        }}
-        component={SettingsBottomTabs}
-      />
-      <Drawer.Screen
-        name="FirstLoginWizard"
-        options={{
-          headerTitle: 'Finalizando Cadastro',
-          drawerItemStyle: { display: 'none' }
-        }}
-        component={FirstLoginWizardStackNavigator}
-      />
+      {authCtx.userInfo?.userCreationCompleted && (
+        <>
+          <Drawer.Screen
+            name="Agenda"
+            options={{
+              drawerLabel: 'Agenda',
+              headerTitle: 'Agenda'
+            }}
+            component={AgendaStackCompScreen}
+          />
+          <Drawer.Screen
+            name="PatientsHome"
+            options={{
+              drawerLabel: 'Pacientes',
+              headerTitle: 'Pacientes'
+            }}
+            component={PatientsHomeScreen}
+          />
+          <Drawer.Screen
+            name="Financial"
+            options={{
+              drawerLabel: 'Financeiro',
+              headerTitle: 'Financeiro'
+            }}
+            component={FinancialHomeScreen}
+          />
+          <Drawer.Screen
+            name="Reports"
+            options={{
+              drawerLabel: 'Relatórios',
+              headerTitle: 'Relatórios'
+            }}
+            component={ReportsHomeScreen}
+          />
+          <Drawer.Screen
+            name="Settings"
+            options={{
+              drawerLabel: 'Configurações',
+              headerTitle: 'Configurações'
+            }}
+            component={SettingsBottomTabs}
+          />
+        </>
+      )}
+      {!authCtx.userInfo?.userCreationCompleted && (
+        <Drawer.Screen
+          name="FirstLoginWizard"
+          options={{
+            headerTitle: 'Finalizando Cadastro',
+            drawerItemStyle: { display: 'none' }
+          }}
+          component={FirstLoginWizardStackNavigator}
+        />
+      )}
     </Drawer.Navigator>
   );
 };

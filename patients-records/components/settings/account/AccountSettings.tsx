@@ -144,7 +144,6 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
   };
 
   const validateUserGender = (newUserGender: string): boolean => {
-    console.log(`userGender: ${newUserGender}`);
     if (/(?:male|female|others)$/.test(newUserGender)) {
       setErrors((curErrors) => {
         return {

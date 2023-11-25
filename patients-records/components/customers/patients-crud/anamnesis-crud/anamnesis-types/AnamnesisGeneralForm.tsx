@@ -1,9 +1,9 @@
-import IconButton from '../../../../../components/ui/IconButton';
 import CreateEditInputCheckboxGroup, {
   CheckboxItem
 } from '../../../../../components/ui/custom-form/CreateEditInputCheckboxGroup';
 import Input from '../../../../../components/ui/custom-form/Input';
 import InputCheckboxGroup from '../../../../../components/ui/custom-form/InputCheckboxGroup';
+import IconButton from '../../../../../components/ui/IconButton';
 import { Colors } from '../../../../../constants/styles';
 import { getAnamnesisTypeById } from '../../../../../http/AnamnesisTypesApi';
 import { GetAnamnesisTypeByIdResponse } from '../../../../../models/customers/anamnesis-types/GetAnamnesisTypeByIdResponse';
@@ -12,8 +12,9 @@ import { GetQuestionItem } from '../../../../../models/customers/anamnesis/GetAn
 import { AuthContext } from '../../../../../store/auth-context';
 import { NotificationContext } from '../../../../../store/notification-context';
 import CreateEditInput from '../../../../ui/custom-form/CreateEditInput';
+
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, View, Text } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -84,7 +85,6 @@ const AnamnesisGeneralForm: React.FC<Props> = ({
         setErrors(errorsArray);
       }
     } else {
-      console.log(`ANAMNESIS LOADED WITH ERROR`);
       notificationCtx.showNotification({
         title: 'Ops...',
         message: 'Tivemos um problema passageiro. Por favor, tente novamente!'

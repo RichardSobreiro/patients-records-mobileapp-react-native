@@ -64,8 +64,6 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    console.log(`number: ${paymentForm.values.number.replace(' ', '')}`);
-
     const card = PagSeguro.encryptCard({
       publicKey: process.env.PUBLIC_KEY_PAG_SEGURO,
       holder: paymentForm.values.name,
@@ -74,10 +72,6 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
       expYear: `20${paymentForm.values.expiry.split('/')[1]}`,
       securityCode: paymentForm.values.cvc
     });
-
-    console.log(`card.encryptedCard: ${card.encryptedCard}`);
-    console.log(`card.hasErrors: ${card.hasErrors}`);
-    console.log(`card.errors: ${JSON.stringify(card.errors)}`);
 
     if (card.hasErrors) {
       let message = 'Verifique os dados do cartão e tente novamente!';

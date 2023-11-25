@@ -156,7 +156,6 @@ const AnamnesisList: React.FC<Props> = ({ customerId }) => {
             setAnamnesisList([...response.body.anamnesis]);
           }
         } else {
-          console.log(`ANAMNESIS LIST - ERROR - PAGE: ${nextPage}`);
           const notification = {
             status: 'error',
             title: 'Opsss...',
