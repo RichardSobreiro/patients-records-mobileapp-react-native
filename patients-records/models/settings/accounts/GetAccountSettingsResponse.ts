@@ -35,7 +35,7 @@ class GetAccountSettingsResponse {
 
     public companyName?: string,
     public companyCNPJ?: string,
-    public companyNumberOfEmployees?: string
+    public companyNumberOfEmployees?: string | number
   ) {}
 }
 
