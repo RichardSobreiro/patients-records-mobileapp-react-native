@@ -1,7 +1,6 @@
 import { Token, TokenPasswordGranType, UserInfo, validadeToken } from '../util/auth';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import { createContext, useState } from 'react';
 
 type AuthState = {
@@ -63,7 +62,10 @@ const AuthContextProvider = ({ children }) => {
     }
   };
 
-  const setUserCreationCompleted = (value: boolean) => {
+  const setUserCreationCompleted = async (value: boolean) => {
+    const asyncStorageUserInfo = { ...userInfo };
+    asyncStorageUserInfo.userCreationCompleted = value;
+    await AsyncStorage.setItem('USER_INFO', JSON.stringify(asyncStorageUserInfo));
     setUserInfo((currentUserInfo) => {
       if (currentUserInfo) {
         const newUserInfo = { ...currentUserInfo };

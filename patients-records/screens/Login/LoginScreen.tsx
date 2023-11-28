@@ -58,7 +58,7 @@ const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
             userId: '',
             username: params.username,
             email: params.email,
-            userCreationCompleted: accessToken.userCreationCompleted,
+            userCreationCompleted: accessToken.userCreationCompleted as unknown as boolean,
             userPlanId: accessToken.userPlanId,
             paymentOk: accessToken.paymentOk,
             companyName: accessToken.companyName

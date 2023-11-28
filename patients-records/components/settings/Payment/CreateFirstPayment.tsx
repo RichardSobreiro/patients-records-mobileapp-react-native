@@ -127,7 +127,7 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    const request = new CreatePaymentRequest(paymentUserMethodId);
+    const request = new CreatePaymentRequest(paymentUserMethodId, true);
 
     try {
       const response = await createPayment(authCtx.token?.access_token!, request);

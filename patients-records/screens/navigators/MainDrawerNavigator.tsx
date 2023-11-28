@@ -3,6 +3,7 @@ import IconButton from '../../components/ui/IconButton';
 import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
 import FinancialHomeScreen from '../Financial/FinancialHomeScreen';
+import NotificationsScreen from '../Notifications/NotificationsScreen';
 import PatientsHomeScreen from '../Patients/PatientsHomeScreen';
 import ReportsHomeScreen from '../Reports/ReportsHomeScreen';
 import AgendaStackCompScreen from './Agenda/AgendaStackNavigator';
@@ -18,6 +19,7 @@ export type MainDrawerParamList = {
   Financial;
   Reports;
   Settings;
+  Notifications;
   FirstLoginWizard;
 };
 
@@ -53,7 +55,6 @@ const MainDrawerNavigatorComp = () => {
         }
       }}
       drawerContent={(props) => <CustomSideBarMainDrawerNavigator {...props} />}
-      //initialRouteName={authCtx.userInfo?.userCreationCompleted ? 'Agenda' : 'FirstLoginWizard'}
       initialRouteName={'Agenda'}
     >
       {authCtx.userInfo?.userCreationCompleted && (
@@ -97,6 +98,14 @@ const MainDrawerNavigatorComp = () => {
               headerTitle: 'Configurações'
             }}
             component={SettingsBottomTabs}
+          />
+          <Drawer.Screen
+            name="Notifications"
+            options={{
+              drawerLabel: 'Notificações',
+              headerTitle: 'Notificações'
+            }}
+            component={NotificationsScreen}
           />
         </>
       )}

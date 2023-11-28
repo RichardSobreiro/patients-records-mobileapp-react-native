@@ -44,7 +44,7 @@ const FirstLoginWizardCompleted: React.FC<Props> = ({ navigation }) => {
     try {
       const response = await updateAccountSettings(authCtx.token?.access_token!, request);
       if (response.ok) {
-        authCtx.setUserCreationCompleted(true);
+        await authCtx.setUserCreationCompleted(true);
       } else {
         asyncErrorHandler(
           new Error(
