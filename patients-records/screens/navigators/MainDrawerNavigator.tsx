@@ -2,7 +2,9 @@ import CustomSideBarMainDrawerNavigator from '../../components/ui/CustomSideBarM
 import IconButton from '../../components/ui/IconButton';
 import { Colors } from '../../constants/styles';
 import { AuthContext } from '../../store/auth-context';
+import { UserNotificationsContext } from '../../store/user-notifications-context';
 import FinancialHomeScreen from '../Financial/FinancialHomeScreen';
+import LogoutScreen from '../Logout/LogoutScreen';
 import NotificationsScreen from '../Notifications/NotificationsScreen';
 import PatientsHomeScreen from '../Patients/PatientsHomeScreen';
 import ReportsHomeScreen from '../Reports/ReportsHomeScreen';
@@ -11,7 +13,10 @@ import FirstLoginWizardStackNavigator from './FirstLoginWizard/FirstLoginWizardS
 import SettingsBottomTabs from './Settings/SettingsBottomTabsNavigator';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { useContext } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useContext, useLayoutEffect } from 'react';
+import { View } from 'react-native';
+import { Badge } from 'react-native-paper';
 
 export type MainDrawerParamList = {
   Agenda: { customerId?: string; serviceId?: string };
@@ -21,12 +26,21 @@ export type MainDrawerParamList = {
   Settings;
   Notifications;
   FirstLoginWizard;
+  Logout;
 };
 
 const Drawer = createDrawerNavigator<MainDrawerParamList>();
 
 const MainDrawerNavigatorComp = () => {
   const authCtx = useContext(AuthContext);
+  const userNotificationCtx = useContext(UserNotificationsContext);
+  const navigation = useNavigation<NavigationProp<MainDrawerParamList>>();
+
+  useLayoutEffect(() => {
+    userNotificationCtx.updateUserNotificationsState();
+  });
+
+  setInterval(userNotificationCtx.updateUserNotificationsState, 120000);
 
   return (
     <Drawer.Navigator
@@ -35,13 +49,24 @@ const MainDrawerNavigatorComp = () => {
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: '#ffffff',
         headerRight: ({ tintColor }) => (
-          <IconButton
-            pressable={{ marginRight: 10 }}
-            icon="exit"
-            color={tintColor}
-            size={24}
-            onPress={authCtx.logout}
-          />
+          <View>
+            {userNotificationCtx.unReadNotificationsCount > 0 ? (
+              <Badge style={{ top: 12, right: 10 }}>
+                {userNotificationCtx.unReadNotificationsCount}
+              </Badge>
+            ) : (
+              ''
+            )}
+            <IconButton
+              pressable={{ marginRight: 15 }}
+              icon="notifications"
+              color={tintColor}
+              size={30}
+              onPress={() => {
+                navigation.navigate('Notifications');
+              }}
+            />
+          </View>
         ),
         drawerStyle: { backgroundColor: Colors.primary100 },
         drawerLabelStyle: {
@@ -106,6 +131,16 @@ const MainDrawerNavigatorComp = () => {
               headerTitle: 'Notificações'
             }}
             component={NotificationsScreen}
+          />
+          <Drawer.Screen
+            name="Logout"
+            options={{
+              drawerLabel: 'Sair',
+              headerTitle: 'Deseja realmente sair?',
+              drawerItemStyle: { display: 'none' },
+              drawerActiveBackgroundColor: 'transparent'
+            }}
+            component={LogoutScreen}
           />
         </>
       )}

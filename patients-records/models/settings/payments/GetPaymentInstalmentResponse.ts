@@ -1,6 +1,6 @@
 /** @format */
 import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
-import { GetUserPaymentMethodResponse } from './GetPaymentUserMethodResponse';
+import { GetUserPaymentMethodResponse } from './GetUserPaymentMethodsResponse';
 
 class GetPaymentInstalmentResponse {
   constructor(

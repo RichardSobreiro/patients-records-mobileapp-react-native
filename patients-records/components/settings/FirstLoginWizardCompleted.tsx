@@ -7,7 +7,7 @@ import GetAccountSettingsResponse from '../../models/settings/accounts/GetAccoun
 import {
   GetCreditCardPaymentMethodResponse,
   GetUserPaymentMethodResponse
-} from '../../models/settings/payments/GetPaymentUserMethodResponse';
+} from '../../models/settings/payments/GetUserPaymentMethodsResponse';
 import { AuthContext } from '../../store/auth-context';
 import Button, { ButtonTypes } from '../ui/Button';
 import CreditCard from '../ui/CreditCard';

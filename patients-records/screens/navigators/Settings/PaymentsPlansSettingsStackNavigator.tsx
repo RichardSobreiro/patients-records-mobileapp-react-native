@@ -1,6 +1,7 @@
 /* eslint-disable import/order */
 import PlanSettingsScreen from '../../../components/settings/plan/PlanSettings';
 import { Colors } from '../../../constants/styles';
+import PaymentMethodsListScreen from '../../../screens/Settings/Payments/Methods/PaymentMethodsListScreen';
 import PaymentInstalmentsEditScreen from '../../Settings/Payments/PaymentInstalmentsEditScreen';
 import PaymentsSettingsScreen from '../../Settings/Payments/PaymentsSettingsScreen';
 
@@ -11,6 +12,7 @@ import React, { useLayoutEffect } from 'react';
 export type PaymentsStack = {
   PaymentInstalmentsEdit;
   PaymentsPlansSettingsScreen;
+  PaymentsMethodsListScreen;
 };
 
 export type PaymentsPlanSettingsTopTabsPamsList = {
@@ -87,6 +89,13 @@ const PaymentsPlansSettingsStackNavigator = ({ route, navigation }) => {
         <PaymentsPlansSettingsStack.Screen
           name="PaymentsPlansSettingsScreen"
           component={PaymentsPlanSettingsTopTabs}
+        />
+        <PaymentsPlansSettingsStack.Screen
+          name="PaymentsMethodsListScreen"
+          component={PaymentMethodsListScreen}
+          options={{
+            title: 'Meios de pagamento'
+          }}
         />
       </PaymentsPlansSettingsStack.Group>
       <PaymentsPlansSettingsStack.Group screenOptions={{ presentation: 'modal' }}>

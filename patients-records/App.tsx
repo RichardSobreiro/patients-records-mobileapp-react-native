@@ -8,6 +8,7 @@ import MainDrawerNavigatorComp from './screens/Navigators/MainDrawerNavigator';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
+import UserNotificationProvider from './store/user-notifications-context';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
@@ -113,9 +114,11 @@ const App: React.FC = () => {
         <AuthContextProvider>
           <AxiosContextProvider>
             <PaperProvider theme={theme}>
-              <NotificationProvider>
-                <Root />
-              </NotificationProvider>
+              <UserNotificationProvider>
+                <NotificationProvider>
+                  <Root />
+                </NotificationProvider>
+              </UserNotificationProvider>
             </PaperProvider>
           </AxiosContextProvider>
         </AuthContextProvider>

@@ -1,6 +1,8 @@
 import { Colors } from '../../constants/styles';
+
 import { Ionicons } from '@expo/vector-icons';
 import { GestureResponderEvent, Pressable, StyleSheet, Text } from 'react-native';
+import { Badge } from 'react-native-paper';
 
 interface Props {
   icon;

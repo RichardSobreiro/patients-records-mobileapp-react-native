@@ -24,7 +24,7 @@ export class GetUserPaymentMethodResponse {
   ) {}
 }
 
-class GetPaymentUserMethodResponse {
+class GetUserPaymentMethodsResponse {
   constructor(
     public defaultPaymentMethod: PaymentMethods,
     public defaultPaymentUserMethodId: string,
@@ -32,4 +32,4 @@ class GetPaymentUserMethodResponse {
   ) {}
 }
 
-export default GetPaymentUserMethodResponse;
+export default GetUserPaymentMethodsResponse;

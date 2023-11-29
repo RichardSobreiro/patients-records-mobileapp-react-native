@@ -1,3 +1,5 @@
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 import CreditCard from '../../../components/ui/CreditCard';
 import PaymentMethods from '../../../constants/enums/PaymentMethods';
 import PaymentsUserMethodStatus from '../../../constants/enums/PaymentsUserMethodStatus';
@@ -8,7 +10,7 @@ import GetAccountSettingsResponse from '../../../models/settings/accounts/GetAcc
 import {
   GetCreditCardPaymentMethodResponse,
   GetUserPaymentMethodResponse
-} from '../../../models/settings/payments/GetPaymentUserMethodResponse';
+} from '../../../models/settings/payments/GetUserPaymentMethodsResponse';
 import { AuthContext } from '../../../store/auth-context';
 import PaymentInstalmentsList from './PaymentInstalmentsList';
 
@@ -141,6 +143,23 @@ const PaymentsSettings: React.FC<Props> = ({ navigation }) => {
         lastFourNumbers={defaultPaymentMethod?.creditCard?.fourFinalNumbers}
         type={defaultPaymentMethod?.creditCard?.type}
       />
+
+      <TouchableOpacity
+        style={{
+          marginHorizontal: 20,
+          marginTop: 20,
+          borderWidth: 1,
+          borderColor: Colors.primary500,
+          borderRadius: 20,
+          paddingHorizontal: 10,
+          maxWidth: 200
+        }}
+        onPress={() => {
+          navigation.navigate('PaymentsMethodsListScreen');
+        }}
+      >
+        <Text style={{ color: Colors.primary500, fontSize: 16 }}>Meios de pagamento...</Text>
+      </TouchableOpacity>
 
       <PaymentInstalmentsList
         navigation={navigation}

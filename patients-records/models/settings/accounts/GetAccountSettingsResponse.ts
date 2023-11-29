@@ -1,6 +1,6 @@
 import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
 import GetPaymentInstalmentResponse from '../payments/GetPaymentInstalmentResponse';
-import GetPaymentUserMethodResponse from '../payments/GetPaymentUserMethodResponse';
+import GetUserPaymentMethodsResponse from '../payments/GetUserPaymentMethodsResponse';
 
 class GetAccountSettingsResponse {
   constructor(
@@ -30,7 +30,7 @@ class GetAccountSettingsResponse {
     public userPlanId: string,
 
     public paymentStatus: PaymentInstalmentsStatus,
-    public paymentUserMethods?: GetPaymentUserMethodResponse,
+    public paymentUserMethods?: GetUserPaymentMethodsResponse,
     public instalments?: GetPaymentInstalmentResponse[],
 
     public companyName?: string,

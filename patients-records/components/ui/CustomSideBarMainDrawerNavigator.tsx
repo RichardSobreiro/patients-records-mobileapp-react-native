@@ -1,5 +1,7 @@
+import { Colors } from '../../constants/styles';
+
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
   navigation: any;
@@ -16,6 +18,22 @@ const CustomSideBarMainDrawerNavigator: React.FC<Props> = (props) => {
       </View>
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate('Logout');
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              marginHorizontal: 20,
+              marginVertical: 20
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary500 }}>Sair</Text>
+          </View>
+        </TouchableOpacity>
       </DrawerContentScrollView>
     </SafeAreaView>
   );
