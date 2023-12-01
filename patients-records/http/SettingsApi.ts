@@ -8,7 +8,7 @@ import fetchWithTimeout from '../util/fetchWithTimeout';
 export const getAccountSettings = async (accessToken: string): Promise<ApiResponse> => {
   const URL = `http://10.0.2.2:3006/settings/accounts`;
 
-  const response = await fetchWithTimeout(URL, {
+  const response = await fetch(URL, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,

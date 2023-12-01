@@ -1,6 +1,8 @@
 /* eslint-disable import/order */
 import PlanSettingsScreen from '../../../components/settings/plan/PlanSettings';
 import { Colors } from '../../../constants/styles';
+import CreatePaymentMethodScreen from '../../../screens/Settings/Payments/Methods/CreatePaymentMethodScreen';
+import EditPaymentMethodScreen from '../../../screens/Settings/Payments/Methods/EditPaymentMethodScreen';
 import PaymentMethodsListScreen from '../../../screens/Settings/Payments/Methods/PaymentMethodsListScreen';
 import PaymentInstalmentsEditScreen from '../../Settings/Payments/PaymentInstalmentsEditScreen';
 import PaymentsSettingsScreen from '../../Settings/Payments/PaymentsSettingsScreen';
@@ -13,6 +15,8 @@ export type PaymentsStack = {
   PaymentInstalmentsEdit;
   PaymentsPlansSettingsScreen;
   PaymentsMethodsListScreen;
+  CreatePaymentMethodScreen;
+  EditPaymentMethodScreen;
 };
 
 export type PaymentsPlanSettingsTopTabsPamsList = {
@@ -95,6 +99,20 @@ const PaymentsPlansSettingsStackNavigator = ({ route, navigation }) => {
           component={PaymentMethodsListScreen}
           options={{
             title: 'Meios de pagamento'
+          }}
+        />
+        <PaymentsPlansSettingsStack.Screen
+          name="CreatePaymentMethodScreen"
+          component={CreatePaymentMethodScreen}
+          options={{
+            title: 'Substituir cartão de crédito'
+          }}
+        />
+        <PaymentsPlansSettingsStack.Screen
+          name="EditPaymentMethodScreen"
+          component={EditPaymentMethodScreen}
+          options={{
+            title: 'Atualizando meio de pagamento'
           }}
         />
       </PaymentsPlansSettingsStack.Group>

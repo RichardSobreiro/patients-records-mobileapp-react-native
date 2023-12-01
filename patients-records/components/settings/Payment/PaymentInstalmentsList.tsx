@@ -1,6 +1,9 @@
+import { ScrollView } from 'react-native-gesture-handler';
+
+import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
 import { Colors } from '../../../constants/styles';
+import GetPaymentInstalmentResponse from '../../../models/settings/payments/GetPaymentInstalmentResponse';
 import { formatDatePTBR } from '../../../util/date-helpers';
-import GetPaymentInstalmentResponse from '/models/settings/payments/GetPaymentInstalmentResponse';
 
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
@@ -21,7 +24,7 @@ const PaymentInstalmentsList: React.FC<Props> = ({ instalmentsProp, navigation }
   }, [instalmentsProp]);
 
   return (
-    <>
+    <ScrollView style={{ marginBottom: 20 }}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Pagamentos</Text>
       </View>
@@ -41,21 +44,59 @@ const PaymentInstalmentsList: React.FC<Props> = ({ instalmentsProp, navigation }
           </View>
         </View>
         {instalments?.map((it) => (
-          <View key={it.paymentInstalmentsId} style={styles.row}>
+          <View key={it.paymentInstalmentsId} style={[styles.row]}>
             <View style={[styles.cell, { flex: 1 }]}>
-              <Text style={styles.text}>{it.instalmentNumber}</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      it.status === PaymentInstalmentsStatus.OK
+                        ? Colors.primary500
+                        : Colors.error500
+                  }
+                ]}
+              >
+                {it.instalmentNumber}
+              </Text>
             </View>
             <View style={[styles.cell, { flex: 2 }]}>
-              <Text style={styles.text}>{it.status}</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      it.status === PaymentInstalmentsStatus.OK
+                        ? Colors.primary500
+                        : Colors.error500
+                  }
+                ]}
+              >
+                {it.status}
+              </Text>
             </View>
             <View style={[styles.cell, { flex: 4 }]}>
-              <Text style={styles.text}>{formatDatePTBR(it.expireDate)}</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      it.status === PaymentInstalmentsStatus.OK
+                        ? Colors.primary500
+                        : Colors.error500
+                  }
+                ]}
+              >
+                {formatDatePTBR(it.expireDate)}
+              </Text>
             </View>
             <View style={[styles.cell, { flex: 2 }]}>
               <AntDesign
                 name="infocirlceo"
                 size={24}
-                color={Colors.primary500}
+                color={
+                  it.status === PaymentInstalmentsStatus.OK ? Colors.primary500 : Colors.error500
+                }
                 onPress={() => {
                   navigation.push('PaymentInstalmentsEdit', {
                     paymentInstalmentsId: it.paymentInstalmentsId
@@ -66,7 +107,7 @@ const PaymentInstalmentsList: React.FC<Props> = ({ instalmentsProp, navigation }
           </View>
         ))}
       </View>
-    </>
+    </ScrollView>
   );
 };
 

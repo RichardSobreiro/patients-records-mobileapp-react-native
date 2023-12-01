@@ -1,6 +1,7 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import CreditCard from '../../../components/ui/CreditCard';
+import PaymentInstalmentsStatus from '../../../constants/enums/PaymentInstalmentsStatus';
 import PaymentMethods from '../../../constants/enums/PaymentMethods';
 import PaymentsUserMethodStatus from '../../../constants/enums/PaymentsUserMethodStatus';
 import { Colors } from '../../../constants/styles';
@@ -14,7 +15,7 @@ import {
 import { AuthContext } from '../../../store/auth-context';
 import PaymentInstalmentsList from './PaymentInstalmentsList';
 
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
@@ -93,13 +94,7 @@ const PaymentsSettings: React.FC<Props> = ({ navigation }) => {
     if (isFocused) {
       getAccountSettingsAsync();
     }
-  }, [
-    accountSettingsFromServer,
-    asyncErrorHandler,
-    authCtx,
-    authCtx.token?.access_token,
-    isFocused
-  ]);
+  }, [asyncErrorHandler, authCtx, isFocused]);
 
   return (
     <>
@@ -130,9 +125,28 @@ const PaymentsSettings: React.FC<Props> = ({ navigation }) => {
           alignItems: 'center'
         }}
       >
-        <FontAwesome5 name="check-circle" size={80} color="green" />
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary500 }}>
-          Tudo certo com o seu pagamento.
+        {accountSettingsFromServer?.paymentStatus === PaymentInstalmentsStatus.OK ? (
+          <FontAwesome5 name="check-circle" size={80} color="green" />
+        ) : (
+          <MaterialIcons name="error" size={80} color={Colors.error500} />
+        )}
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color:
+              accountSettingsFromServer?.paymentStatus === PaymentInstalmentsStatus.OK
+                ? Colors.primary500
+                : Colors.error500,
+            textAlign: 'center'
+          }}
+        >
+          {accountSettingsFromServer?.paymentStatus === PaymentInstalmentsStatus.PENDING &&
+            'O seu pagamento venceu. Tente realizar um novo pagamento.'}
+          {accountSettingsFromServer?.paymentStatus === PaymentInstalmentsStatus.ERROR &&
+            'Existe um problema com o seu último pagamento. Verifique seu cartão de crédito!'}
+          {accountSettingsFromServer?.paymentStatus === PaymentInstalmentsStatus.OK &&
+            'Tudo certo com o seu pagamento.'}
         </Text>
       </View>
 
@@ -146,19 +160,28 @@ const PaymentsSettings: React.FC<Props> = ({ navigation }) => {
 
       <TouchableOpacity
         style={{
+          margin: 20,
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
           marginHorizontal: 20,
-          marginTop: 20,
+          padding: 10,
           borderWidth: 1,
           borderColor: Colors.primary500,
-          borderRadius: 20,
-          paddingHorizontal: 10,
-          maxWidth: 200
+          borderRadius: 20
         }}
         onPress={() => {
-          navigation.navigate('PaymentsMethodsListScreen');
+          navigation.navigate('CreatePaymentMethodScreen');
         }}
       >
-        <Text style={{ color: Colors.primary500, fontSize: 16 }}>Meios de pagamento...</Text>
+        <MaterialCommunityIcons
+          name="credit-card-sync"
+          size={24}
+          color={Colors.primary500}
+          style={{ marginRight: 10 }}
+        />
+        <Text style={{ color: Colors.primary500, fontWeight: 'bold', fontSize: 18 }}>
+          Substituir cartão de crédito
+        </Text>
       </TouchableOpacity>
 
       <PaymentInstalmentsList

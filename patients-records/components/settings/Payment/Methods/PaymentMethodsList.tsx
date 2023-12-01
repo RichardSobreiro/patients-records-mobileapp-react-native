@@ -3,11 +3,12 @@ import useAsyncErrorHandler from '../../../../hooks/useAsyncErrorHandler';
 import { getUserPaymentMethods } from '../../../../http/PaymentsApi';
 import GetUserPaymentMethodsResponse from '../../../../models/settings/payments/GetUserPaymentMethodsResponse';
 import { AuthContext } from '../../../../store/auth-context';
+import { formatDatePTBR } from '../../../../util/date-helpers';
 
-import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
   navigation: any;
@@ -83,14 +84,120 @@ const PaymentMethodsList: React.FC<Props> = ({ navigation }) => {
           }}
         />
       )}
+      {paymentMethods && paymentMethods?.paymentMethods.length > 0 ? (
+        <>
+          <TouchableOpacity
+            style={{
+              margin: 20,
+              flexDirection: 'row',
+              marginHorizontal: 20,
+              padding: 10,
+              borderWidth: 1,
+              borderColor: Colors.primary500,
+              borderRadius: 20
+            }}
+            onPress={() => {
+              navigation.navigate('CreatePaymentMethodScreen');
+            }}
+          >
+            <AntDesign
+              name="plus"
+              size={24}
+              color={Colors.primary500}
+              style={{ marginRight: 10 }}
+            />
+            <Text style={{ color: Colors.primary500, fontWeight: 'bold', fontSize: 18 }}>
+              Novo meio de pagamento
+            </Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <></>
+      )}
       {paymentMethods?.paymentMethods.map((m) => {
         return (
-          <View key={m.paymentUserMethodId}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text>Tipo: </Text>
-              <MaterialIcons name="payment" size={48} color={Colors.primary800} />
+          <TouchableOpacity
+            key={m.paymentUserMethodId}
+            style={{
+              marginHorizontal: 20,
+              padding: 10,
+              borderWidth: 1,
+              borderColor: Colors.primary500,
+              borderRadius: 20
+            }}
+          >
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{}}>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={{ color: Colors.primary500, fontSize: 16 }}>Tipo:</Text>
+                  <Text
+                    style={{
+                      color: Colors.primary500,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 10
+                    }}
+                  >
+                    Cartão de Crédito
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={{ color: Colors.primary500, fontSize: 16 }}>Cadastrado em:</Text>
+                  <Text
+                    style={{
+                      color: Colors.primary500,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 10
+                    }}
+                  >
+                    {formatDatePTBR(m.creationDate)}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={{ color: Colors.primary500, fontSize: 16 }}>Expira em:</Text>
+                  <Text
+                    style={{
+                      color: Colors.primary500,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 10
+                    }}
+                  >
+                    {formatDatePTBR(m.expireDate)}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={{ color: Colors.primary500, fontSize: 16 }}>Status:</Text>
+                  <Text
+                    style={{
+                      color: Colors.primary500,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 10
+                    }}
+                  >
+                    {m.status}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text
+                    style={{
+                      color: Colors.primary500,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 10
+                    }}
+                  >
+                    {m.statusDescription}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <MaterialIcons name="payment" size={48} color={Colors.primary800} />
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
