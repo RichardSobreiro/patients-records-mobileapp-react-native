@@ -2,19 +2,21 @@
 import 'react-native-gesture-handler';
 
 import ErrorDialog from './components/ui/ErrorDialog';
+import PaymentInstalmentsStatus from './constants/enums/PaymentInstalmentsStatus';
 import { Colors } from './constants/styles';
 import LoginMainStackNavigator from './screens/Navigators/LoginMainStackNavigator';
-import MainDrawerNavigatorComp from './screens/Navigators/MainDrawerNavigator';
+import MainDrawerNavigator from './screens/Navigators/MainDrawerNavigator';
+import PaymentIssueDrawerNavigator from './screens/Navigators/PaymentIssueDrawerNavigator';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import AxiosContextProvider from './store/axios-context';
 import NotificationProvider from './store/notification-context';
-import UserNotificationProvider from './store/user-notifications-context';
+import AccountSettingsProvider from './store/user-notifications-context';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet } from 'react-native';
+import { ActivityIndicator, LogBox, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
 import { pt, registerTranslation } from 'react-native-paper-dates';
@@ -57,8 +59,15 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <ErrorBoundary onError={handleJSErrors} FallbackComponent={CustomFallback}>
-        {!authCtx.isAuthenticated && <LoginMainStackNavigator />}
-        {authCtx.isAuthenticated && <MainDrawerNavigatorComp />}
+        {authCtx.isAuthenticated ? (
+          authCtx.userInfo?.paymentStatus === PaymentInstalmentsStatus.OK ? (
+            <MainDrawerNavigator />
+          ) : (
+            <PaymentIssueDrawerNavigator />
+          )
+        ) : (
+          <LoginMainStackNavigator />
+        )}
       </ErrorBoundary>
     </NavigationContainer>
   );
@@ -114,11 +123,11 @@ const App: React.FC = () => {
         <AuthContextProvider>
           <AxiosContextProvider>
             <PaperProvider theme={theme}>
-              <UserNotificationProvider>
+              <AccountSettingsProvider>
                 <NotificationProvider>
                   <Root />
                 </NotificationProvider>
-              </UserNotificationProvider>
+              </AccountSettingsProvider>
             </PaperProvider>
           </AxiosContextProvider>
         </AuthContextProvider>

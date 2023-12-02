@@ -9,7 +9,7 @@ export type Token = {
   token_type: string;
   userCreationCompleted: string;
   userPlanId: string;
-  paymentOk: string;
+  paymentStatus: string;
   companyName: string;
 };
 
@@ -19,7 +19,7 @@ export type UserInfo = {
   email: string;
   userCreationCompleted: boolean;
   userPlanId: string;
-  paymentOk: string;
+  paymentStatus: string;
   companyName: string;
 };
 
@@ -35,7 +35,7 @@ export type TokenPasswordGranType = {
   email: string;
   userCreationCompleted: boolean;
   userPlanId: string;
-  paymentOk: string;
+  paymentStatus: string;
   companyName: string;
 };
 

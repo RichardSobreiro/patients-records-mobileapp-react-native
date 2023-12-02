@@ -77,7 +77,7 @@ const PaymentsPlanSettingsTopTabs = ({ route, navigation }) => {
   );
 };
 
-const PaymentsPlansSettingsStackNavigator = ({ route, navigation }) => {
+const PaymentsPlansSettingsStackNavigator = () => {
   return (
     <PaymentsPlansSettingsStack.Navigator
       id="PaymentsPlansSettingsStackNavigator"

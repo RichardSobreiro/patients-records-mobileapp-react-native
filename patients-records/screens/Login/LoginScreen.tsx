@@ -27,7 +27,7 @@ const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
           email: accessToken.email,
           userCreationCompleted: accessToken.userCreationCompleted,
           userPlanId: accessToken.userPlanId,
-          paymentOk: accessToken.paymentOk,
+          paymentStatus: accessToken.paymentStatus,
           companyName: accessToken.companyName
         });
       } else {
@@ -60,7 +60,7 @@ const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
             email: params.email,
             userCreationCompleted: accessToken.userCreationCompleted as unknown as boolean,
             userPlanId: accessToken.userPlanId,
-            paymentOk: accessToken.paymentOk,
+            paymentStatus: accessToken.paymentStatus,
             companyName: accessToken.companyName
           });
         } else {

@@ -69,19 +69,19 @@ const PaymentInstalmentsEdit: React.FC<Props> = ({ navigation, route, paymentIns
   useLayoutEffect(() => {
     if (!navigation) return;
 
-    navigation.setOptions({
+    navigation?.setOptions({
       headerTitle: `Pagamento ${instalment?.instalmentNumber}`
     });
 
     const mainDrawerNavigator = navigation.getParent('MainDrawerNavigator');
     if (mainDrawerNavigator) {
-      mainDrawerNavigator.setOptions({
+      mainDrawerNavigator?.setOptions({
         headerShown: false
       });
     }
 
     return () => {
-      mainDrawerNavigator.setOptions({
+      mainDrawerNavigator?.setOptions({
         headerShown: true
       });
     };

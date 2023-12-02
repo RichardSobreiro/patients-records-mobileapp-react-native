@@ -1,3 +1,4 @@
+import PaymentInstalmentsStatus from '../constants/enums/PaymentInstalmentsStatus';
 import { Token, TokenPasswordGranType, UserInfo, validadeToken } from '../util/auth';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,6 +12,7 @@ type AuthState = {
   logout: () => void;
   initializeState: () => void;
   setUserCreationCompleted: (value: boolean) => void;
+  setPaymentStatus: (paymentStatus: PaymentInstalmentsStatus) => void;
 };
 
 const initialState: AuthState = {
@@ -20,7 +22,8 @@ const initialState: AuthState = {
   authenticate: (token: Token | TokenPasswordGranType, userInfo: UserInfo) => {},
   logout: () => {},
   initializeState: () => {},
-  setUserCreationCompleted: (value: boolean) => {}
+  setUserCreationCompleted: (value: boolean) => {},
+  setPaymentStatus: (paymentStatus: PaymentInstalmentsStatus) => {}
 };
 
 export const AuthContext = createContext(initialState);
@@ -77,6 +80,21 @@ const AuthContextProvider = ({ children }) => {
     });
   };
 
+  const setPaymentStatus = async (paymentStatus: PaymentInstalmentsStatus) => {
+    const asyncStorageUserInfo = { ...userInfo };
+    asyncStorageUserInfo.paymentStatus = paymentStatus as unknown as string;
+    await AsyncStorage.setItem('USER_INFO', JSON.stringify(asyncStorageUserInfo));
+    setUserInfo((currentUserInfo) => {
+      if (currentUserInfo) {
+        const newUserInfo = { ...currentUserInfo };
+        newUserInfo.paymentStatus = paymentStatus as unknown as string;
+        return newUserInfo;
+      } else {
+        return currentUserInfo;
+      }
+    });
+  };
+
   const value = {
     token: authToken,
     userInfo,
@@ -84,7 +102,8 @@ const AuthContextProvider = ({ children }) => {
     authenticate,
     logout,
     initializeState,
-    setUserCreationCompleted
+    setUserCreationCompleted,
+    setPaymentStatus
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

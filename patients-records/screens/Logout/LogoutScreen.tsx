@@ -18,27 +18,42 @@ const LogoutScreen: React.FC<Props> = ({ navigation }) => {
       style={{
         flex: 1,
         backgroundColor: Colors.primary100,
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center'
+        justifyContent: 'center'
       }}
     >
-      <TouchableOpacity
-        style={{ borderWidth: 1, borderColor: Colors.primary500, borderRadius: 20, padding: 20 }}
-        onPress={() => {
-          navigation.goBack();
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 60
         }}
       >
-        <Text style={{ color: Colors.primary500, fontSize: 40, fontWeight: 'bold' }}>Não</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ borderWidth: 1, borderColor: Colors.primary500, borderRadius: 20, padding: 20 }}
-        onPress={() => {
-          authCtx.logout();
+        <Text style={{ color: Colors.primary500, fontSize: 22 }}>Deseja realment sair?</Text>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          alignItems: 'center'
         }}
       >
-        <Text style={{ color: Colors.primary500, fontSize: 40, fontWeight: 'bold' }}>Sim</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={{ borderWidth: 1, borderColor: Colors.primary500, borderRadius: 20, padding: 10 }}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Text style={{ color: Colors.primary500, fontSize: 30, fontWeight: 'bold' }}>Não</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ borderWidth: 1, borderColor: Colors.primary500, borderRadius: 20, padding: 10 }}
+          onPress={() => {
+            authCtx.logout();
+          }}
+        >
+          <Text style={{ color: Colors.primary500, fontSize: 30, fontWeight: 'bold' }}>Sim</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

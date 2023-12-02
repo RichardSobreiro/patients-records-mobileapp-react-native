@@ -7,7 +7,7 @@ import GetNotificationsResponse, {
 import UpdateNotificationRequest from '../../models/notifications/UpdateNotificationRequest';
 import UpdateNotificationResponse from '../../models/notifications/UpdateNotificationResponse';
 import { AuthContext } from '../../store/auth-context';
-import { UserNotificationsContext } from '../../store/user-notifications-context';
+import { AccountSettingsContext } from '../../store/user-notifications-context';
 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
@@ -27,7 +27,7 @@ type Props = {
 
 const NotificationsHome: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
-  const userNotificationCtx = useContext(UserNotificationsContext);
+  const userNotificationCtx = useContext(AccountSettingsContext);
   const asyncErrorHandler = useAsyncErrorHandler();
 
   const [notifications, setNotifications] = useState<GetNotificationResponse[] | undefined>(

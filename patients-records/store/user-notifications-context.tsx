@@ -1,28 +1,38 @@
+import PaymentInstalmentsStatus from '../constants/enums/PaymentInstalmentsStatus';
 import useAsyncErrorHandler from '../hooks/useAsyncErrorHandler';
 import { getUserNotifications } from '../http/NotificationsApi';
+import { getAccountSettings } from '../http/SettingsApi';
 import GetNotificationsResponse from '../models/notifications/GetNotificationsResponse';
+import GetAccountSettingsResponse from '../models/settings/accounts/GetAccountSettingsResponse';
 import { AuthContext } from './auth-context';
 
 import { createContext, useContext, useState } from 'react';
 
-interface UserNotificationState {
+interface AccountSettingsState {
   unReadNotificationsCount: number;
   updateUserNotificationsState: () => void;
+  accountSettings: GetAccountSettingsResponse | undefined;
+  updateAccountSettingsState: () => void;
 }
 
-const initialState: UserNotificationState = {
+const initialState: AccountSettingsState = {
   unReadNotificationsCount: 0,
-  updateUserNotificationsState: () => {}
+  updateUserNotificationsState: () => {},
+  accountSettings: undefined,
+  updateAccountSettingsState: () => {}
 };
 
-export const UserNotificationsContext = createContext(initialState);
+export const AccountSettingsContext = createContext(initialState);
 
 type Props = {
   children: string | JSX.Element | JSX.Element[];
 };
 
-const UserNotificationProvider = ({ children }: Props) => {
+const AccountSettingsProvider = ({ children }: Props) => {
   const [unReadNotificationsCount, setUnReadNotificationsCount] = useState<number>(0);
+  const [accountSettingsFromServer, setAccountSettingsFromServer] = useState<
+    GetAccountSettingsResponse | undefined
+  >(undefined);
 
   const authCtx = useContext(AuthContext);
   const asyncErrorHandler = useAsyncErrorHandler();
@@ -62,14 +72,56 @@ const UserNotificationProvider = ({ children }: Props) => {
     }
   };
 
+  const updateAccountSettingsState = async () => {
+    try {
+      console.log(`${new Date().toLocaleTimeString()} - UPDATED PAYMENT STATUS`);
+      const response = await getAccountSettings(authCtx.token?.access_token!);
+      if (response.ok) {
+        const getAccountSettingsResponse = response.body as GetAccountSettingsResponse;
+        if (
+          (getAccountSettingsResponse.paymentStatus as PaymentInstalmentsStatus) !==
+          accountSettingsFromServer?.paymentStatus
+        ) {
+          setAccountSettingsFromServer(getAccountSettingsResponse);
+          authCtx.setPaymentStatus(getAccountSettingsResponse.paymentStatus);
+          console.log(
+            `${new Date().toLocaleTimeString()} - UPDATED PAYMENT STATUS RESPONSE: ${
+              getAccountSettingsResponse.paymentStatus
+            }`
+          );
+        }
+      } else {
+        asyncErrorHandler(
+          new Error(
+            `UserSettingsContext.updateAccountSettingsState - else: ${JSON.stringify(response)}`,
+            {
+              cause: response.httpStatusCode
+            }
+          )
+        );
+      }
+    } catch (error: any) {
+      asyncErrorHandler(
+        new Error(
+          `UserSettingsContext.updateAccountSettingsState - catch: ${JSON.stringify(error)}`,
+          {
+            cause: error.message
+          }
+        )
+      );
+    }
+  };
+
   const value = {
     unReadNotificationsCount,
-    updateUserNotificationsState
+    updateUserNotificationsState,
+    accountSettings: accountSettingsFromServer,
+    updateAccountSettingsState
   };
 
   return (
-    <UserNotificationsContext.Provider value={value}>{children}</UserNotificationsContext.Provider>
+    <AccountSettingsContext.Provider value={value}>{children}</AccountSettingsContext.Provider>
   );
 };
 
-export default UserNotificationProvider;
+export default AccountSettingsProvider;

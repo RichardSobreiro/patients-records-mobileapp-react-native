@@ -192,7 +192,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
             email: accessToken.email,
             userCreationCompleted: accessToken.userCreationCompleted,
             userPlanId: accessToken.userPlanId,
-            paymentOk: accessToken.paymentOk,
+            paymentStatus: accessToken.paymentStatus,
             companyName: accessToken.companyName
           });
         } else {

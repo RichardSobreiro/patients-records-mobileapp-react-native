@@ -165,6 +165,7 @@ const CreatePaymentMethod: React.FC<Props> = ({ navigation }) => {
         );
         if (responseCreatePayment) {
           if (responseCreatePayment.status === PaymentInstalmentsStatus.OK) {
+            authCtx.setPaymentStatus(PaymentInstalmentsStatus.OK);
             navigation.navigate('PaymentsPlansSettingsScreen');
           } else {
             notificationCtx.showNotification({
