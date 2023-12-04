@@ -6,6 +6,7 @@ import { createUser } from '../../../http/AccountsApi';
 import { CreateUserRequest } from '../../../models/user/CreateUserRequest';
 import { CreateUserResponse } from '../../../models/user/CreateUserResponse';
 import { AuthContext } from '../../../store/auth-context';
+import { NotificationContext } from '../../../store/notification-context';
 import { login } from '../../../util/auth';
 import Input from '../../ui/custom-form/Input';
 
@@ -48,6 +49,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
   const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const notificationCtx = useContext(NotificationContext);
 
   const [inputs, setInputs] = useState<Inputs>({
     username: {
@@ -203,11 +205,11 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
           );
         }
       } else {
-        asyncErrorHandler(
-          new Error(`LoginData.submitHandler - else: ${JSON.stringify(response)}`, {
-            cause: response.httpStatusCode
-          })
-        );
+        notificationCtx.showNotification({
+          title: 'Erro',
+          message: response.error?.message,
+          status: response.httpStatusCode
+        });
       }
     } catch (error: any) {
       asyncErrorHandler(

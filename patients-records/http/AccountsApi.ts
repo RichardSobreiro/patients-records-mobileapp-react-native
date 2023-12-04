@@ -26,13 +26,14 @@ export const createUser = async (request: CreateUserRequest): Promise<ApiRespons
 
   if (response.ok) {
     const responseBody: CreateUserResponse = await response.json();
-    return new ApiResponse(true, response.status, responseBody);
+    return new ApiResponse(true, response.status + '', responseBody);
   } else {
+    const errrorBody: any = await response.json();
     return new ApiResponse(
       false,
-      response.status,
+      response.status + '',
       ``,
-      new ErrorDetails(response.statusText, response.status)
+      new ErrorDetails(errrorBody.message, response.status)
     );
   }
 };
