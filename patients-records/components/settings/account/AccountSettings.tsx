@@ -189,7 +189,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const validateCpf = (newCpf: string): boolean => {
+  const validateUserCPF = (newCpf: string): boolean => {
     if (validateCPF(newCpf)) {
       setErrors((curErrors) => {
         return {
@@ -281,7 +281,7 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
         validateUserGender(inputs.userGender.value);
       }
       if (field === 'userCPF') {
-        validateCpf(inputs.userCPF.value);
+        validateUserCPF(inputs.userCPF.value);
       }
       if (field === 'username') {
         validateUsername(inputs.username.value);
@@ -296,11 +296,11 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
   const submitHandler = async () => {
     if (
       Object.values(errors).some((value) => value !== undefined) ||
-      !validateUsernameComplete(inputs.userNameComplete.value) ||
+      !validateUsernameComplete(inputs.userNameComplete.value ?? '') ||
       !validateBirthdate(inputs.userBirthdate.value) ||
-      !validateUserGender(inputs.userGender.value) ||
-      !validateCPF(inputs.userCPF.value) ||
-      !validateUsername(inputs.username.value)
+      !validateUserGender(inputs.userGender.value ?? '') ||
+      !validateUserCPF(inputs.userCPF.value ?? '') ||
+      !validateUsername(inputs.username.value ?? '')
     ) {
       return;
     }
@@ -327,14 +327,14 @@ const AccountSettings: React.FC<Props> = ({ navigation }) => {
         }
       } else {
         asyncErrorHandler(
-          new Error(`LoginData.submitHandler - else: ${JSON.stringify(response)}`, {
+          new Error(`Signup.submitHandler - else: ${JSON.stringify(response)}`, {
             cause: response.httpStatusCode
           })
         );
       }
     } catch (error: any) {
       asyncErrorHandler(
-        new Error(`LoginData.submitHandler - catch: ${JSON.stringify(error)}`, {
+        new Error(`Signup.submitHandler - catch: ${JSON.stringify(error)}`, {
           cause: error.message
         })
       );

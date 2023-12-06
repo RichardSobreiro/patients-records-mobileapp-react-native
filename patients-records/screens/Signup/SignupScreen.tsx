@@ -1,4 +1,4 @@
-import LoginData from '../../components/authentication/Signup/LoginData';
+import Signup from '../../components/authentication/Signup/Signup';
 
 type Props = {
   route: any;
@@ -6,7 +6,7 @@ type Props = {
 };
 
 const SignupScreen: React.FC<Props> = ({ navigation, route }) => {
-  return <LoginData navigation={navigation} />;
+  return <Signup navigation={navigation} />;
 };
 
 export default SignupScreen;

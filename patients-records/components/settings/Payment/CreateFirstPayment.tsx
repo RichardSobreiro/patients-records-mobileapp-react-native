@@ -27,6 +27,10 @@ type Props = {
   navigation: any;
 };
 
+interface PagSeguroType {
+  encryptCard: (args: any) => any;
+}
+
 const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
   const notificationCtx = useContext(NotificationContext);
@@ -64,7 +68,7 @@ const CreateFirstPayment: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    const card = PagSeguro.encryptCard({
+    const card = (PagSeguro as PagSeguroType).encryptCard({
       publicKey: process.env.PUBLIC_KEY_PAG_SEGURO,
       holder: paymentForm.values.name,
       number: paymentForm.values.number.replaceAll(' ', ''),

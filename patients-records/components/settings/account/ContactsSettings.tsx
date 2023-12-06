@@ -22,6 +22,10 @@ type Inputs = {
     value: string;
     isValid: boolean;
   };
+  emailVerified: {
+    value: boolean;
+    isValid: boolean;
+  };
   phoneNumber: {
     value: string;
     isValid: boolean;
@@ -30,11 +34,13 @@ type Inputs = {
 
 type Touched = {
   email: boolean;
+  emailVerified: boolean;
   phoneNumber: boolean;
 };
 
 type Errors = {
   email: string | undefined;
+  emailVerified: string | undefined;
   phoneNumber: string | undefined;
 };
 
@@ -54,6 +60,10 @@ const ContactsSettings: React.FC<Props> = ({ navigation }) => {
       value: '',
       isValid: true
     },
+    emailVerified: {
+      value: false,
+      isValid: true
+    },
     phoneNumber: {
       value: '',
       isValid: true
@@ -62,11 +72,13 @@ const ContactsSettings: React.FC<Props> = ({ navigation }) => {
 
   const [touched, setTouched] = useState<Touched>({
     email: false,
+    emailVerified: false,
     phoneNumber: false
   });
 
   const [errors, setErrors] = useState<Errors>({
     email: undefined,
+    emailVerified: undefined,
     phoneNumber: undefined
   });
 
@@ -196,6 +208,10 @@ const ContactsSettings: React.FC<Props> = ({ navigation }) => {
           setInputs({
             email: {
               value: getAccountSettingsResponse.email,
+              isValid: true
+            },
+            emailVerified: {
+              value: getAccountSettingsResponse.emailVerified,
               isValid: true
             },
             phoneNumber: {

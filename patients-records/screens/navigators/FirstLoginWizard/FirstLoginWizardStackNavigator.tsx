@@ -1,16 +1,21 @@
 import { Colors } from '../../../constants/styles';
+import AccountSettingsScreen from '../../../screens/Settings/Account/AccountSettingsScreen';
+import AddressSettingsScreen from '../../../screens/Settings/Account/AddressSettingsScreen';
+import ContactsSettingsScreen from '../../../screens/Settings/Account/ContactsSettingsScreen';
 import BusinessSettingsScreen from '../../../screens/Settings/Business/BusinessSettingsScreen';
 import FirstLoginWizardCompletedScreen from '../../../screens/Settings/FirstLoginWizardCompletedScreen';
 import MessagesSettingsScreen from '../../../screens/Settings/Messages/MessagesSettingsScreen';
 import PaymentInstalmentsEditScreen from '../../../screens/Settings/Payments/PaymentInstalmentsEditScreen';
 import PlanSettingsScreen from '../../../screens/Settings/Plans/PlansSettingsScreen';
 import CreateFirstPaymentScreen from '../../Settings/Payments/CreateFirstPaymentScreen';
-import AccountSettingsTopTabsNavigator from '../Settings/AccountsSettingsTopTabsNavigator';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useLayoutEffect } from 'react';
 
 export type LogintStackParamList = {
+  AccountSettingsScreen;
+  AddressSettingsScreen;
+  ContactsSettingsScreen;
   BasicUserInfo;
   BusinessInfo;
   MessageSettings;
@@ -48,10 +53,26 @@ const FirstLoginWizardStackNavigator = ({ navigation }) => {
       }}
     >
       <Stack.Screen
-        name="BasicUserInfo"
-        component={AccountSettingsTopTabsNavigator}
+        name="AccountSettingsScreen"
+        component={AccountSettingsScreen}
         options={{
-          headerTitle: 'Dados Básicos',
+          headerTitle: 'Dados da Conta',
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Stack.Screen
+        name="AddressSettingsScreen"
+        component={AddressSettingsScreen}
+        options={{
+          headerTitle: 'Endereço',
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Stack.Screen
+        name="ContactsSettingsScreen"
+        component={ContactsSettingsScreen}
+        options={{
+          headerTitle: 'Contatos',
           headerTitleAlign: 'center'
         }}
       />

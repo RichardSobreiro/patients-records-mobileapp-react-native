@@ -1,13 +1,16 @@
 /* eslint-disable import/order */
-import Button from '../../../components/ui/Button';
+import OTPType from '../../../constants/OTPType';
 import { Colors } from '../../../constants/styles';
 import useAsyncErrorHandler from '../../../hooks/useAsyncErrorHandler';
 import { createUser } from '../../../http/AccountsApi';
+import { sendWelcomeEmailWithOTP } from '../../../http/SecurityApi';
+import CreateOTPRequest from '../../../models/security/CreateOTPRequest';
 import { CreateUserRequest } from '../../../models/user/CreateUserRequest';
 import { CreateUserResponse } from '../../../models/user/CreateUserResponse';
 import { AuthContext } from '../../../store/auth-context';
 import { NotificationContext } from '../../../store/notification-context';
 import { login } from '../../../util/auth';
+import Button from '../../ui/Button';
 import Input from '../../ui/custom-form/Input';
 
 import { useContext, useState } from 'react';
@@ -45,7 +48,7 @@ type Errors = {
   email: string | undefined;
 };
 
-const LoginData: React.FC<Props> = ({ navigation }) => {
+const Signup: React.FC<Props> = ({ navigation }) => {
   const authCtx = useContext(AuthContext);
   const asyncErrorHandler = useAsyncErrorHandler();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -188,6 +191,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
         const createUserResponse = response.body as CreateUserResponse;
         const accessToken = await login(createUserResponse.email, inputs.password.value);
         if (accessToken) {
+          await sendWelcomeEmailWithOTPAsync(accessToken.userId, accessToken.access_token);
           authCtx.authenticate(accessToken, {
             userId: accessToken.userId,
             username: accessToken.username,
@@ -199,7 +203,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
           });
         } else {
           asyncErrorHandler(
-            new Error(`LoginData.submitHandler - trying to login:`, {
+            new Error(`Signup.submitHandler - trying to login:`, {
               cause: response.httpStatusCode
             })
           );
@@ -213,7 +217,36 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
       }
     } catch (error: any) {
       asyncErrorHandler(
-        new Error(`LoginData.submitHandler - catch: ${JSON.stringify(error)}`, {
+        new Error(`Signup.submitHandler - catch: ${JSON.stringify(error)}`, {
+          cause: error.message
+        })
+      );
+    }
+
+    setIsLoading(false);
+  };
+
+  const sendWelcomeEmailWithOTPAsync = async (userId: string, accessToken: string) => {
+    setIsLoading(true);
+
+    const request = new CreateOTPRequest(userId, OTPType.ACCOUNT_CREATED);
+
+    try {
+      const response = await sendWelcomeEmailWithOTP(accessToken, request);
+      if (response.ok) {
+        return true;
+      } else {
+        const errorBody = await response.body();
+        notificationCtx.showNotification({
+          title: 'Erro',
+          message: errorBody.message,
+          status: errorBody.httpStatusCode
+        });
+        return false;
+      }
+    } catch (error: any) {
+      asyncErrorHandler(
+        new Error(`Signup.submitHandler - catch: ${JSON.stringify(error)}`, {
           cause: error.message
         })
       );
@@ -286,7 +319,7 @@ const LoginData: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default LoginData;
+export default Signup;
 
 const styles = StyleSheet.create({
   facebookContent: {

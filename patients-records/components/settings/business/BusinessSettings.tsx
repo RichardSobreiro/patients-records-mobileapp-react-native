@@ -256,7 +256,7 @@ const BusinessSettings: React.FC<Props> = ({ navigation }) => {
               isValid: true
             },
             companyNumberOfEmployees: {
-              value: getAccountSettingsResponse.companyNumberOfEmployees + '',
+              value: getAccountSettingsResponse.companyNumberOfEmployees + '' ?? '',
               isValid: true
             }
           });

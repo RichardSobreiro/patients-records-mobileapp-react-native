@@ -6,7 +6,7 @@ import { createContext, useState } from 'react';
 export type Notification = {
   title?: string | null | undefined;
   message?: string | null | undefined;
-  status?: string | null | undefined;
+  status?: number | string | null | undefined;
 };
 
 export type NotificationState = {

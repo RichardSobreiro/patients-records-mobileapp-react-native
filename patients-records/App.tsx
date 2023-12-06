@@ -60,7 +60,8 @@ const Navigation = () => {
     <NavigationContainer>
       <ErrorBoundary onError={handleJSErrors} FallbackComponent={CustomFallback}>
         {authCtx.isAuthenticated ? (
-          authCtx.userInfo?.paymentStatus === PaymentInstalmentsStatus.OK ? (
+          authCtx.userInfo?.paymentStatus === PaymentInstalmentsStatus.OK ||
+          !authCtx.userInfo?.userCreationCompleted ? (
             <MainDrawerNavigator />
           ) : (
             <PaymentIssueDrawerNavigator />
